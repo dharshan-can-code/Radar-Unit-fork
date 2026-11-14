@@ -113,7 +113,7 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
     results = [None] * len(granules)
     done = 0
     from concurrent.futures import as_completed
-    with ThreadPoolExecutor(max_workers=6) as ex:
+    with ThreadPoolExecutor(max_workers=4) as ex:  # total HTTP concurrency is capped in remote_h5
         futs = [ex.submit(process, ig) for ig in enumerate(granules)]
         for fut in as_completed(futs):
             idx, g, dbs, vfs, nb, nr = fut.result()

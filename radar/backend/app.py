@@ -17,6 +17,7 @@ Run (from the radar folder):
 from __future__ import annotations
 
 import hashlib
+import re
 import json
 import sys
 import threading
@@ -52,6 +53,18 @@ app.mount("/api/results", StaticFiles(directory=RESULTS), name="results")
 
 JOBS: dict[str, dict] = {}
 POOL = ThreadPoolExecutor(max_workers=2)
+
+
+_URL_RE = re.compile(r"https?://\S+")
+
+
+def public_error(e: Exception) -> str:
+    """Error text safe to show users: never includes (signed) URLs, which can carry account names."""
+    from remote_h5 import ArchiveUnavailable
+    if isinstance(e, ArchiveUnavailable):
+        return str(e)
+    msg = _URL_RE.sub("[archive URL hidden]", str(e))
+    return f"{type(e).__name__}: {msg}"[:400]
 
 
 def now_utc() -> str:
@@ -186,7 +199,7 @@ def api_analyze(req: AnalyzeRequest):
             job.update(status="error", message=str(e))
         except Exception as e:  # noqa: BLE001
             traceback.print_exc()
-            job.update(status="error", message=f"{type(e).__name__}: {e}")
+            job.update(status="error", message=public_error(e))
 
     POOL.submit(work)
     return {"job_id": key, **job}

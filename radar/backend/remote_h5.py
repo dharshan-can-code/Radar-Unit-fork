@@ -9,11 +9,29 @@ small block cache. GCOV files are chunked (512x512) with paged metadata, so a
 from __future__ import annotations
 
 import io
+import random
 import threading
 import time
 from collections import OrderedDict
 
 import requests
+
+# The archive (CloudFront + S3) throttles bursts with HTTP 503 "Slow Down".
+# One cap for ALL files read at once, plus retry with exponential back-off.
+MAX_CONCURRENT_REQUESTS = 12
+_GLOBAL_SLOTS = threading.BoundedSemaphore(MAX_CONCURRENT_REQUESTS)
+RETRY_STATUS = {429, 500, 502, 503, 504}
+MAX_ATTEMPTS = 7
+
+
+class ArchiveUnavailable(IOError):
+    """NASA's archive kept refusing requests. The message never contains signed URLs."""
+
+
+def _backoff(attempt: int, retry_after: str | None = None) -> float:
+    if retry_after and retry_after.isdigit():
+        return min(float(retry_after), 20.0)
+    return min(0.5 * 2 ** attempt, 16.0) * (0.75 + random.random() / 2)  # jittered: 0.5, 1, 2, 4, 8, 16 s
 
 
 class RemoteFile(io.RawIOBase):
@@ -32,10 +50,26 @@ class RemoteFile(io.RawIOBase):
         self._resolve()
 
     def _resolve(self):
-        r = self.session.get(self.orig_url, headers={"Authorization": f"Bearer {self.token}", "Range": "bytes=0-0"},
-                             allow_redirects=True, timeout=60)
+        name = self.orig_url.rsplit("/", 1)[-1]
+        for attempt in range(MAX_ATTEMPTS):
+            try:
+                with _GLOBAL_SLOTS:
+                    r = self.session.get(self.orig_url, allow_redirects=True, timeout=60,
+                                         headers={"Authorization": f"Bearer {self.token}", "Range": "bytes=0-0"})
+            except requests.RequestException:
+                time.sleep(_backoff(attempt))
+                continue
+            if r.status_code in RETRY_STATUS:
+                time.sleep(_backoff(attempt, r.headers.get("Retry-After")))
+                continue
+            break
+        else:
+            raise ArchiveUnavailable(f"NASA's archive is busy (repeated HTTP errors) while opening {name}; "
+                                     "please try again in a minute")
+        if r.status_code in (401, 403):
+            raise PermissionError(f"Earthdata refused access to {name} (HTTP {r.status_code}); check the token")
         if r.status_code not in (200, 206):
-            raise PermissionError(f"ASF returned HTTP {r.status_code} for {self.orig_url.rsplit('/', 1)[-1]}")
+            raise ArchiveUnavailable(f"NASA's archive returned HTTP {r.status_code} for {name}")
         self.url = r.url  # pre-signed URL after redirects
         cr = r.headers.get("Content-Range", "")
         self.size = int(cr.split("/")[-1]) if "/" in cr else int(r.headers["Content-Length"])
@@ -48,18 +82,30 @@ class RemoteFile(io.RawIOBase):
                 return self.blocks[i]
         start = i * self.block_size
         end = min(start + self.block_size, self.size) - 1
-        for attempt in range(3):
+        status = None
+        for attempt in range(MAX_ATTEMPTS):
             if time.time() - self.resolved_at > 1800:  # pre-signed URLs expire; refresh early
                 self._resolve()
-            r = self.session.get(self.url, headers={"Range": f"bytes={start}-{end}"}, timeout=120)
+            try:
+                with _GLOBAL_SLOTS:
+                    r = self.session.get(self.url, headers={"Range": f"bytes={start}-{end}"}, timeout=120)
+            except requests.RequestException:
+                status = "network error"
+                time.sleep(_backoff(attempt))
+                continue
+            status = r.status_code
             if r.status_code == 206:
                 break
-            if r.status_code in (401, 403):
+            if r.status_code in (401, 403):  # signed URL expired
                 self._resolve()
                 continue
-            r.raise_for_status()
+            if r.status_code in RETRY_STATUS:
+                time.sleep(_backoff(attempt, r.headers.get("Retry-After")))
+                continue
+            raise ArchiveUnavailable(f"NASA's archive returned HTTP {r.status_code} while reading data")
         else:
-            raise IOError(f"range request failed ({r.status_code})")
+            raise ArchiveUnavailable(f"NASA's archive is busy ({status} after {MAX_ATTEMPTS} attempts); "
+                                     "please try again in a minute")
         data = r.content
         with self.lock:
             self.bytes_fetched += len(data)
@@ -69,7 +115,7 @@ class RemoteFile(io.RawIOBase):
                 self.blocks.popitem(last=False)
         return data
 
-    def prefetch(self, ranges: list[tuple[int, int]], workers: int = 16):
+    def prefetch(self, ranges: list[tuple[int, int]], workers: int = 8):
         """Fetch every block covering the given (offset, size) byte ranges in
         parallel, so the following h5py reads are served from memory instead of
         one HTTP round trip at a time."""

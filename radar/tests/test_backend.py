@@ -109,3 +109,47 @@ def test_recommendation_prefers_science_release_on_ties():
           g("2026-10-26", collection="NISAR_L2_GCOV_V1", maturity="VALIDATED", crid="P05036"),
           g("2026-11-07", collection="NISAR_L2_GCOV_V1", maturity="VALIDATED", crid="P05036")]
     assert nisar.group_stacks(gs)[0]["maturity"] == "VALIDATED"
+
+
+def _fake_archive(monkeypatch, data, fail_first: int, status=503):
+    """Fake CloudFront/S3: the first `fail_first` requests return `status`, then ranges work."""
+    import remote_h5
+    monkeypatch.setattr(remote_h5, "_backoff", lambda attempt, retry_after=None: 0)  # no real sleeping
+    state = {"n": 0}
+
+    class Resp:
+        def __init__(self, code, content=b"", headers=None):
+            self.status_code, self.content, self.headers, self.url = code, content, headers or {}, "https://signed/x?A-userid=someone"
+
+    def fake_get(self, url, headers=None, **kw):
+        state["n"] += 1
+        if state["n"] <= fail_first:
+            return Resp(status)
+        a, b = map(int, headers["Range"].split("=")[1].split("-"))
+        return Resp(206, data[a:b + 1], {"Content-Range": f"bytes {a}-{b}/{len(data)}"})
+
+    monkeypatch.setattr(remote_h5.requests.Session, "get", fake_get)
+    return remote_h5, state
+
+
+def test_remote_file_retries_through_503s(monkeypatch):
+    data = bytes(range(256)) * 8
+    remote_h5, state = _fake_archive(monkeypatch, data, fail_first=4)
+    f = remote_h5.RemoteFile("https://asf/x.h5", "tok", block_size=512)  # resolve survives 4x 503
+    f.seek(100)
+    assert f.read(50) == data[100:150]
+
+
+def test_remote_file_gives_clean_error_when_archive_stays_down(monkeypatch):
+    remote_h5, _ = _fake_archive(monkeypatch, b"x" * 100, fail_first=10 ** 6)
+    with pytest.raises(remote_h5.ArchiveUnavailable) as ei:
+        remote_h5.RemoteFile("https://asf/x.h5", "tok")
+    assert "http" not in str(ei.value).lower().replace("http error", "") or "https://" not in str(ei.value)
+    assert "userid" not in str(ei.value)
+
+
+def test_public_error_hides_signed_urls():
+    import app as backend_app
+    e = RuntimeError("503 Server Error for url: https://d1.cloudfront.net/x.h5?A-userid=someone&Signature=abc")
+    msg = backend_app.public_error(e)
+    assert "userid" not in msg and "Signature" not in msg and "[archive URL hidden]" in msg
