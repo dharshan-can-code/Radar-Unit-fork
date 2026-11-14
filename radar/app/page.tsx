@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, BookOpen, Check, Download, Globe2, HelpCircle, Link2, Radar, Waves } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, Download, Globe2, HelpCircle, Link2, Radar, Waves } from "lucide-react";
 import Fingerprint, { Tag } from "@/components/Fingerprint";
 import Timeline from "@/components/Timeline";
 import { Methods, ScienceExplainer } from "@/components/Science";
@@ -18,6 +18,9 @@ import Help from "@/components/Help";
 import { Place, Rainfall, loadResult, rainfall } from "@/lib/api";
 import { dataBase } from "@/lib/data";
 import type { InventoryArea } from "@/lib/data";
+import Navbar from "@/components/Navbar";
+import Story from "@/components/Story";
+import Impact, { Sensitivity } from "@/components/Impact";
 
 const Explorer = dynamic(() => import("@/components/Explorer"), { ssr: false,
   loading: () => <div className="h-[62vh] animate-pulse rounded-xl border border-line bg-panel" /> });
@@ -41,14 +44,22 @@ export default function Home() {
   const [externalPlace, setExternalPlace] = useState<(Place & { nonce: number }) | null>(null);
   const [rain, setRain] = useState<Rainfall | null>(null);
   const [help, setHelp] = useState(false);
+  const [view, setView] = useState<"app" | "story">("app");
 
   // Shareable links: ?result=<id> reopens a saved live analysis.
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("result");
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("result");
+    if (params.get("view") === "story") setView("story");
     if (id && /^[a-f0-9]{8,32}$/.test(id)) {
-      loadResult(`/api/results/${id}/manifest.json`).then((mm) => showLive({ manifest: mm, footprint: null, checkedUtc: null }))
+      const asStory = params.get("view") === "story";
+      loadResult(`/api/results/${id}/manifest.json`).then((mm) => {
+        const r = { manifest: mm, footprint: null, checkedUtc: null };
+        if (asStory) storyResult(r); else showLive(r, true);
+      })
         .catch(() => { /* backend offline or unknown id: stay on case study */ });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Rainfall context (ERA5 via Open-Meteo) for whatever is shown.
@@ -91,13 +102,22 @@ export default function Home() {
   }, [stackId, source, caseReload]);
 
   // A live analysis result replaces the case-study data in every section.
-  function showLive(r: LiveResult) {
+  function showLive(r: LiveResult, noScroll = false) {
     setSource("live"); setLive(r); setSel({ kind: "area" }); setGrid(null); setM(r.manifest);
-    window.history.replaceState(null, "", `?result=${r.manifest.stack}`);
+    window.history.replaceState(null, "", `?result=${r.manifest.stack}${view === "story" ? "&view=story" : ""}`);
     setPairIdx(Math.max(0, r.manifest.pairs.length - 1));
     loadGrid(r.manifest).then((g) => setGrid(new GridIndex(r.manifest, g))).catch(() => setGrid(null));
-    document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" });
+    if (!noScroll && view === "app") document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" });
+    if (view === "story") window.scrollTo({ top: 0 });
   }
+  function storyResult(r: LiveResult) { showLive(r, true); window.history.replaceState(null, "", `?result=${r.manifest.stack}&view=story`); }
+  function openMapFromStory() {
+    setView("app");
+    if (m?.area === "live") window.history.replaceState(null, "", `?result=${m.stack}`);
+    setTimeout(() => document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" }), 80);
+  }
+  const shareStoryUrl = m && m.area === "live" && typeof window !== "undefined"
+    ? `${window.location.origin}/?result=${m.stack}&view=story` : null;
   function backToCase() {
     setSource("case"); setLive(null); setM(undefined); setGrid(null); setCaseReload((n) => n + 1);
     window.history.replaceState(null, "", window.location.pathname);
@@ -134,6 +154,14 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-[1400px] px-4 pb-24 sm:px-6">
+      <Navbar view={view} setView={(v) => {
+        setView(v);
+        if (m?.area === "live") window.history.replaceState(null, "", `?result=${m.stack}${v === "story" ? "&view=story" : ""}`);
+        else window.history.replaceState(null, "", v === "story" ? "?view=story" : window.location.pathname);
+      }} />
+      {view === "story" ? (
+        <Story m={m ?? null} grid={grid} rain={rain} onResult={storyResult} onOpenMap={openMapFromStory} shareUrl={shareStoryUrl} />
+      ) : (<>
       {m?.is_demonstration && (
         <div className="sticky top-0 z-50 -mx-4 flex items-center gap-2 border-b border-amber/40 bg-[#2a1d05] px-4 py-2 text-[13px] text-amber sm:-mx-6 sm:px-6">
           <AlertTriangle size={16} className="shrink-0" />
@@ -148,9 +176,6 @@ export default function Home() {
             <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 rounded-md border border-cyan/40 px-3 py-1 font-sans text-[12px] tracking-normal text-cyan hover:bg-cyan/10">
               <HelpCircle size={14} />How to use
             </button>
-            <a href="/guide" className="flex items-center gap-1.5 rounded-md bg-cyan px-3 py-1 font-sans text-[12px] font-medium tracking-normal text-bg hover:bg-cyan/90">
-              <BookOpen size={14} />User guide
-            </a>
           </span>
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">DELTA PULSE <span className="text-muted">— Hidden Water</span></h1>
@@ -200,14 +225,20 @@ export default function Home() {
         {m && m.pairs.length > 0 && <ChangeByInterval m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />}
       </Section>
 
-      <Section id="science" kicker="04" title="How radar sees wetlands" sub="The physics behind every number above.">
+      <Section id="impact" kicker="04" title="Why it matters" sub="Who this helps, and what NISAR revealed. Every number comes from real data in this app.">
+        <Impact m={m ?? null} grid={grid} />
+      </Section>
+
+      <Section id="science" kicker="05" title="How radar sees wetlands" sub="The physics behind every number above.">
         <ScienceExplainer />
       </Section>
 
-      <Section id="methods" kicker="05" title="Methods, data and limitations" sub="Everything needed to reproduce or challenge the analysis.">
+      <Section id="methods" kicker="06" title="Methods, data and limitations" sub="Everything needed to reproduce or challenge the analysis.">
         <Methods m={m ?? null} />
+        <div className="mt-4"><Sensitivity m={m ?? null} grid={grid} /></div>
       </Section>
 
+      </>)}
       <footer className="mt-16 border-t border-line pt-6 text-[12px] text-muted">
         Data: NASA-ISRO NISAR L2 GCOV via NASA ASF DAAC. Basemaps: Esri World Dark Gray Base and World Imagery (© Esri and data providers, © OpenStreetMap contributors).
         DELTA PULSE is an open-source student project by RADAR UNIT and is not an official NASA product.

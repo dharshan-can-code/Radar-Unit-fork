@@ -178,7 +178,7 @@ export interface Fingerprint {
   same_release: boolean;
 }
 
-function classify(hh: number, hv: number, s: Screening): "water" | "double" | "other" | "nodata" {
+export function classify(hh: number, hv: number, s: Screening): "water" | "double" | "other" | "nodata" {
   if (!Number.isFinite(hh)) return "nodata";
   const waterHV = !Number.isFinite(hv) || hv < s.open_water.hv_max_db.value;
   if (hh < s.open_water.hh_max_db.value && waterHV) return "water";

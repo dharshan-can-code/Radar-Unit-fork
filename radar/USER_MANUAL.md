@@ -105,6 +105,18 @@ DELTA PULSE then searches NASA's archive **right now** and lists the **stacks** 
 
 ---
 
+## 4b. Your Story: an animated story of any place
+Click **✦ Your Story** in the top bar, type a place (your hometown works) and press **Tell its story**. In 20–40 seconds DELTA PULSE reads the newest real NISAR images of that place and writes a scrolling story. Press **Play the story** to watch it play automatically. The chapters are:
+1. **Above the clouds:** how cloudy the sky was at the exact hour of each satellite pass (ERA5).
+2. **What the radar saw:** an animation of every radar image.
+3. **The hidden water:** water-like and hidden-under-vegetation area on each pass. It counts only ground the satellite saw every time, so the comparison is fair.
+4. **The moment it changed:** the biggest change between two passes, plus rain in the week before.
+5. **How sure are we?:** every statement labelled by certainty, and what would confirm it.
+
+**Share this story** copies a link that opens the same story.
+
+The **top bar** links to every section (Explore, Map, Fingerprint, Timeline, Impact, Science, Methods), Your Story, and the User guide.
+
 ## 5. Where the data comes from (nothing is simulated)
 
 | Data | Source | How fresh |

@@ -21,13 +21,19 @@ def rainfall(lat: float, lon: float, start: str, end: str) -> dict:
     if key in _cache and time.time() - _cache[key][0] < 6 * 3600:
         return _cache[key][1]
     r = requests.get(URL, params={"latitude": round(lat, 3), "longitude": round(lon, 3), "start_date": start,
-                                  "end_date": end, "daily": "precipitation_sum", "timezone": "UTC"}, timeout=30)
+                                  "end_date": end, "daily": "precipitation_sum,cloud_cover_mean",
+                                  "hourly": "cloud_cover", "timezone": "UTC"}, timeout=30)
     r.raise_for_status()
-    d = r.json()["daily"]
-    daily = [{"date": t, "precip_mm": v} for t, v in zip(d["time"], d["precipitation_sum"])]
+    js = r.json()
+    d = js["daily"]
+    daily = [{"date": t, "precip_mm": v, "cloud_pct": c}
+             for t, v, c in zip(d["time"], d["precipitation_sum"], d.get("cloud_cover_mean", [None] * len(d["time"])))]
+    h = js.get("hourly", {})
+    hourly = [{"time": t, "cloud_pct": c} for t, c in zip(h.get("time", []), h.get("cloud_cover", [])) if c is not None]
     last = max((x["date"] for x in daily if x["precip_mm"] is not None), default=None)
     out = {"lat": lat, "lon": lon, "source": "Open-Meteo historical weather API",
-           "dataset": "ERA5 / ERA5T reanalysis (ECMWF), daily precipitation sum; the most recent days are preliminary", "units": "mm/day",
-           "latest_available": last, "license": "CC BY 4.0", "daily": daily}
+           "dataset": "ERA5 / ERA5T reanalysis (ECMWF): daily precipitation and cloud cover; the most recent days are preliminary", "units": "mm/day",
+           "latest_available": last, "license": "CC BY 4.0", "daily": daily, "hourly_cloud": hourly,
+           "cloud_note": "Total cloud cover (% of sky) from the same reanalysis; hourly values let you check the sky at the satellite pass time."}
     _cache[key] = (time.time(), out)
     return out

@@ -79,7 +79,7 @@ export default function Guide() {
         <p className="mt-2 text-[14px] text-muted">You don&apos;t need to know anything about radar. This guide takes about 5 minutes to read.</p>
         <nav className="mt-6 flex flex-wrap gap-2 text-[13px]">
           {[["start", "Quick start"], ["map", "Reading the map"], ["fingerprint", "Understanding the results"],
-            ["anywhere", "Explore any place"], ["save", "Save & share"], ["labels", "What the labels mean"], ["faq", "Questions"]].map(([id, t]) => (
+            ["anywhere", "Explore any place"], ["story", "Your Story"], ["save", "Save & share"], ["labels", "What the labels mean"], ["faq", "Questions"]].map(([id, t]) => (
             <a key={id} href={`#${id}`} className="rounded-full border border-line px-3 py-1 text-muted hover:border-cyan/50 hover:text-text">{t}</a>
           ))}
         </nav>
@@ -88,7 +88,7 @@ export default function Guide() {
       <Section id="start" title="Quick start: 3 steps">
         <div className="grid gap-3">
           <Step n={1} icon={<SplitSquareHorizontal size={16} />} title="Look at the example">
-            <p>The app opens on <b>Tonle Sap Lake in Cambodia</b>, which swells enormously every monsoon. Drag the round <Btn>⇔</Btn> handle on the map left and right to compare two dates.</p>
+            <p>Use the bar at the top to jump between sections. The app opens on <b>Tonle Sap Lake in Cambodia</b>, which swells enormously every monsoon. Drag the round <Btn>⇔</Btn> handle on the map left and right to compare two dates.</p>
           </Step>
           <Step n={2} icon={<MousePointer2 size={16} />} title="Click anywhere on the map">
             <p>The <b>Radar Change Fingerprint</b> below the map tells you, in plain words, what changed at that spot and how sure we can be.</p>
@@ -186,6 +186,21 @@ export default function Guide() {
             </div>
           ))}
           <p className="text-[13px] text-muted">Different badges are never mixed in one comparison, because their numbers wouldn&apos;t match up fairly.</p>
+        </div>
+      </Section>
+
+      <Section id="story" title="Your Story: an animated story of any place">
+        <div className="rounded-xl border border-amber/40 bg-amber/5 p-5 text-[14px] leading-relaxed text-text/85">
+          <p>Click <Btn><span className="text-amber">✦ Your Story</span></Btn> in the top bar. Type any place (your hometown works) and press <Btn>Tell its story</Btn>.
+            In 20–40 seconds DELTA PULSE reads the newest real NISAR images of that place and turns them into a story you can scroll through,
+            or press <Btn>▶ Play the story</Btn> to watch it play by itself.</p>
+          <ul className="mt-3 list-disc space-y-1 pl-5">
+            <li><b>Above the clouds:</b> how cloudy it was at the exact hour the satellite passed.</li>
+            <li><b>What the radar saw:</b> an animation of every radar image.</li>
+            <li><b>The hidden water:</b> how much water-like ground there was on each pass.</li>
+            <li><b>The moment it changed</b> and <b>How sure are we?</b>: the biggest change, and what would confirm it.</li>
+          </ul>
+          <p className="mt-3">Press <Btn><span>Share this story</span></Btn> at the end to copy a link to it.</p>
         </div>
       </Section>
 

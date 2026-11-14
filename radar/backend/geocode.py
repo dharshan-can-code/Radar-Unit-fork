@@ -29,7 +29,7 @@ def geocode(q: str, limit: int = 6) -> list[dict]:
         wait = 1.0 - (time.time() - _last)
         if wait > 0:
             time.sleep(wait)
-        r = requests.get(URL, params={"q": q, "format": "jsonv2", "limit": limit}, headers=HEADERS, timeout=20)
+        r = requests.get(URL, params={"q": q, "format": "jsonv2", "limit": limit, "accept-language": "en"}, headers=HEADERS, timeout=20)
         _last = time.time()
     r.raise_for_status()
     out = [{"name": d.get("display_name"), "lat": float(d["lat"]), "lon": float(d["lon"]),

@@ -12,7 +12,7 @@ Every statement in the app is tagged **OBSERVED**, **CALCULATED**, **INTERPRETED
 
 > **All map layers, statistics and dates come from real NISAR L2 GCOV products** retrieved from the ASF DAAC. No simulated data is shown in the app. (Synthetic HDF5 files are generated only inside the automated tests.) The header shows when the ASF archive was last checked, which acquisitions are processed, and which are available but not yet retrieved.
 
-**New here? Read the [User Manual](USER_MANUAL.md)**, or click **How to use** in the app.
+**Judges / submitters: see [SUBMISSION.md](SUBMISSION.md).** **New here? Read the [User Manual](USER_MANUAL.md)**, or click **How to use** in the app.
 
 ## Features
 1. **Hidden Water Explorer:** before/after swipe, a measured-change layer, a screening layer, an optical context basemap, and click-or-draw region selection.
@@ -20,7 +20,9 @@ Every statement in the app is tagged **OBSERVED**, **CALCULATED**, **INTERPRETED
 3. **Observation Timeline:** every real NISAR GCOV granule over both candidate sites, by track, maturity and polarisation, with the documented data gap marked.
 4. **Science explainer** and **Methods & limitations**, including the uncalibrated screening thresholds.
 5. **Explore anywhere:** type a place or coordinates, click the map, or pick from the live **Newest NISAR acquisitions worldwide** map. The backend searches NASA's archive live and analyses a 10–40 km window in about 10–15 s, reading only the needed chunks of the real files.
-6. **Rainfall context** (ERA5 via Open-Meteo), **CSV / image / JSON downloads**, **share links**, a **recent analyses** gallery and an **opacity** slider.
+6. **Your Story:** type any place and get an animated, data-driven story of the water hidden there (cloud cover at each pass, radar flipbook, hidden-water timeline, biggest change, evidence labels).
+7. **Impact** section and a **sensitivity test** showing the conclusions hold when the threshold moves ±2 dB.
+8. **Rainfall context** (ERA5 via Open-Meteo), **CSV / image / JSON downloads**, **share links**, a **recent analyses** gallery and an **opacity** slider.
 
 ## Run the app
 ```bash

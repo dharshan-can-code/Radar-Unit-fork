@@ -74,7 +74,8 @@ export async function latest(days = 3): Promise<Latest> {
 
 export interface Rainfall {
   source: string; dataset: string; units: string; latest_available: string | null; license: string;
-  daily: { date: string; precip_mm: number | null }[];
+  daily: { date: string; precip_mm: number | null; cloud_pct?: number | null }[];
+  hourly_cloud?: { time: string; cloud_pct: number }[];
 }
 export async function rainfall(lat: number, lon: number, start: string, end: string): Promise<Rainfall> {
   return j(await fetch(`${API}/api/weather?lat=${lat}&lon=${lon}&start=${start}&end=${end}`));
