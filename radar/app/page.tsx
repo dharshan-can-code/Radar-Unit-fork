@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, Check, Download, Globe2, HelpCircle, Link2, Radar, Waves } from "lucide-react";
+import { AlertTriangle, ArrowLeft, BookOpen, Check, Download, Globe2, HelpCircle, Link2, Radar, Waves } from "lucide-react";
 import Fingerprint, { Tag } from "@/components/Fingerprint";
 import Timeline from "@/components/Timeline";
 import { Methods, ScienceExplainer } from "@/components/Science";
@@ -144,9 +144,14 @@ export default function Home() {
       {/* hero */}
       <header className="pt-10 pb-8">
         <div className="flex items-center gap-2 font-mono text-xs tracking-widest text-cyan"><Radar size={14} />RADAR UNIT · NASA SPACE APPS 2026 · NISAR L-BAND
-          <button onClick={() => setHelp(true)} className="ml-auto flex items-center gap-1.5 rounded-md border border-cyan/40 px-3 py-1 font-sans text-[12px] tracking-normal text-cyan hover:bg-cyan/10">
-            <HelpCircle size={14} />How to use
-          </button>
+          <span className="ml-auto flex gap-2">
+            <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 rounded-md border border-cyan/40 px-3 py-1 font-sans text-[12px] tracking-normal text-cyan hover:bg-cyan/10">
+              <HelpCircle size={14} />How to use
+            </button>
+            <a href="/guide" className="flex items-center gap-1.5 rounded-md bg-cyan px-3 py-1 font-sans text-[12px] font-medium tracking-normal text-bg hover:bg-cyan/90">
+              <BookOpen size={14} />User guide
+            </a>
+          </span>
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">DELTA PULSE <span className="text-muted">— Hidden Water</span></h1>
         <p className="mt-3 max-w-3xl text-lg text-text/80">Revealing the water we cannot easily see. NISAR&apos;s radar sees wetlands through cloud, every 12 days. Start with our Tonle Sap case study, or search any place on Earth for live NISAR data. We show what changed, what it might mean, and how sure we can be.</p>

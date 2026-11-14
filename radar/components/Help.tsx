@@ -25,7 +25,7 @@ export default function Help({ onClose }: { onClose: () => void }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold">How to use DELTA PULSE</h2>
-            <p className="mt-1 text-sm text-muted">No radar background needed. The full manual is in USER_MANUAL.md in the project.</p>
+            <p className="mt-1 text-sm text-muted">No radar background needed. For pictures, examples and answers to common questions, open the <a href="/guide" className="text-cyan underline">full User Guide</a>.</p>
           </div>
           <button onClick={onClose} aria-label="Close" className="rounded-md border border-line p-1.5 text-muted hover:text-text"><X size={16} /></button>
         </div>
@@ -62,7 +62,10 @@ export default function Help({ onClose }: { onClose: () => void }) {
           <li>Radar change alone never proves flooding. The app tells you what extra evidence would be needed.</li>
           <li>If search says the backend is not reachable, start it with <code className="text-text">npm.cmd run api</code> in the radar folder.</li>
         </ul>
-        <button onClick={onClose} className="mt-6 rounded-md bg-cyan px-4 py-2 text-sm font-medium text-bg">Got it</button>
+        <div className="mt-6 flex gap-3">
+          <button onClick={onClose} className="rounded-md bg-cyan px-4 py-2 text-sm font-medium text-bg">Got it</button>
+          <a href="/guide" className="rounded-md border border-cyan/40 px-4 py-2 text-sm text-cyan hover:bg-cyan/10">Open the full User Guide</a>
+        </div>
       </div>
     </div>
   );
