@@ -2,6 +2,8 @@
 
 *RADAR UNIT · NASA Space Apps 2026 · generated 2026-11-14*
 
+> **Historical snapshot.** This is the Phase 1 report, written before any NISAR pixels were downloaded. Since then all 10 Tonle Sap dates were downloaded and processed, the reader was verified on real P05023 and P05036 files, a live worldwide backend was added, and the screening was checked against independent data. For the current state see [README.md](README.md), [SCIENCE.md](SCIENCE.md) and [LIMITATIONS.md](LIMITATIONS.md).
+
 ## Bottom line
 
 **The project is feasible with real NISAR data, and the recommended study area is Tonle Sap Lake, Cambodia.**
@@ -23,8 +25,8 @@ The primary stack is NISAR L2 GCOV on track 83 ascending, frame 8, in the 20+5 M
 | Processing release consistency within the stack | `crid` / `pge_version` per granule | Primary stacks use a single CRID |
 | Polarisation per acquisition | `mainBandPolarization` | Some dates on Tonle Sap tracks 76/148 are **HH-only**. Track 83 is HH+HV on every date. |
 | Unauthenticated file access | HTTP requests to .h5, QA CSV/H5, ISO XML, browse PNG | All redirect to Earthdata Login (302/303) |
-| HDF5 inspection, processing and change maths | Run end to end on **synthetic** HDF5 fixtures | Works; 12 unit tests pass |
-| HDF5 structure of a **real** GCOV file | — | **NOT VERIFIED** (needs Earthdata access) |
+| HDF5 inspection, processing and change maths | Run end to end on **synthetic** HDF5 fixtures | Works; 12 unit tests passed at the time (32 now) |
+| HDF5 structure of a **real** GCOV file | — | Not verified at the time; **since verified** on real P05023 and P05036 files |
 
 ## Study area comparison (from ASF metadata, retrieved 2026-11-14)
 

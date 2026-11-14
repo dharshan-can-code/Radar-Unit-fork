@@ -7,9 +7,10 @@ import Timeline from "@/components/Timeline";
 import { Methods, ScienceExplainer } from "@/components/Science";
 import type { Mode, Selection } from "@/components/Explorer";
 import {
-  AreaStatus, Bounds, Channel, GridIndex, Inventory, Manifest, Stacks, fingerprint, interpret, loadGrid, loadInventory,
-  loadManifest, loadStacks, loadStatus, timeSeries,
+  AreaStatus, Bounds, Channel, GridIndex, Inventory, Manifest, Stacks, Validation, fingerprint, interpret, loadGrid, loadInventory,
+  loadManifest, loadStacks, loadStatus, loadValidation, timeSeries,
 } from "@/lib/data";
+import ValidationPanel from "@/components/Validation";
 import DataStatus from "@/components/DataStatus";
 import ChangeByInterval from "@/components/ChangeByInterval";
 import LiveSearch, { LiveResult } from "@/components/LiveSearch";
@@ -48,6 +49,8 @@ export default function Home() {
   const [rain, setRain] = useState<Rainfall | null>(null);
   const [help, setHelp] = useState(false);
   const [view, setView] = useState<"app" | "story">("app");
+  const [validation, setValidation] = useState<Validation | null>(null);
+  const [featuredFor, setFeaturedFor] = useState<string | null>(null);
 
   // Shareable links: ?result=<id> reopens a saved live analysis.
   useEffect(() => {
@@ -84,6 +87,7 @@ export default function Home() {
   useEffect(() => {
     loadInventory().then(setInv).catch(() => setInv(null));
     loadStatus().then((s) => setStatus(s?.[AREA] ?? null)).catch(() => setStatus(null));
+    loadValidation(AREA).then(setValidation).catch(() => setValidation(null));
     loadStacks(AREA).then((s) => {
       setStacks(s);
       if (s?.default) setStackId(s.default); else setM(null);
@@ -103,6 +107,18 @@ export default function Home() {
       }
     }).catch(() => setM(null));
   }, [stackId, source, caseReload]);
+
+  // Case study opens on the featured flooded-forest example (picked by scripts/validation/validate_area.py).
+  const featured = validation?.featured && m && m.stack === validation.stack ? validation.featured : null;
+  useEffect(() => {
+    if (source !== "case" || !m || !featured) return;
+    const key = `${m.stack}:${caseReload}`;
+    if (featuredFor === key) return;
+    const i = m.pairs.findIndex((p) => p.id === featured.pair);
+    if (i >= 0) setPairIdx(i);
+    setSel({ kind: "box", bounds: featured.bounds });
+    setFeaturedFor(key);
+  }, [source, m, featured, caseReload, featuredFor]);
 
   // A live analysis result replaces the case-study data in every section.
   function showLive(r: LiveResult, noScroll = false) {
@@ -136,8 +152,12 @@ export default function Home() {
       const [w, s, e, n] = m.bbox;
       return { rect: grid.rectOf({ w, s, e, n }), bounds: null, label: source === "live" ? `whole ${m.size_km ?? ""} km window` : "whole study area" };
     }
-    if (sel.kind === "box") return { rect: grid.rectOf(sel.bounds), bounds: sel.bounds,
-      label: `box ${sel.bounds.w.toFixed(3)}…${sel.bounds.e.toFixed(3)}°E, ${sel.bounds.s.toFixed(3)}…${sel.bounds.n.toFixed(3)}°N` };
+    if (sel.kind === "box") {
+      const isFeatured = source === "case" && featured && sel.bounds === featured.bounds;
+      return { rect: grid.rectOf(sel.bounds), bounds: sel.bounds,
+        label: isFeatured ? `${featured.name}: 10 × 10 km box on the flooded-forest belt (draw your own region, or press “Whole area” on the map)`
+          : `box ${sel.bounds.w.toFixed(3)}…${sel.bounds.e.toFixed(3)}°E, ${sel.bounds.s.toFixed(3)}…${sel.bounds.n.toFixed(3)}°N` };
+    }
     const cell = grid.cellOf(sel.lng, sel.lat);
     if (!cell) return { rect: null, bounds: null, label: "outside processed area" };
     const r = { r0: Math.max(0, cell[0] - 1), r1: Math.min(grid.ny - 1, cell[0] + 1), c0: Math.max(0, cell[1] - 1), c1: Math.min(grid.nx - 1, cell[1] + 1) };
@@ -145,7 +165,7 @@ export default function Home() {
     const dl = d / Math.cos((sel.lat * Math.PI) / 180);
     return { rect: r, bounds: { w: sel.lng - dl, e: sel.lng + dl, s: sel.lat - d, n: sel.lat + d },
       label: `point ${sel.lat.toFixed(4)}°N ${sel.lng.toFixed(4)}°E (3×3 cells, ${3 * m.grid.res_m} m)` };
-  }, [grid, m, sel, source]);
+  }, [grid, m, sel, source, featured]);
 
   const analysis = useMemo(() => {
     if (!grid || !m || !pair || !rect) return null;
@@ -252,6 +272,7 @@ export default function Home() {
       </Section>
 
       <Section id="methods" kicker="09" title="Methods, data and limitations" sub="Everything needed to reproduce or challenge the analysis.">
+        {source === "case" && validation && m?.stack === validation.stack && <div className="mb-4"><ValidationPanel v={validation} /></div>}
         <Methods m={m ?? null} />
         <div className="mt-4"><Sensitivity m={m ?? null} grid={grid} /></div>
       </Section>

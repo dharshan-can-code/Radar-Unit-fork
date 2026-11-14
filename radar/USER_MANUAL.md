@@ -46,6 +46,8 @@ The app opens on **Tonle Sap Lake, Cambodia**: 10 real NISAR acquisitions from 1
 - **Click** the map to inspect a small spot (about 600 m × 600 m in the case study).
 - Or press **Draw region** and drag a box.
 - Press **Whole area** to go back to the full view.
+- The Tonle Sap case study opens on a **featured 10 × 10 km box** on the flooded-forest belt, at the 12-day interval where water under the trees appeared fastest. It is a showcase: press **Whole area** or draw your own box for unbiased numbers.
+- The **Independent checks** panel (under *Methods*) compares the radar with Landsat's water record, river flow and wind.
 
 The Fingerprint section then shows:
 

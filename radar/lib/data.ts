@@ -89,6 +89,34 @@ export async function loadManifest(area: string, stack: string): Promise<Manifes
   const r = await fetch(`${BASE}/${area}/${stack}/manifest.json`, { cache: "no-store" });
   return r.ok ? r.json() : null;
 }
+/** Independent checks written by scripts/validation/validate_area.py (case study only). */
+export interface ValidationDate {
+  date: string; water_found_in_permanent: number | null; water_flagged_on_never_water_land: number | null;
+  flooded_veg_on_never_water_land: number | null; flooded_veg_in_sometimes_water: number | null;
+  water_km2: number; flooded_veg_km2: number; wind_ms: number | null; windy: boolean;
+}
+export interface RiverCheck {
+  name: string; why: string; glofas_cell: [number, number]; discharge_m3s: (number | null)[];
+  pearson_vs_water: number | null; pearson_vs_flooded_veg: number | null; pearson_vs_water_plus_veg: number | null;
+  spearman_vs_water_plus_veg: number | null;
+}
+export interface Validation {
+  area: string; stack: string; generated_utc: string; script: string; note: string; grid_res_m: number;
+  jrc: { dataset: string; tile: string; url: string; license: string; classes: Record<string, string>;
+    cells: Record<string, number>;
+    threshold_sweep: { note: string; current_hh_max_db: number; rows: { hh_max_db: number; water_found_in_permanent: number; water_flagged_on_never_water_land: number }[] } };
+  featured: { name: string; bounds: Bounds; pair: string; flooded_veg_share: number[]; why: string } | null;
+  flooded_veg_by_distance: { note: string; first: string; peak: string; dates: string[];
+    rows: { band: string; never_wet_cells: number; flooded_veg_share_never_wet: (number | null)[]; new_flooded_veg_km2: number }[] };
+  wind: { dataset: string; windy_threshold_ms: number; pearson_wind_vs_water_found: number | null };
+  rivers: { dataset: string; n_dates: number; points: RiverCheck[] };
+  per_date: ValidationDate[];
+}
+export async function loadValidation(area: string): Promise<Validation | null> {
+  const r = await fetch(`${BASE}/${area}/validation.json`, { cache: "no-store" });
+  return r.ok ? r.json() : null;
+}
+
 export const API = process.env.NEXT_PUBLIC_API ?? "http://localhost:8000";
 /** Batch results live under /data/<area>/<stack>; live results are served by the backend. */
 export const dataBase = (m: Manifest) =>
@@ -275,14 +303,28 @@ export function interpret(fp: Fingerprint, s: Screening): { verdict: Verdict; st
   st.push({ kind: "CALCULATED", text: `HH changed by ${f(hh.delta_mean_db)} dB (region mean, power-averaged); ${(hh.frac_increase * 100).toFixed(0)}% of cells brightened and ${(hh.frac_decrease * 100).toFixed(0)}% darkened by at least ${sig} dB.` });
   if (hv.available) st.push({ kind: "CALCULATED", text: `HV changed by ${f(hv.delta_mean_db)} dB. HH−HV difference: ${fp.ratio_before_db.toFixed(1)} → ${fp.ratio_after_db.toFixed(1)} dB.` });
 
+  // Share of valid cells with the double-bounce (flooded-vegetation-like) signature, before and after.
+  const share = (x: Record<string, number>) => { const t = (x.water ?? 0) + (x.double ?? 0) + (x.other ?? 0); return t ? (x.double ?? 0) / t : NaN; };
+  const dblBefore = share(fp.screening.before), dblAfter = share(fp.screening.after);
+  if (hv.available && Number.isFinite(dblBefore)) {
+    st.push({ kind: "CALCULATED", text: `Cells with the double-bounce signature (flooded-vegetation-like): ${(dblBefore * 100).toFixed(0)}% → ${(dblAfter * 100).toFixed(0)}% of valid cells.` });
+  }
+
   let verdict: Verdict = "No significant radar change";
   const ratioUp = hv.available && fp.ratio_after_db - fp.ratio_before_db >= sig;
+  // A large jump in the share of double-bounce cells together with a rising HH−HV difference is the same
+  // mechanism as `ratioUp`, seen per cell instead of in the region mean (which mixes in unaffected cells).
+  const SHARE_JUMP = 0.2;
+  const dblJump = hv.available && dblAfter - dblBefore >= SHARE_JUMP && fp.ratio_after_db > fp.ratio_before_db && hh.delta_mean_db > 0;
   if (hh.delta_mean_db >= sig && ratioUp) {
     verdict = "Possible inundation-related signal";
     st.push({ kind: "INTERPRETED", text: "HH brightened much more than HV. This pattern is consistent with double-bounce scattering, which occurs when water rises beneath trunks and stems. Other explanations: buildings, wet or flattened vegetation, or a change in vegetation structure." });
   } else if (hh.delta_mean_db <= -sig && (!hv.available || hv.delta_mean_db <= -sig) && hh.after_db < s.open_water.hh_max_db.value) {
     verdict = "Possible inundation-related signal";
     st.push({ kind: "INTERPRETED", text: "Both channels darkened to very low values. This is consistent with a surface becoming smooth open water (mirror-like reflection away from the satellite). Other explanations: very smooth bare soil, or calm conditions over water that was already there. Wind-roughened water can hide this signal." });
+  } else if (dblJump) {
+    verdict = "Possible inundation-related signal";
+    st.push({ kind: "INTERPRETED", text: `The double-bounce signature spread from ${(dblBefore * 100).toFixed(0)}% to ${(dblAfter * 100).toFixed(0)}% of the region while HH brightened more than HV. This is consistent with water rising beneath trees or shrubs, even though the region average changed by less than ${sig} dB. Other explanations: buildings, wet or flattened vegetation, or crop growth.` });
   } else if (hv.available && hv.delta_mean_db >= sig && !ratioUp) {
     verdict = "Radar change detected";
     st.push({ kind: "INTERPRETED", text: "HV increased, indicating more volume scattering — often vegetation growth (e.g. crops) or wetter canopy. Not by itself an indicator of flooding." });

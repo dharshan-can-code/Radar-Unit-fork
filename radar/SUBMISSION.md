@@ -16,7 +16,7 @@ When rivers and lakes flood into forests, the water spreads under the trees, whe
 - **Your Story:** turns any place into an animated story about the water hidden there.
 - **Honest by design:** every statement is labelled *observed*, *calculated*, *interpreted* or *unconfirmed*, so the app never claims a flood it cannot prove.
 
-In our Tonle Sap case study, the radar signature of flooded forest grew about sixfold (293 → 1,721 km², peak 11 Sep) and water-like ground grew about 62%, while clouds covered more than half the sky at 9 of 10 pass times.
+In our Tonle Sap case study, the radar signature of water under vegetation grew about 6.5× (260 → 1,704 km², peak 11 Sep) and water-like ground grew 48%, while clouds covered more than half the sky at 9 of 10 pass times. Independent checks back it up: the water class finds most of Landsat's permanent water with almost no false alarms on dry land, and the flooded area tracks river flow.
 
 ## Links
 - **Code:** https://github.com/haricharanparna/Radar-Unit
@@ -47,8 +47,13 @@ In our Tonle Sap case study, the radar signature of flooded forest grew about si
 - **Real physics:** specular water (dark), volume scattering (HV), double bounce from water under trunks (bright HH, large HH−HV). Explained in plain language in the app.
 - **Quality masks:** NASA's own masks are applied. We verified two different file layouts on real data, including validity bits we discovered in VALIDATED products.
 - **Fair comparisons:** releases and product lines are never mixed. Story and impact numbers count only ground seen on **every** pass.
+- **Independent checks** (in-app, *Methods*; script `scripts/validation/validate_area.py`), using data never used to build the screening:
+  - **JRC Global Surface Water** (Landsat, 1984–2021): the water-like class finds a median 82% of permanent water and flags at most 0.1% of never-wet land.
+  - **Where the hidden water appears:** the flooded-vegetation signature grows most within 20 km of the lake (4% → 22–24% of never-wet land 5–20 km out), much less far away (4% → 12% beyond 40 km).
+  - **River flow (GloFAS):** the radar's flooded area tracks the Tonle Sap River, r = 0.81 over 10 dates (labelled honestly: small sample, shared seasonality).
+  - **Wind (ERA5):** light at every pass (0.5–4.2 m/s); two dips in lake detection stay labelled as unexplained.
 - **Sensitivity test:** the conclusions hold when the water threshold moves ±2 dB, for both the direction of change and the peak date.
-- **Testing:** 28 automated tests, plus live end-to-end runs (Tonle Sap, Manaus, Sundarbans, Jakarta, Dhaka, Aleutians).
+- **Testing:** 32 automated tests, plus live end-to-end runs (Tonle Sap, Manaus, Sundarbans, Jakarta, Dhaka, Aleutians).
 - **Usability:** navbar, in-app guide, User Guide page, share links, CSV/JSON downloads, works on phones, reduced-motion support.
 
 ### Relevance
@@ -77,6 +82,7 @@ In our Tonle Sap case study, the radar signature of flooded forest grew about si
 - ERA5 / ERA5T reanalysis (ECMWF), precipitation and cloud cover, via the Open-Meteo Historical Weather API (CC BY 4.0)
 - Current conditions: Open-Meteo forecast API (CC BY 4.0)
 - River discharge: GloFAS v4, Copernicus Emergency Management Service, via the Open-Meteo Flood API (CC BY 4.0)
+- JRC Global Surface Water v1.4 (EC Joint Research Centre / Google): Pekel, J.-F., Cottam, A., Gorelick, N. & Belward, A. S. (2016). High-resolution mapping of global surface water and its long-term changes. *Nature* 540, 418–422.
 - NASA GIBS / Worldview: MODIS Terra and Aqua, VIIRS SNPP corrected reflectance true colour
 - AWS Terrain Tiles (Mapzen; SRTM, USGS and others)
 - OpenStreetMap Nominatim geocoding (© OpenStreetMap contributors, ODbL)
@@ -100,7 +106,7 @@ In our Tonle Sap case study, the radar signature of flooded forest grew about si
 |---|---|---|
 | 0–4 s | Story cover, "The water we cannot see in Tonle Sap" | "Floodwater hides under forests and clouds. Cameras can't see it. NISAR's radar can." |
 | 4–9 s | Chapter 1 cloud bars animate | "On 9 of 10 passes, clouds covered the sky. NISAR's radar saw through." |
-| 9–15 s | Radar flipbook, then hidden-water bars | "Water-like ground grew 62%, and hidden flooded forest appeared." |
+| 9–15 s | Radar flipbook, then hidden-water bars | "Water hidden under trees grew six-fold. Water-like ground grew 48%." |
 | 15–21 s | Type a new place in Your Story, steps tick, story appears | "Type any place on Earth. Real NASA data, read live, about 30 seconds." |
 | 21–26 s | Chapter 5 tags (OBSERVED / INTERPRETED / UNCONFIRMED) | "Every claim is labelled. We show what we know, and what we don't." |
 | 26–30 s | Logo, GitHub link | "DELTA PULSE: revealing the water we cannot see. Team RADAR UNIT." |
@@ -112,8 +118,8 @@ Record at 1080p with the browser zoomed to 110%. Keep the captions burned in.
 2. **Problem:** forest canopy and clouds hide floodwater (Tonle Sap: flooded forest invisible to cameras; 9 of 10 passes cloudy).
 3. **Why NISAR:** 24 cm L-band reaches under the canopy (double bounce off water and trunks), unlike shorter-wavelength radars; also through cloud and darkness; every 12 days, worldwide.
 4. **What we built:** live search, remote chunk reading, Fingerprint, Your Story (screenshots).
-5. **Results:** Tonle Sap flood pulse (flooded-forest signature about 6× larger at its 11 Sep peak, +62% water-like area); live examples.
-6. **Why trust it:** quality masks, fair comparisons, sensitivity test, evidence labels, 28 tests.
+5. **Results:** Tonle Sap flood pulse (water-under-vegetation signature about 6.5× larger at its 11 Sep peak, +48% water-like area); live examples.
+6. **Why trust it:** independent checks (82% of JRC permanent water found, ~0% false alarms; tracks river flow r = 0.81), quality masks, fair comparisons, sensitivity test, evidence labels, 32 tests.
 7. **Impact and next steps:** users, gauge calibration, alerts, languages, GitHub link.
 
 ## Eligibility checklist

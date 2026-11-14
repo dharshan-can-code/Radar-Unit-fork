@@ -6,12 +6,12 @@
 | ASF Search API (`asf_search` 14.1.0) | Discovery and inventory | — | — | Public | **Used** |
 | ASF NISAR Data User Guide (nisar-docs.asf.alaska.edu) | Product structure, maturity levels, documented data gap 2026-07-27 → 2026-08-10 | — | — | Public | **Used** |
 | Esri World Dark Gray Base / World Imagery | Basemap and **optical context only** (not time-matched) | varies | global | Esri terms, attribution shown | **Used** in app |
-| JRC Global Surface Water | Calibrating the open-water screening on permanent water | 30 m | 1984–2021 | Free (Copernicus) | Planned |
+| JRC Global Surface Water occurrence v1.4 | Independent check of the water-like class (permanent / never-wet land) and distance-to-lake analysis | 30 m | 1984–2021 | Free (EC JRC / Google) | **Used** (`scripts/validation/validate_area.py`) |
 | ESA WorldCover | Separating tree cover and built-up land (double-bounce look-alikes) | 10 m | 2021 | CC-BY 4.0 | Planned |
 | Mekong River Commission hydrometric data (e.g. Kampong Luong, Prek Kdam) | Lake water level at acquisition times | point | check 2026 availability | MRC data portal (registration may be needed) | Planned; **verify access** |
 | NASA GPM IMERG | Rainfall context | 0.1° | daily | NASA GES DISC, Earthdata Login | Planned |
 | ERA5 / ERA5T reanalysis via Open-Meteo | Rainfall and cloud cover at each pass (context only) | ~25 km | daily and hourly | Free, no key, CC BY 4.0 | **Used** in app |
-| GloFAS v4 river discharge via Open-Meteo Flood API | River flow history and forecast (context only) | ~5 km | daily | Free, no key, CC BY 4.0 | **Used** in app |
+| GloFAS v4 river discharge via Open-Meteo Flood API | River flow history and forecast (context); correlation with radar areas (validation) | ~5 km | daily | Free, no key, CC BY 4.0 | **Used** in app |
 | NASA GIBS / Worldview (MODIS Terra and Aqua, VIIRS SNPP true colour) | Same-day optical image beside the radar | 250 m–1 km | daily | Free, no key | **Used** in app |
 | AWS Terrain Tiles (SRTM, USGS and others) | 3D terrain view | ~30 m | static | Free | **Used** in app |
 | Barataria alternative: CRMS, NOAA 8761724 Grand Isle, USFWS NWI, USGS 3DEP | Validation if the second site is added | varies | — | Public | Not started |
