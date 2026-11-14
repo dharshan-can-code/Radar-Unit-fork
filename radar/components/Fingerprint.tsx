@@ -1,6 +1,8 @@
 "use client";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
+import { Download } from "lucide-react";
 import { Fingerprint as FP, Manifest, SeriesPoint, Statement, Verdict, fmtDb, fmtSigned, pct } from "@/lib/data";
+import type { Rainfall } from "@/lib/api";
 
 export const TAG_STYLE: Record<Statement["kind"], string> = {
   OBSERVED: "border-cyan/40 text-cyan bg-cyan/10",
@@ -22,10 +24,43 @@ export function Tag({ kind }: { kind: Statement["kind"] }) {
 
 interface Props {
   m: Manifest; fp: FP; verdict: Verdict; statements: Statement[]; series: SeriesPoint[];
-  regionLabel: string; selectedDates: [string, string];
+  regionLabel: string; selectedDates: [string, string]; rain?: Rainfall | null;
 }
 
-export default function Fingerprint({ m, fp, verdict, statements, series, regionLabel, selectedDates }: Props) {
+function downloadCsv(name: string, rows: (string | number | null)[][]) {
+  const csv = rows.map((r) => r.map((v) => (v == null ? "" : typeof v === "string" && /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)).join(",")).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+export default function Fingerprint({ m, fp, verdict, statements, series, regionLabel, selectedDates, rain }: Props) {
+  const t0 = series.length ? series[0].t - 15 * 864e5 : 0;
+  const t1 = series.length ? series[series.length - 1].t + 3 * 864e5 : 0;
+  const rainPts = (rain?.daily ?? []).map((d) => ({ t: Date.parse(d.date), mm: d.precip_mm })).filter((d) => d.t >= t0 && d.t <= t1);
+  const exportCsv = () => {
+    const rows: (string | number | null)[][] = [
+      ["# DELTA PULSE export", m.name, `region: ${regionLabel}`, `generated ${new Date().toISOString()}`],
+      ["# NISAR L2 GCOV", `track ${fp.before.track}${fp.before.direction?.[0] ?? ""}`, `frame ${fp.before.frame}`, `${fp.before.maturity} ${fp.before.crid}`],
+      ["date", "HH_dB_region_mean", "HV_dB_region_mean", "valid_fraction", "scene", "ERA5_precip_mm_on_date"],
+      ...series.map((s) => {
+        const o = m.observations.find((x) => x.date === s.date);
+        const r = rain?.daily.find((d) => d.date === s.date);
+        return [s.date, s.hh != null ? +s.hh.toFixed(3) : null, s.hv != null ? +s.hv.toFixed(3) : null, +s.valid.toFixed(4), o?.scene ?? "", r?.precip_mm ?? null];
+      }),
+      [],
+      ["pair", `${fp.before.date} -> ${fp.after.date}`, `${fp.pair_days} days`],
+      ["channel", "before_dB", "after_dB", "delta_mean_dB", "delta_median_dB", "frac_brighter", "frac_darker", "cells"],
+      ...fp.channels.filter((c) => c.available).map((c) => [c.channel, +c.before_db.toFixed(3), +c.after_db.toFixed(3), +c.delta_mean_db.toFixed(3),
+        +c.delta_median_db.toFixed(3), +c.frac_increase.toFixed(4), +c.frac_decrease.toFixed(4), c.n_cells]),
+      [],
+      ["verdict", verdict],
+      ...statements.map((st) => [st.kind, st.text]),
+    ];
+    downloadCsv(`delta-pulse_${m.name.replace(/[^a-z0-9]+/gi, "_")}_${fp.before.date}_${fp.after.date}.csv`, rows);
+  };
   const sig = m.screening.change.significant_db.value;
   const total = (o: Record<string, number>) => o.water + o.double + o.other || 1;
   return (
@@ -131,13 +166,16 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
             <span className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full bg-amber" />HV</span>
             <span>Points are actual acquisitions only; lines are drawn only between them, spacing is to scale.</span>
             <Tag kind="CALCULATED" />
+            <button onClick={exportCsv} className="flex items-center gap-1 rounded border border-line px-2 py-0.5 text-text hover:border-cyan/50">
+              <Download size={12} />CSV
+            </button>
           </div>
         </div>
         <div className="h-56">
           <ResponsiveContainer>
             <LineChart data={series} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
               <CartesianGrid stroke="#1e2a44" strokeDasharray="2 4" />
-              <XAxis dataKey="t" type="number" scale="time" domain={["dataMin - 259200000", "dataMax + 259200000"]}
+              <XAxis dataKey="t" type="number" scale="time" domain={rainPts.length ? [t0, t1] : ["dataMin - 259200000", "dataMax + 259200000"]}
                 tickFormatter={(t) => new Date(t).toISOString().slice(5, 10)} ticks={series.map((s) => s.t)}
                 tick={{ fill: "#8b9ab5", fontSize: 10 }} axisLine={{ stroke: "#1e2a44" }} tickLine={false} />
               <YAxis unit=" dB" tick={{ fill: "#8b9ab5", fontSize: 10 }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
@@ -150,6 +188,27 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
             </LineChart>
           </ResponsiveContainer>
         </div>
+        {rain && rainPts.length > 0 && (
+          <>
+            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 text-[11px] text-muted">
+              <span className="text-sm font-semibold text-text">Daily rainfall at this location</span>
+              <span>Context only, not a radar measurement · {rain.dataset} via {rain.source} ({rain.license}) <Tag kind="OBSERVED" /></span>
+            </div>
+            <div className="h-24">
+              <ResponsiveContainer>
+                <BarChart data={rainPts} margin={{ top: 4, right: 16, bottom: 0, left: -12 }}>
+                  <XAxis dataKey="t" type="number" scale="time" domain={[t0, t1]} hide />
+                  <YAxis unit=" mm" tick={{ fill: "#8b9ab5", fontSize: 10 }} axisLine={false} tickLine={false} width={60} />
+                  <Tooltip cursor={{ fill: "#ffffff08" }} contentStyle={{ background: "#0d1424", border: "1px solid #1e2a44", fontSize: 12 }}
+                    labelFormatter={(t) => new Date(Number(t)).toISOString().slice(0, 10)} formatter={(v) => [`${v ?? "–"} mm`, "rain"]} />
+                  {series.map((s) => <ReferenceLine key={s.t} x={s.t} stroke="#22d3ee" strokeOpacity={0.35} />)}
+                  <Bar dataKey="mm" fill="#3b82f6" isAnimationActive={false} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-[11px] text-muted">Faint cyan lines mark NISAR acquisition dates. Heavy rain before an acquisition can wet soil and leaves, which also changes backscatter.</p>
+          </>
+        )}
       </div>
     </div>
   );

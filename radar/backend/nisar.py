@@ -15,7 +15,14 @@ from config import COLLECTION_MATURITY  # noqa: E402
 from gcov_reader import DIAGONAL_TERMS, quality_ok  # noqa: E402
 
 GRID = "/science/LSAR/GCOV/grids/frequencyA"
-USABLE = {"PROVISIONAL", "VALIDATED"}  # BETA is pre-calibration: listed, never analysed
+# BETA is pre-calibration: listed, never analysed. URGENT_RESPONSE (collection NISAR_UR_L2) is the
+# fastest-published product line: analysed only within its own stack and always labelled as such.
+USABLE = {"PROVISIONAL", "VALIDATED", "URGENT_RESPONSE"}
+CAVEATS = {
+    "URGENT_RESPONSE": "Urgent-response product (NISAR_UR_L2): published fastest for events, not a validated "
+                       "science release. Compare only with other urgent-response acquisitions.",
+    "PROVISIONAL": "Provisional release: calibrated, partially validated.",
+}
 _CACHE: dict[str, tuple[float, dict]] = {}
 SEARCH_TTL_S = 900
 
@@ -25,6 +32,8 @@ def now_utc() -> str:
 
 
 def maturity_of(collection: str) -> str:
+    if collection == "NISAR_UR_L2":
+        return "URGENT_RESPONSE"
     return COLLECTION_MATURITY.get(collection, "OTHER")
 
 
@@ -46,7 +55,7 @@ def stack_key(g: dict) -> str:
     and ASF collection (e.g. NISAR_UR_L2 urgent-response products can share a CRID
     with PROVISIONAL ones but are a different product line)."""
     base = f"t{g['track']}{(g['direction'] or '?')[0]}_f{g['frame']}_{g['bandwidth'].replace('+', '-')}_{g['crid']}"
-    return base if g["maturity"] in USABLE else f"{base}_{g['maturity'].lower()}"
+    return base if g["maturity"] in ("PROVISIONAL", "VALIDATED") else f"{base}_{g['maturity'].lower()}"
 
 
 def group_stacks(granules: list[dict]) -> list[dict]:
@@ -55,7 +64,8 @@ def group_stacks(granules: list[dict]) -> list[dict]:
         k = stack_key(g)
         s = stacks.setdefault(k, {"id": k, "track": g["track"], "direction": g["direction"], "frame": g["frame"],
                                   "bandwidth": g["bandwidth"], "crid": g["crid"], "maturity": g["maturity"],
-                                  "usable": g["maturity"] in USABLE, "granules": []})
+                                  "usable": g["maturity"] in USABLE, "caveat": CAVEATS.get(g["maturity"]),
+                                  "granules": []})
         s["granules"].append(g)
     out = []
     for s in stacks.values():
@@ -67,7 +77,10 @@ def group_stacks(granules: list[dict]) -> list[dict]:
         s["latest"] = gs[-1]["date"] if gs else None
         out.append(s)
     # Most useful first: usable, then most recent latest date, then most dates.
-    out.sort(key=lambda s: (s["usable"], s["n_dates"] >= 2, s["latest"] or "", s["n_dates"]), reverse=True)
+    rank = {"VALIDATED": 3, "PROVISIONAL": 2, "URGENT_RESPONSE": 1}
+    # Usable with a pair first, then newest data, then the more mature release, then the longer record.
+    out.sort(key=lambda s: (s["usable"], s["n_dates"] >= 2, s["latest"] or "", rank.get(s["maturity"], 0),
+                            s["n_dates"]), reverse=True)
     return out
 
 
@@ -103,6 +116,59 @@ def scene_epsg(f) -> int:
     return int(pr[()])
 
 
+GRID_B = "/science/LSAR/GCOV/grids/frequencyB"  # 5 MHz side band: coarser (80 m) but tiny to read
+
+
+def _chunk_ranges(ds, rs: slice, cs: slice) -> list[tuple[int, int]]:
+    """Byte (offset, size) of every stored chunk of `ds` intersecting rows rs x cols cs."""
+    if ds.chunks is None:
+        return []
+    ch_r, ch_c = ds.chunks
+    out = []
+    for r in range((rs.start // ch_r) * ch_r, rs.stop, ch_r):
+        for c in range((cs.start // ch_c) * ch_c, cs.stop, ch_c):
+            try:
+                info = ds.id.get_chunk_info_by_coord((r, c))
+            except Exception:  # noqa: BLE001  (chunk never written = fill value)
+                continue
+            if info.byte_offset is not None:
+                out.append((info.byte_offset, info.size))
+    return out
+
+
+def read_window_multi(f, xlim: tuple, ylim: tuple, rf=None, grid: str = GRID, pols=("HH", "HV")):
+    """Read every available polarisation in the window ONCE, with the quality
+    masks read a single time. If `rf` (RemoteFile) is given, all needed chunks
+    are first downloaded in parallel. Returns (x, y, {pol: (power, usable)}) or None."""
+    g = f[grid]
+    x = g["xCoordinates"][()]
+    y = g["yCoordinates"][()]
+    xi = np.where((x >= xlim[0]) & (x <= xlim[1]))[0]
+    yi = np.where((y >= ylim[0]) & (y <= ylim[1]))[0]
+    if xi.size == 0 or yi.size == 0:
+        return None
+    rs, cs = slice(int(yi.min()), int(yi.max()) + 1), slice(int(xi.min()), int(xi.max()) + 1)
+    names = [DIAGONAL_TERMS[p] for p in pols if DIAGONAL_TERMS[p] in g] + \
+        [n for n in ("mask", "inputDataExceptionMask") if n in g]
+    if rf is not None:
+        ranges = [r for n in names for r in _chunk_ranges(g[n], rs, cs)]
+        rf.prefetch(ranges)
+    mk = g["mask"][rs, cs] if "mask" in g else None
+    ex = g["inputDataExceptionMask"][rs, cs] if "inputDataExceptionMask" in g else None
+    out = {}
+    for pol in pols:
+        term = DIAGONAL_TERMS[pol]
+        if term not in g:
+            continue
+        p = g[term][rs, cs]
+        ok = np.isfinite(p) & (p > 0) & quality_ok(mk, ex, pol)
+        fv = g[term].attrs.get("_FillValue")
+        if fv is not None and np.isfinite(fv):
+            ok &= p != fv
+        out[pol] = (p, ok)
+    return x[cs], y[rs], out
+
+
 def read_window(f, pol: str, xlim: tuple, ylim: tuple):
     """Return (x, y, power, usable) for the part of the frequency-A grid inside
     the projected limits, applying the verified GCOV quality masks."""
@@ -125,3 +191,33 @@ def read_window(f, pol: str, xlim: tuple, ylim: tuple):
     if fv is not None and np.isfinite(fv):
         ok &= p != fv
     return x[cs], y[rs], p, ok
+
+
+# ---- newest acquisitions worldwide ----------------------------------------------
+
+_LATEST: dict[str, tuple[float, dict]] = {}
+
+
+def latest(days: float = 3, limit: int = 400) -> dict:
+    """The most recent NISAR GCOV acquisitions anywhere, straight from ASF."""
+    key = f"{days}|{limit}"
+    if key in _LATEST and time.time() - _LATEST[key][0] < 600:
+        return _LATEST[key][1]
+    import asf_search as asf
+    from datetime import timedelta
+    from shapely.geometry import shape
+
+    start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    res = asf.search(dataset="NISAR", processingLevel="GCOV", start=start, maxResults=limit)
+    items = {}
+    for r in res:
+        g = granule_record(r.properties, r.geometry)
+        c = shape(r.geometry).centroid
+        g["centroid"] = [round(c.x, 4), round(c.y, 4)]
+        items[g["scene"]] = g
+    gs = sorted(items.values(), key=lambda g: g["start_time"], reverse=True)
+    out = {"checked_utc": now_utc(), "days": days, "n": len(gs),
+           "source": "ASF Search API (asf_search), dataset NISAR, processingLevel GCOV, newest first",
+           "granules": gs}
+    _LATEST[key] = (time.time(), out)
+    return out

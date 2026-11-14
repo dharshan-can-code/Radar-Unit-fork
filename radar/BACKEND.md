@@ -26,23 +26,33 @@ Open http://localhost:8000/docs for interactive API docs. Analysis needs the Ear
 | GET | `/api/jobs/{id}` | `status` (queued/running/done/error), `progress`, `message` |
 | GET | `/api/results/{id}/manifest.json` | Result in the **same format as the batch pipeline**, plus `grid.bin` and `img/*.png` |
 | GET/POST | `/api/watch` | List/add locations for the periodic archive check |
+| GET | `/api/latest?days=3` | Newest NISAR GCOV acquisitions anywhere on Earth, live from ASF (cached 10 min) |
+| GET | `/api/weather?lat=&lon=&start=&end=` | Daily rainfall (ERA5/ERA5T via Open-Meteo), context only |
+| GET | `/api/gallery` | Previously computed analyses, newest first |
+
+`/api/analyze` also takes `detail`: `"standard"` reads frequency A (main band, 40 m cells) and `"quick"` reads frequency B (5 MHz side band, 80 m cells).
 
 Identical requests reuse the stored result instantly (`data/live/<id>/`, git-ignored).
 
 ## Scientific safeguards (enforced, tested)
-- Only **PROVISIONAL** and **VALIDATED** products are analysed. BETA (pre-calibration) and other product lines (e.g. `NISAR_UR_L2` urgent-response) are listed but refused.
-- Acquisitions in one analysis must share track, pass, frame, bandwidth, release and collection. Releases are never mixed.
+- **PROVISIONAL**, **VALIDATED** and **URGENT RESPONSE** (`NISAR_UR_L2`, the fastest-published products) are analysed. Urgent-response stacks carry a caveat, because they aren't a validated science release. BETA (pre-calibration) is listed but refused.
+- Acquisitions in one analysis must share track, pass, frame, bandwidth, release and collection. Releases and product lines are never mixed. When an urgent-response stack and a science release cover the same dates, the science release is recommended.
 - Quality masks are applied for **both** file layouts found in real data:
   - P05023 (product 1.0.11): `mask` 1–254 valid, uint8 exception mask must be 0.
   - P05036 (product 1.0.20): additionally a uint16 exception mask whose low byte holds anomaly codes and whose bits 256/512 mark HH/HV as fully focused. 65535 = fill.
 - If a location has no valid data on a date (outside the swath or masked), the job fails with that reason instead of returning empty numbers.
 
-## Measured performance (2026-11-14, home connection)
-| Location | Acquisitions | Time | Transfer |
-|---|---|---|---|
-| Manaus (VALIDATED, 10 m product) | 2 | 59 s | 92 MB |
-| Sundarbans (PROVISIONAL) | 5 | 154 s | 255 MB |
-| Repeat of an identical request | — | instant | 0 |
+## Speed: parallel chunk prefetch
+h5py reads a remote file one chunk at a time, about 0.6 s per HTTP round trip. Before reading, the backend asks the HDF5 index which compressed chunks the window needs (`get_chunk_info_by_coord`) and downloads them all **in parallel**. The quality masks are read once per acquisition, not once per channel.
+
+Measured performance (2026-11-14, home connection):
+
+| Request | Before | Now |
+|---|---|---|
+| Jakarta, 2 VALIDATED dates, detailed 40 m | ~60 s | **12.6 s** (96 MB) |
+| Jakarta, 2 dates, quick 80 m | — | **8.8 s** (20 MB) |
+| Aleutians, 2 dates, quick, in the browser end to end | — | **10.3 s** |
+| Repeat of an identical request | — | instant |
 
 ## Privacy
 - Place names typed by users are sent to OpenStreetMap Nominatim to find coordinates.

@@ -22,7 +22,7 @@ sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "scripts" / "processing"), str
 import radar  # noqa: E402
 from process_stack import (CHANGE_RANGE, SCREENING, STRETCH, _rgba_change, _rgba_class, _rgba_gray,  # noqa: E402
                            _save, corners_lonlat)
-from nisar import read_window, scene_epsg  # noqa: E402
+from nisar import read_window_multi, scene_epsg  # noqa: E402
 from remote_h5 import RemoteFile  # noqa: E402
 
 MAX_SIZE_KM = 40
@@ -42,16 +42,25 @@ def validate_request(granules: list[dict], size_km: float):
     if len(keys) != 1:
         raise AnalysisError("acquisitions must come from one compatible stack "
                             "(same track, pass, frame, bandwidth and processing release)")
-    bad = [g["date"] for g in granules if g["maturity"] not in ("PROVISIONAL", "VALIDATED")]
+    bad = [g["date"] for g in granules if g["maturity"] not in ("PROVISIONAL", "VALIDATED", "URGENT_RESPONSE")]
     if bad:
         raise AnalysisError(f"pre-calibration (BETA/other) products are not analysed: {bad}")
     if len({g["date"] for g in granules}) != len(granules):
         raise AnalysisError("duplicate acquisition dates")
 
 
-def window_grid(lat, lon, size_km, epsg):
+DETAIL = {
+    # standard: frequency A (main band, 10-20 m posting), output <= ~500 px
+    "standard": {"grid": "/science/LSAR/GCOV/grids/frequencyA", "min_res": 40.0, "px": 500},
+    # quick: frequency B (5 MHz side band, 80 m posting) - same acquisition, coarser, ~10x less to read
+    "quick": {"grid": "/science/LSAR/GCOV/grids/frequencyB", "min_res": 80.0, "px": 250},
+}
+
+
+def window_grid(lat, lon, size_km, epsg, detail: str = "standard"):
     """Square window centred on the point, in the scene's UTM CRS."""
-    res = float(max(40.0, round(size_km * 1000 / 500 / 20) * 20))  # <= ~500 px, multiple of native 20 m
+    d = DETAIL[detail]
+    res = float(max(d["min_res"], round(size_km * 1000 / d["px"] / 20) * 20))
     cx, cy = Transformer.from_crs(4326, epsg, always_xy=True).transform(lon, lat)
     half = size_km * 500.0
     x0 = np.floor((cx - half) / res) * res
@@ -62,8 +71,11 @@ def window_grid(lat, lon, size_km, epsg):
 
 def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: list[dict], token: str,
                  place: str | None = None, progress=lambda msg, frac: None,
-                 result_id: str | None = None) -> dict:
+                 result_id: str | None = None, detail: str = "standard") -> dict:
     validate_request(granules, size_km)
+    if detail not in DETAIL:
+        raise AnalysisError(f"detail must be one of {list(DETAIL)}")
+    grid_path = DETAIL[detail]["grid"]
     granules = sorted(granules, key=lambda g: g["start_time"])
     (out / "img").mkdir(parents=True, exist_ok=True)
     t0 = time.time()
@@ -75,8 +87,8 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
     first = RemoteFile(granules[0]["url"], token)
     with h5py.File(first, "r") as f:
         epsg = scene_epsg(f)
-    x0, y1, res, nx, ny = window_grid(lat, lon, size_km, epsg)
-    progress(f"Reading {len(granules)} acquisitions from NASA's archive in parallel (~30-60 s each)", 0.05)
+    x0, y1, res, nx, ny = window_grid(lat, lon, size_km, epsg, detail)
+    progress(f"Reading {len(granules)} acquisitions from NASA's archive in parallel", 0.05)
     xlim = (x0 - res, x0 + nx * res + res)
     ylim = (y1 - ny * res - res, y1 + res)
 
@@ -87,12 +99,12 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
         with h5py.File(rf, "r") as f:
             if scene_epsg(f) != epsg:
                 raise AnalysisError(f"{g['date']} is in a different projection; cannot align")
-            for pol in ("HH", "HV"):
-                w = read_window(f, pol, xlim, ylim)
-                if w is None:
-                    continue
+            if grid_path not in f:
+                raise AnalysisError(f"{g['date']} has no {grid_path.rsplit('/', 1)[-1]} band; use standard detail")
+            w = read_window_multi(f, xlim, ylim, rf=rf, grid=grid_path)  # all chunks fetched in parallel
+            for pol, (p_raw, ok) in (w[2].items() if w else []):
                 acc = radar.GridAccumulator(x0, y1, res, nx, ny)
-                acc.add(*w)
+                acc.add(w[0], w[1], p_raw, ok)
                 p, vf = acc.mean(), acc.valid_fraction()
                 p[vf < min_vf] = np.nan
                 dbs[pol], vfs[pol] = radar.to_db(p), vf
@@ -100,8 +112,11 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
 
     results = [None] * len(granules)
     done = 0
-    with ThreadPoolExecutor(max_workers=4) as ex:
-        for idx, g, dbs, vfs, nb, nr in ex.map(process, enumerate(granules)):
+    from concurrent.futures import as_completed
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        futs = [ex.submit(process, ig) for ig in enumerate(granules)]
+        for fut in as_completed(futs):
+            idx, g, dbs, vfs, nb, nr = fut.result()
             results[idx] = (g, dbs, vfs)
             stats["bytes_fetched"] += nb
             stats["requests"] += nr
@@ -163,7 +178,7 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
     manifest = {
         "area": "live", "stack": result_id or out.name, "name": place or f"{lat:.4f}°, {lon:.4f}°",
         "bbox": [round(lon0, 5), round(lat0, 5), round(lon1, 5), round(lat1, 5)],
-        "center": [lon, lat], "size_km": size_km,
+        "center": [lon, lat], "size_km": size_km, "detail": detail,
         "is_demonstration": False, "demonstration_note": None,
         "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "epsg": epsg,
         "display": {"res_m": res, "nx": nx, "ny": ny, "x0": x0, "y1": y1,
@@ -175,7 +190,7 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
         "observations": obs, "pairs": pairs,
         "processing": {"steps": [
             "live ASF search for NISAR L2 GCOV covering the point",
-            "HTTP range reads of the frequency-A HHHH/HVHV window (no full download)",
+            f"parallel HTTP range reads of the {grid_path.rsplit('/', 1)[-1]} HHHH/HVHV chunks in the window (no full download)",
             "exclude non-finite, <=0, mask 0/255 and inputDataExceptionMask samples",
             f"bin onto a common {res:.0f} m grid in EPSG:{epsg} by mean linear power",
             f"drop cells with valid fraction < {min_vf}",

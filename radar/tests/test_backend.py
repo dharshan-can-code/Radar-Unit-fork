@@ -85,3 +85,27 @@ def test_remote_file_reads_ranges_through_cache(monkeypatch):
     f.seek(-5, 2)
     assert f.read(100) == data[-5:]
     assert np.isclose(f.tell(), len(data))
+
+
+def test_urgent_response_is_its_own_labelled_stack():
+    assert nisar.maturity_of("NISAR_UR_L2") == "URGENT_RESPONSE"
+    gs = [g("2026-11-02"), g("2026-11-14", collection="NISAR_UR_L2", maturity="URGENT_RESPONSE"),
+          g("2026-11-26", collection="NISAR_UR_L2", maturity="URGENT_RESPONSE")]
+    by = {s["id"]: s for s in nisar.group_stacks(gs)}
+    ur = by["t83A_f8_20-5_P05023_urgent_response"]
+    assert ur["usable"] and ur["caveat"] and ur["dates"] == ["2026-11-14", "2026-11-26"]
+    validate_request(ur["granules"], 20)                      # UR-only stack may be analysed
+    with pytest.raises(AnalysisError):                        # but never mixed with a science release
+        validate_request([gs[0], gs[1]], 20)
+
+
+def test_quick_detail_uses_coarser_grid():
+    assert window_grid(12.85, 104.05, 20, 32648, "quick")[2] == 80
+
+
+def test_recommendation_prefers_science_release_on_ties():
+    gs = [g("2026-10-26", collection="NISAR_UR_L2", maturity="URGENT_RESPONSE", crid="P05036"),
+          g("2026-11-07", collection="NISAR_UR_L2", maturity="URGENT_RESPONSE", crid="P05036"),
+          g("2026-10-26", collection="NISAR_L2_GCOV_V1", maturity="VALIDATED", crid="P05036"),
+          g("2026-11-07", collection="NISAR_L2_GCOV_V1", maturity="VALIDATED", crid="P05036")]
+    assert nisar.group_stacks(gs)[0]["maturity"] == "VALIDATED"

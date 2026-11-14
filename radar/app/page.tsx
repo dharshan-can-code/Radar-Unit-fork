@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, Globe2, Radar, Waves } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, Download, Globe2, HelpCircle, Link2, Radar, Waves } from "lucide-react";
 import Fingerprint, { Tag } from "@/components/Fingerprint";
 import Timeline from "@/components/Timeline";
 import { Methods, ScienceExplainer } from "@/components/Science";
@@ -13,6 +13,10 @@ import {
 import DataStatus from "@/components/DataStatus";
 import ChangeByInterval from "@/components/ChangeByInterval";
 import LiveSearch, { LiveResult } from "@/components/LiveSearch";
+import LatestFeed from "@/components/LatestFeed";
+import Help from "@/components/Help";
+import { Place, Rainfall, loadResult, rainfall } from "@/lib/api";
+import { dataBase } from "@/lib/data";
 import type { InventoryArea } from "@/lib/data";
 
 const Explorer = dynamic(() => import("@/components/Explorer"), { ssr: false,
@@ -34,6 +38,34 @@ export default function Home() {
   const [source, setSource] = useState<"case" | "live">("case");
   const [live, setLive] = useState<LiveResult | null>(null);
   const [caseReload, setCaseReload] = useState(0);
+  const [externalPlace, setExternalPlace] = useState<(Place & { nonce: number }) | null>(null);
+  const [rain, setRain] = useState<Rainfall | null>(null);
+  const [help, setHelp] = useState(false);
+
+  // Shareable links: ?result=<id> reopens a saved live analysis.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("result");
+    if (id && /^[a-f0-9]{8,32}$/.test(id)) {
+      loadResult(`/api/results/${id}/manifest.json`).then((mm) => showLive({ manifest: mm, footprint: null, checkedUtc: null }))
+        .catch(() => { /* backend offline or unknown id: stay on case study */ });
+    }
+  }, []);
+
+  // Rainfall context (ERA5 via Open-Meteo) for whatever is shown.
+  useEffect(() => {
+    if (!m || !m.observations.length) { setRain(null); return; }
+    const [lon, lat] = m.center ?? [(m.bbox[0] + m.bbox[2]) / 2, (m.bbox[1] + m.bbox[3]) / 2];
+    const first = new Date(Date.parse(m.observations[0].date) - 15 * 864e5).toISOString().slice(0, 10);
+    const last = new Date(Math.min(Date.now(), Date.parse(m.observations[m.observations.length - 1].date) + 3 * 864e5)).toISOString().slice(0, 10);
+    let cancelled = false;
+    rainfall(lat, lon, first, last).then((r) => { if (!cancelled) setRain(r); }).catch(() => { if (!cancelled) setRain(null); });
+    return () => { cancelled = true; };
+  }, [m]);
+
+  function pickPlace(p: Place) {
+    setExternalPlace({ ...p, nonce: Date.now() });
+    document.getElementById("live")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   useEffect(() => {
     loadInventory().then(setInv).catch(() => setInv(null));
@@ -61,11 +93,15 @@ export default function Home() {
   // A live analysis result replaces the case-study data in every section.
   function showLive(r: LiveResult) {
     setSource("live"); setLive(r); setSel({ kind: "area" }); setGrid(null); setM(r.manifest);
+    window.history.replaceState(null, "", `?result=${r.manifest.stack}`);
     setPairIdx(Math.max(0, r.manifest.pairs.length - 1));
     loadGrid(r.manifest).then((g) => setGrid(new GridIndex(r.manifest, g))).catch(() => setGrid(null));
     document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" });
   }
-  function backToCase() { setSource("case"); setLive(null); setM(undefined); setGrid(null); setCaseReload((n) => n + 1); }
+  function backToCase() {
+    setSource("case"); setLive(null); setM(undefined); setGrid(null); setCaseReload((n) => n + 1);
+    window.history.replaceState(null, "", window.location.pathname);
+  }
   const inventoryForMap: InventoryArea | undefined = source === "live"
     ? ({ primary_footprint: live?.footprint ?? null } as InventoryArea)
     : m ? inv?.areas[m.area] : undefined;
@@ -107,7 +143,11 @@ export default function Home() {
 
       {/* hero */}
       <header className="pt-10 pb-8">
-        <div className="flex items-center gap-2 font-mono text-xs tracking-widest text-cyan"><Radar size={14} />RADAR UNIT · NASA SPACE APPS 2026 · NISAR L-BAND</div>
+        <div className="flex items-center gap-2 font-mono text-xs tracking-widest text-cyan"><Radar size={14} />RADAR UNIT · NASA SPACE APPS 2026 · NISAR L-BAND
+          <button onClick={() => setHelp(true)} className="ml-auto flex items-center gap-1.5 rounded-md border border-cyan/40 px-3 py-1 font-sans text-[12px] tracking-normal text-cyan hover:bg-cyan/10">
+            <HelpCircle size={14} />How to use
+          </button>
+        </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">DELTA PULSE <span className="text-muted">— Hidden Water</span></h1>
         <p className="mt-3 max-w-3xl text-lg text-text/80">Revealing the water we cannot easily see. NISAR&apos;s radar sees wetlands through cloud, every 12 days. Start with our Tonle Sap case study, or search any place on Earth for live NISAR data. We show what changed, what it might mean, and how sure we can be.</p>
         <div className="mt-5 flex flex-wrap gap-2 text-[12px]">
@@ -118,8 +158,10 @@ export default function Home() {
           ))}
         </div>
         {source === "case" && status && <DataStatus status={status} stacks={stacks} stackId={stackId} setStackId={setStackId} manifest={m ?? null} />}
-        <div className="mt-4"><LiveSearch onResult={showLive} active={source === "live"} /></div>
+        <div id="live" className="mt-4 scroll-mt-4"><LiveSearch onResult={showLive} active={source === "live"} externalPlace={externalPlace} /></div>
+        <div className="mt-4"><LatestFeed onPick={pickPlace} /></div>
       </header>
+      {help && <Help onClose={() => setHelp(false)} />}
 
       {/* explorer */}
       <Section id="explorer" kicker="01" title="Hidden Water Explorer"
@@ -128,10 +170,11 @@ export default function Home() {
         {m === null && <NoData />}
         {m && (
           <>
-            <SourceBar m={m} source={source} live={live} onBack={backToCase} />
+            <SourceBar m={m} source={source} live={live} onBack={backToCase} pairId={pair?.id ?? null} channel={channel} />
             <PairPicker m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />
             <Explorer manifest={m} inventory={inventoryForMap} pairIdx={pairIdx} channel={channel} mode={mode}
-              setChannel={setChannel} setMode={setMode} selection={sel} onSelect={setSel} selectionBounds={bounds} />
+              setChannel={setChannel} setMode={setMode} selection={sel} onSelect={setSel} selectionBounds={bounds}
+              onPickLocation={(lat, lon) => pickPlace({ name: `${lat.toFixed(4)}°, ${lon.toFixed(4)}° (picked on map)`, lat, lon, type: "map" })} />
           </>
         )}
       </Section>
@@ -141,7 +184,7 @@ export default function Home() {
         sub="What the satellite measured in your region, what changed between the two dates, what could explain it, and what remains uncertain.">
         {m && analysis && pair ? (
           <Fingerprint m={m} fp={analysis.fp} verdict={analysis.verdict} statements={analysis.statements}
-            series={analysis.series} regionLabel={label} selectedDates={[pair.before, pair.after]} />
+            series={analysis.series} regionLabel={label} selectedDates={[pair.before, pair.after]} rain={rain} />
         ) : m && !rect ? <p className="text-muted">Selected location is outside the processed area.</p> : <p className="text-muted">Loading…</p>}
       </Section>
 
@@ -180,9 +223,14 @@ function Section({ id, kicker, title, sub, children }: { id: string; kicker: str
   );
 }
 
-function SourceBar({ m, source, live, onBack }: { m: Manifest; source: "case" | "live"; live: LiveResult | null; onBack: () => void }) {
+function SourceBar({ m, source, live, onBack, pairId, channel }: { m: Manifest; source: "case" | "live"; live: LiveResult | null;
+  onBack: () => void; pairId: string | null; channel: Channel }) {
   const o = m.observations;
   const pr = m.processing;
+  const [copied, setCopied] = useState(false);
+  const copyLink = () => {
+    navigator.clipboard?.writeText(window.location.href).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); });
+  };
   return (
     <div className={`mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border px-3 py-2 text-[12px] ${source === "live" ? "border-cyan/40 bg-cyan/5" : "border-line bg-panel"}`}>
       <span className="flex items-center gap-1.5 font-semibold text-text">
@@ -194,12 +242,28 @@ function SourceBar({ m, source, live, onBack }: { m: Manifest; source: "case" | 
       </span>
       {source === "live" && live && (
         <span className="text-muted">
-          archive checked {live.checkedUtc.slice(0, 16).replace("T", " ")} UTC · read {pr.bytes_fetched ? `${Math.round(pr.bytes_fetched / 1e6)} MB` : ""} in {pr.elapsed_s ?? "?"} s
+          {live.checkedUtc ? `archive checked ${live.checkedUtc.slice(0, 16).replace("T", " ")} UTC · ` : `computed ${m.generated_utc.slice(0, 16).replace("T", " ")} UTC · `}
+          read {pr.bytes_fetched ? `${Math.round(pr.bytes_fetched / 1e6)} MB` : ""} in {pr.elapsed_s ?? "?"} s
         </span>
       )}
-      {source === "live" && (
-        <button onClick={onBack} className="ml-auto flex items-center gap-1 text-cyan hover:text-text"><ArrowLeft size={13} />Tonle Sap case study</button>
-      )}
+      <span className="ml-auto flex flex-wrap items-center gap-3">
+        {pairId && (
+          <a href={`${dataBase(m)}/img/d_${pairId}_${channel}.png`} download className="flex items-center gap-1 text-cyan hover:text-text" title="Download the change map image">
+            <Download size={13} />Change map
+          </a>
+        )}
+        <a href={`${dataBase(m)}/manifest.json`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-cyan hover:text-text" title="All numbers and provenance as JSON">
+          <Download size={13} />Data (JSON)
+        </a>
+        {source === "live" && (
+          <button onClick={copyLink} className="flex items-center gap-1 text-cyan hover:text-text" title="Copy a link that reopens this result">
+            {copied ? <Check size={13} /> : <Link2 size={13} />}{copied ? "Copied" : "Share link"}
+          </button>
+        )}
+        {source === "live" && (
+          <button onClick={onBack} className="flex items-center gap-1 text-cyan hover:text-text"><ArrowLeft size={13} />Tonle Sap case study</button>
+        )}
+      </span>
     </div>
   );
 }

@@ -37,6 +37,7 @@ sys.path[:0] = [str(HERE), str(ROOT / "scripts")]
 import nisar  # noqa: E402
 from analyze import AnalysisError, run_analysis, validate_request  # noqa: E402
 from geocode import geocode  # noqa: E402
+from weather import rainfall  # noqa: E402
 from refresh import get_token  # noqa: E402
 
 RESULTS = ROOT / "data" / "live"
@@ -92,16 +93,57 @@ def api_acquisitions(lat: float = Query(..., ge=-90, le=90), lon: float = Query(
             "note": None if stacks else "NISAR has no GCOV products over this point in the archive yet."}
 
 
+@app.get("/api/latest")
+def api_latest(days: float = Query(3, gt=0, le=14), limit: int = Query(400, ge=10, le=2000)):
+    """Newest NISAR GCOV acquisitions anywhere on Earth (live from ASF, cached 10 min)."""
+    try:
+        r = nisar.latest(days, limit)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"ASF search failed: {e}") from e
+    return r
+
+
+@app.get("/api/weather")
+def api_weather(lat: float = Query(..., ge=-90, le=90), lon: float = Query(..., ge=-180, le=180),
+                start: str = Query(...), end: str = Query(...)):
+    try:
+        return rainfall(lat, lon, start, end)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"weather service unavailable: {e}") from e
+
+
+@app.get("/api/gallery")
+def api_gallery(limit: int = Query(30, ge=1, le=200)):
+    """Previously computed analyses (newest first), so results can be reopened or shared."""
+    items = []
+    for mp in RESULTS.glob("*/manifest.json"):
+        try:
+            m = json.loads(mp.read_text())
+        except Exception:  # noqa: BLE001
+            continue
+        o = m.get("observations", [])
+        items.append({"id": mp.parent.name, "name": m.get("name"), "center": m.get("center"),
+                      "generated_utc": m.get("generated_utc"), "detail": m.get("detail", "standard"),
+                      "size_km": m.get("size_km"), "n_obs": len(o), "first": o[0]["date"] if o else None,
+                      "last": o[-1]["date"] if o else None, "maturity": o[0].get("maturity") if o else None,
+                      "result": f"/api/results/{mp.parent.name}/manifest.json"})
+    items.sort(key=lambda i: i["generated_utc"] or "", reverse=True)
+    return {"items": items[:limit]}
+
+
 class AnalyzeRequest(BaseModel):
     lat: float = Field(ge=-90, le=90)
     lon: float = Field(ge=-180, le=180)
     scenes: list[str] = Field(min_length=2, max_length=12)
     size_km: float = 20
     place: str | None = None
+    detail: str = Field(default="standard", pattern="^(standard|quick)$")
 
 
 def _job_key(req: AnalyzeRequest) -> str:
-    raw = json.dumps([round(req.lat, 4), round(req.lon, 4), sorted(req.scenes), req.size_km, "v1"])
+    raw = json.dumps([round(req.lat, 4), round(req.lon, 4), sorted(req.scenes), req.size_km, req.detail, "v2"])
     return hashlib.sha1(raw.encode()).hexdigest()[:16]
 
 
@@ -137,7 +179,7 @@ def api_analyze(req: AnalyzeRequest):
             job.update(message=msg, progress=round(frac, 3))
         try:
             # Write straight into the final folder; manifest.json appears only when complete.
-            m = run_analysis(out, req.lat, req.lon, req.size_km, granules, token, req.place, prog, result_id=key)
+            m = run_analysis(out, req.lat, req.lon, req.size_km, granules, token, req.place, prog, result_id=key, detail=req.detail)
             job.update(status="done", result=f"/api/results/{key}/manifest.json",
                        elapsed_s=m["processing"]["elapsed_s"], finished_utc=now_utc())
         except AnalysisError as e:

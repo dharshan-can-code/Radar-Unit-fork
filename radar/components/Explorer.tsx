@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { Map as MLMap, GeoJSONSource, StyleSpecification } from "maplibre-gl";
-import { BoxSelect, MousePointer2, Layers, SplitSquareHorizontal, Satellite, Map as MapIcon } from "lucide-react";
+import { BoxSelect, Crosshair, MousePointer2, Layers, SplitSquareHorizontal, Satellite, Map as MapIcon } from "lucide-react";
 import type { Bounds, Channel, InventoryArea, Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
 
@@ -56,6 +56,8 @@ interface Props {
   pairIdx: number; channel: Channel; mode: Mode;
   setChannel: (c: Channel) => void; setMode: (m: Mode) => void;
   selection: Selection; onSelect: (s: Selection) => void; selectionBounds: Bounds | null;
+  /** Called when the user clicks the map in "pick a place" mode (starts a live search there). */
+  onPickLocation?: (lat: number, lon: number) => void;
 }
 
 export default function Explorer(p: Props) {
@@ -67,7 +69,11 @@ export default function Explorer(p: Props) {
   const [swipe, setSwipe] = useState(50);
   const [draw, setDraw] = useState(false);
   const [base, setBase] = useState<keyof typeof BASEMAPS>("dark");
+  const [picking, setPicking] = useState(false);
+  const [opacity, setOpacity] = useState(0.92);
   const drawRef = useRef(draw); drawRef.current = draw;
+  const pickRef = useRef(picking); pickRef.current = picking;
+  const onPickRef = useRef(p.onPickLocation); onPickRef.current = p.onPickLocation;
   const onSelectRef = useRef(p.onSelect); onSelectRef.current = p.onSelect;
 
   // create maps once
@@ -109,7 +115,10 @@ export default function Explorer(p: Props) {
       start = null; a.dragPan.enable(); setDraw(false);
       if (bb.e - bb.w > 0.002 && bb.n - bb.s > 0.002) onSelectRef.current({ kind: "box", bounds: bb });
     });
-    a.on("click", (ev) => { if (!drawRef.current) onSelectRef.current({ kind: "point", lng: ev.lngLat.lng, lat: ev.lngLat.lat }); });
+    a.on("click", (ev) => {
+      if (pickRef.current) { setPicking(false); onPickRef.current?.(ev.lngLat.lat, ev.lngLat.lng); return; }
+      if (!drawRef.current) onSelectRef.current({ kind: "point", lng: ev.lngLat.lng, lat: ev.lngLat.lat });
+    });
     return () => { maps.current.ready = 0; setReady(false); a.remove(); b.remove(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [m.area, m.stack, m.generated_utc]);
@@ -134,9 +143,17 @@ export default function Explorer(p: Props) {
     if (mode === "compare") { left = `${pair.before}_${ch}`; right = `${pair.after}_${ch}`; }
     else if (mode === "screening") { left = `${pair.before}_class`; right = `${pair.after}_class`; }
     else { left = `${pair.before}_${ch}`; right = `d_${pair.id}_${ch}`; }
-    setRadar(maps.current.a!, imgUrl(m, left), c, mode === "change" ? 0.35 : 0.92);
-    setRadar(maps.current.b!, imgUrl(m, right), c, mode === "change" ? 1 : 0.92);
+    setRadar(maps.current.a!, imgUrl(m, left), c, mode === "change" ? 0.35 * opacity : opacity);
+    setRadar(maps.current.b!, imgUrl(m, right), c, mode === "change" ? 1 : opacity);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, pairIdx, channel, mode, m]);
+
+  // opacity changes only repaint, no reload
+  useEffect(() => {
+    if (!ready || maps.current.ready < 2) return;
+    maps.current.a!.setPaintProperty("radar", "raster-opacity", mode === "change" ? 0.35 * opacity : opacity);
+    maps.current.b!.setPaintProperty("radar", "raster-opacity", mode === "change" ? Math.max(opacity, 0.5) : opacity);
+  }, [opacity, ready, mode]);
 
   // selection outline
   useEffect(() => {
@@ -147,9 +164,9 @@ export default function Explorer(p: Props) {
   }, [ready, p.selectionBounds]);
 
   useEffect(() => {
-    if (aEl.current) aEl.current.style.cursor = draw ? "crosshair" : "";
-    maps.current.a?.getCanvas().style.setProperty("cursor", draw ? "crosshair" : "pointer");
-  }, [draw]);
+    if (aEl.current) aEl.current.style.cursor = draw || picking ? "crosshair" : "";
+    maps.current.a?.getCanvas().style.setProperty("cursor", draw || picking ? "crosshair" : "pointer");
+  }, [draw, picking]);
 
   const clip = mode === "change" ? 0 : swipe;
   const pair = m.pairs[pairIdx];
@@ -177,8 +194,19 @@ export default function Explorer(p: Props) {
             { v: "HH", label: "HH" }, { v: "HV", label: "HV", disabled: !hvOk },
           ]} />
         )}
-        <div className="flex flex-wrap gap-2 sm:ml-auto">
-          <button onClick={() => setDraw((d) => !d)}
+        <div className="flex min-w-0 basis-full flex-wrap gap-2 xl:ml-auto xl:basis-auto">
+          <label className="flex items-center gap-1.5 rounded-md border border-line bg-panel px-3 py-1.5 text-muted" title="Radar layer opacity">
+            Opacity
+            <input type="range" min={0.1} max={1} step={0.05} value={opacity} onChange={(e) => setOpacity(+e.target.value)}
+              className="w-20" aria-label="Radar layer opacity" />
+          </label>
+          {p.onPickLocation && (
+            <button onClick={() => { setPicking((v) => !v); setDraw(false); }}
+              className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 ${picking ? "border-cyan bg-cyan/15 text-cyan" : "border-line bg-panel text-text hover:border-cyan/50"}`}>
+              <Crosshair size={14} />{picking ? "Click anywhere on the map…" : "Analyse a new place here"}
+            </button>
+          )}
+          <button onClick={() => { setDraw((d) => !d); setPicking(false); }}
             className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 ${draw ? "border-amber bg-amber/15 text-amber" : "border-line bg-panel text-text hover:border-cyan/50"}`}>
             {draw ? <BoxSelect size={14} /> : <MousePointer2 size={14} />}{draw ? "Drag a box on the map…" : "Draw region"}
           </button>

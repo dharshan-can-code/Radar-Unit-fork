@@ -69,6 +69,22 @@ class RemoteFile(io.RawIOBase):
                 self.blocks.popitem(last=False)
         return data
 
+    def prefetch(self, ranges: list[tuple[int, int]], workers: int = 16):
+        """Fetch every block covering the given (offset, size) byte ranges in
+        parallel, so the following h5py reads are served from memory instead of
+        one HTTP round trip at a time."""
+        need = sorted({i for off, size in ranges if size > 0
+                       for i in range(off // self.block_size, (off + size - 1) // self.block_size + 1)})
+        with self.lock:
+            need = [i for i in need if i not in self.blocks]
+            self.max_blocks = max(self.max_blocks, len(self.blocks) + len(need) + 16)
+        if not need:
+            return 0
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=min(workers, len(need))) as ex:
+            list(ex.map(self._get_block, need))
+        return len(need)
+
     # --- io.RawIOBase API used by h5py ---
     def readable(self):
         return True

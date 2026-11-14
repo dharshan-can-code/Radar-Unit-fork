@@ -1,23 +1,33 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, Loader2, MapPin, Play, RefreshCw, Search, Satellite } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AlertTriangle, History, Loader2, MapPin, Play, RefreshCw, Search, Satellite, Zap } from "lucide-react";
 import type { Manifest } from "@/lib/data";
 import {
-  Acquisitions, Job, LiveStack, Place, acquisitions, geocode, health, job as getJob, loadResult, startAnalysis,
+  Acquisitions, Detail, GalleryItem, Job, LiveStack, Place, acquisitions, gallery, geocode, health, job as getJob,
+  loadResult, startAnalysis,
 } from "@/lib/api";
 
-const MAT: Record<string, string> = {
+export const MAT: Record<string, string> = {
   VALIDATED: "border-green/50 text-green bg-green/10",
   PROVISIONAL: "border-cyan/50 text-cyan bg-cyan/10",
+  URGENT_RESPONSE: "border-amber/50 text-amber bg-amber/10",
   BETA: "border-line text-muted",
   OTHER: "border-rose/40 text-rose bg-rose/5",
 };
+export const MAT_LABEL: Record<string, string> = { URGENT_RESPONSE: "URGENT RESPONSE" };
 const SIZES = [10, 20, 40];
 const fmtUtc = (iso: string) => `${iso.slice(0, 10)} ${iso.slice(11, 16)} UTC`;
 
-export interface LiveResult { manifest: Manifest; footprint: GeoJSON.Geometry | null; checkedUtc: string }
+export interface LiveResult { manifest: Manifest; footprint: GeoJSON.Geometry | null; checkedUtc: string | null }
 
-export default function LiveSearch({ onResult, active }: { onResult: (r: LiveResult) => void; active: boolean }) {
+interface Props {
+  onResult: (r: LiveResult) => void;
+  active: boolean;
+  /** A place chosen elsewhere (map click, newest-acquisitions feed). */
+  externalPlace: (Place & { nonce: number }) | null;
+}
+
+export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   const [backend, setBackend] = useState<{ ok: boolean; token: boolean } | null>(null);
   const [q, setQ] = useState("");
   const [places, setPlaces] = useState<Place[] | null>(null);
@@ -26,24 +36,51 @@ export default function LiveSearch({ onResult, active }: { onResult: (r: LiveRes
   const [stackId, setStackId] = useState<string | null>(null);
   const [picked, setPicked] = useState<string[]>([]);
   const [size, setSize] = useState(20);
+  const [detail, setDetail] = useState<Detail>("standard");
   const [busy, setBusy] = useState<"geocode" | "search" | null>(null);
   const [jobState, setJobState] = useState<Job | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const poll = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [recent, setRecent] = useState<GalleryItem[]>([]);
   const [started, setStarted] = useState<number | null>(null);
   const [now, setNow] = useState(0);
+  const poll = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const refreshGallery = useCallback(() => { gallery().then(setRecent).catch(() => setRecent([])); }, []);
 
   useEffect(() => {
     health().then((h) => setBackend({ ok: true, token: h.earthdata_token })).catch(() => setBackend({ ok: false, token: false }));
+    refreshGallery();
     return () => { if (poll.current) clearTimeout(poll.current); };
-  }, []);
+  }, [refreshGallery]);
 
   const stack = acq?.stacks.find((s) => s.id === stackId) ?? null;
+  const running = !!jobState && (jobState.status === "queued" || jobState.status === "running");
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [running]);
 
   function chooseStack(s: LiveStack) {
     setStackId(s.id);
     setPicked(s.usable ? s.granules.slice(-2).map((g) => g.scene) : []); // latest compatible pair
   }
+
+  const pickPlace = useCallback(async (p: Place, fresh = false) => {
+    setPlace(p); setPlaces(null); setAcq(null); setStackId(null); setPicked([]); setJobState(null); setErr(null);
+    setBusy("search");
+    try {
+      const a = await acquisitions(p.lat, p.lon, fresh);
+      setAcq(a);
+      const rec = a.stacks.find((s) => s.id === a.recommended_stack) ?? a.stacks.find((s) => s.usable);
+      if (rec) { setStackId(rec.id); setPicked(rec.usable ? rec.granules.slice(-2).map((g) => g.scene) : []); }
+    } catch (x) { setErr(`Archive search failed: ${(x as Error).message}`); }
+    finally { setBusy(null); }
+  }, []);
+
+  useEffect(() => {
+    if (externalPlace) { setQ(externalPlace.name); pickPlace(externalPlace); }
+  }, [externalPlace, pickPlace]);
 
   async function doGeocode(e?: React.FormEvent) {
     e?.preventDefault();
@@ -58,51 +95,44 @@ export default function LiveSearch({ onResult, active }: { onResult: (r: LiveRes
     finally { setBusy((b) => (b === "geocode" ? null : b)); }
   }
 
-  async function pickPlace(p: Place, fresh = false) {
-    setPlace(p); setPlaces(null); setAcq(null); setStackId(null); setPicked([]); setJobState(null); setErr(null);
-    setBusy("search");
-    try {
-      const a = await acquisitions(p.lat, p.lon, fresh);
-      setAcq(a);
-      const rec = a.stacks.find((s) => s.id === a.recommended_stack) ?? a.stacks.find((s) => s.usable);
-      if (rec) chooseStack(rec);
-    } catch (x) { setErr(`Archive search failed: ${(x as Error).message}`); }
-    finally { setBusy(null); }
-  }
-
   function toggleDate(scene: string) {
     setPicked((p) => (p.includes(scene) ? p.filter((s) => s !== scene) : p.length >= 12 ? p : [...p, scene]));
+  }
+
+  async function openSaved(item: GalleryItem) {
+    setErr(null);
+    try {
+      const m = await loadResult(item.result);
+      onResult({ manifest: m, footprint: null, checkedUtc: null });
+    } catch (x) { setErr(`Could not open saved result: ${(x as Error).message}`); }
   }
 
   async function analyze() {
     if (!place || !stack || picked.length < 2) return;
     setErr(null); setStarted(Date.now()); setNow(Date.now());
     try {
-      let j = await startAnalysis({ lat: place.lat, lon: place.lon, scenes: picked, size_km: size, place: place.name.split(",").slice(0, 2).join(",") });
+      let j = await startAnalysis({ lat: place.lat, lon: place.lon, scenes: picked, size_km: size, detail,
+        place: place.type && ["coordinates", "feed", "map"].includes(place.type) ? `${place.lat.toFixed(4)}°, ${place.lon.toFixed(4)}°` : place.name.split(",").slice(0, 2).join(",") });
       setJobState(j);
       const tick = async () => {
         if (j.status === "done" && j.result) {
           const m = await loadResult(j.result);
-          onResult({ manifest: m, footprint: stack.footprint, checkedUtc: acq!.checked_utc });
+          onResult({ manifest: m, footprint: stack.footprint, checkedUtc: acq?.checked_utc ?? null });
           setJobState({ ...j, message: j.cached ? "Loaded saved result" : "Done" });
+          refreshGallery();
           return;
         }
         if (j.status === "error") { setErr(j.message ?? "Analysis failed"); return; }
         poll.current = setTimeout(async () => {
           try { j = await getJob(j.job_id); setJobState(j); tick(); }
           catch (x) { setErr(`Lost contact with the backend: ${(x as Error).message}`); }
-        }, 2000);
+        }, 1500);
       };
       tick();
     } catch (x) { setErr((x as Error).message); }
   }
 
-  const running = jobState && (jobState.status === "queued" || jobState.status === "running");
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, [running]);
+  const est = detail === "quick" ? 10 : 12 + Math.max(0, picked.length - 2) * 3;
 
   return (
     <div className={`rounded-xl border bg-panel p-4 ${active ? "border-cyan/50" : "border-line"}`}>
@@ -110,8 +140,8 @@ export default function LiveSearch({ onResult, active }: { onResult: (r: LiveRes
         <Satellite size={16} className="text-cyan" /> Explore anywhere with live NISAR data
       </div>
       <p className="mt-1 text-[12px] text-muted">
-        Type a place or coordinates. DELTA PULSE searches NASA&apos;s ASF archive right now, then reads only the window
-        you choose from the real NISAR files.
+        Type a place or coordinates, click the map, or pick from the newest acquisitions. DELTA PULSE searches NASA&apos;s
+        ASF archive right now, then reads only the window you choose from the real NISAR files.
       </p>
 
       {backend && !backend.ok && (
@@ -162,18 +192,18 @@ export default function LiveSearch({ onResult, active }: { onResult: (r: LiveRes
             <div className="text-text"><MapPin size={12} className="mr-1 inline text-cyan" />{place.name.split(",").slice(0, 3).join(",")}</div>
             <div className="flex items-center gap-2 text-muted">
               {acq.n_granules} GCOV granules · archive checked {fmtUtc(acq.checked_utc)}
-              <button onClick={() => pickPlace(place, true)} title="Search the archive again" className="text-cyan hover:text-text"><RefreshCw size={12} /></button>
+              <button onClick={() => pickPlace(place, true)} title="Search the archive again now" className="text-cyan hover:text-text"><RefreshCw size={12} /></button>
             </div>
           </div>
           {acq.note && <p className="mt-2 text-[13px] text-muted">{acq.note}</p>}
 
-          <div className="mt-2 grid gap-1.5">
+          <div className="mt-2 grid max-h-72 gap-1.5 overflow-auto pr-1">
             {acq.stacks.map((s) => (
               <button key={s.id} onClick={() => chooseStack(s)} disabled={!s.usable}
-                title={s.usable ? undefined : "Pre-calibration or non-standard products are listed but not analysed"}
+                title={s.usable ? s.caveat ?? undefined : "Pre-calibration or non-standard products are listed but not analysed"}
                 className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border px-3 py-2 text-left text-[12px] ${s.id === stackId ? "border-cyan bg-cyan/10" : "border-line hover:border-cyan/40"} disabled:cursor-not-allowed disabled:opacity-45`}>
                 <span className="font-mono text-text">Track {s.track}{s.direction?.[0]} · frame {s.frame} · {s.bandwidth} MHz</span>
-                <span className={`rounded border px-1.5 font-mono text-[10px] ${MAT[s.maturity] ?? MAT.OTHER}`}>{s.maturity} {s.crid}</span>
+                <span className={`rounded border px-1.5 font-mono text-[10px] ${MAT[s.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[s.maturity] ?? s.maturity} {s.crid}</span>
                 <span className="text-muted">{s.n_dates} date{s.n_dates === 1 ? "" : "s"} · {s.dates[0]} → {s.latest}</span>
                 <span className="text-muted">{s.dual_pol_dates.length === s.n_dates ? "HH+HV" : `HV on ${s.dual_pol_dates.length}/${s.n_dates}`}</span>
                 {s.id === acq.recommended_stack && <span className="ml-auto text-[10px] text-cyan">latest compatible pair</span>}
@@ -184,6 +214,9 @@ export default function LiveSearch({ onResult, active }: { onResult: (r: LiveRes
 
           {stack && stack.usable && (
             <div className="mt-3">
+              {stack.caveat && stack.maturity === "URGENT_RESPONSE" && (
+                <div className="mb-2 rounded-md border border-amber/40 bg-amber/5 p-2 text-[12px] text-amber">{stack.caveat}</div>
+              )}
               <div className="mb-1.5 text-[12px] text-muted">
                 Acquisitions to compare ({picked.length} selected · 2–12 · consecutive selected dates are paired):
               </div>
@@ -197,20 +230,30 @@ export default function LiveSearch({ onResult, active }: { onResult: (r: LiveRes
                     </button>
                   );
                 })}
+                {stack.granules.length > 2 && (
+                  <button onClick={() => setPicked(stack.granules.slice(-Math.min(12, stack.granules.length)).map((g) => g.scene))}
+                    className="rounded border border-dashed border-line px-2 py-1 text-[11px] text-muted hover:text-text">select all (max 12)</button>
+                )}
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-3">
-                <div className="flex overflow-hidden rounded-md border border-line text-[12px]">
+                <div className="flex overflow-hidden rounded-md border border-line text-[12px]" role="group" aria-label="Detail">
+                  <button onClick={() => setDetail("quick")} title="5 MHz side band, 80 m cells, fastest"
+                    className={`flex items-center gap-1 px-3 py-1.5 ${detail === "quick" ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}><Zap size={12} />Quick 80 m</button>
+                  <button onClick={() => setDetail("standard")} title="Main band, 40 m cells (20 km window)"
+                    className={`px-3 py-1.5 ${detail === "standard" ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>Detailed 40 m</button>
+                </div>
+                <div className="flex overflow-hidden rounded-md border border-line text-[12px]" role="group" aria-label="Window size">
                   {SIZES.map((k) => (
                     <button key={k} onClick={() => setSize(k)}
                       className={`px-3 py-1.5 ${size === k ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>{k} km</button>
                   ))}
                 </div>
-                <button onClick={analyze} disabled={picked.length < 2 || !!running || !backend?.token}
+                <button onClick={analyze} disabled={picked.length < 2 || running || !backend?.token}
                   className="flex items-center gap-1.5 rounded-md bg-cyan px-4 py-1.5 text-sm font-medium text-bg disabled:opacity-40">
                   {running ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
                   Analyse {picked.length} acquisition{picked.length === 1 ? "" : "s"}
                 </button>
-                <span className="text-[11px] text-muted">≈ {Math.max(1, Math.round((picked.length * 30) / 60))} min · reads ~{size >= 40 ? 90 : 45} MB per date</span>
+                <span className="text-[11px] text-muted">≈ {est}–{est * 2} s</span>
               </div>
             </div>
           )}
@@ -232,6 +275,22 @@ export default function LiveSearch({ onResult, active }: { onResult: (r: LiveRes
         <div className="mt-3 flex gap-2 rounded-md border border-rose/40 bg-rose/5 p-2 text-[12px] text-rose">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />{err}
         </div>
+      )}
+
+      {recent.length > 0 && (
+        <details className="mt-4 text-[12px]">
+          <summary className="flex cursor-pointer items-center gap-1.5 text-muted hover:text-text"><History size={13} />Recent analyses ({recent.length}) open instantly</summary>
+          <ul className="mt-2 grid gap-1 sm:grid-cols-2">
+            {recent.map((r) => (
+              <li key={r.id}>
+                <button onClick={() => openSaved(r)} className="w-full rounded-md border border-line px-2.5 py-1.5 text-left hover:border-cyan/40">
+                  <div className="truncate text-text">{r.name}</div>
+                  <div className="font-mono text-[10px] text-muted">{r.n_obs} dates · {r.first} → {r.last} · {r.detail === "quick" ? "80 m" : `${r.size_km} km`} · {MAT_LABEL[r.maturity] ?? r.maturity}</div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </details>
       )}
     </div>
   );
