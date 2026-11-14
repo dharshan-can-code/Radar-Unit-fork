@@ -4,9 +4,13 @@ import { BookOpen, Radar, Sparkles } from "lucide-react";
 
 export const SECTIONS: [string, string][] = [
   ["live", "Explore"],
+  ["globe", "Globe"],
   ["explorer", "Map"],
   ["fingerprint", "Fingerprint"],
+  ["now", "Water Now"],
+  ["scatter", "Scatter Lab"],
   ["timeline", "Timeline"],
+  ["lab", "Radar Lab"],
   ["impact", "Impact"],
   ["science", "Science"],
   ["methods", "Methods"],

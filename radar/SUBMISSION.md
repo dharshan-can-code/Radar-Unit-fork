@@ -38,7 +38,10 @@ In our Tonle Sap case study, clouds covered more than half the sky on 9 of 10 NI
 - **"Your Story":** an automatically written, animated, data-driven story for any place. It includes cloud cover *at the exact hour the satellite passed*, a radar flipbook, the hidden-water timeline, the moment of biggest change, and an honesty chapter.
 - **Remote chunk reading:** the HDF5 chunk index plus parallel HTTP range requests read a 20 km window of a 1.9 GB file in seconds.
 - **The evidence-label system**, applied to every sentence.
-- **A live worldwide map** of NISAR's newest acquisitions, clickable to explore.
+- **A live 3D globe** of NISAR's newest acquisitions, clickable to explore.
+- **Sound:** story narration, rain that follows the real rainfall, and data sonification ("hear the water": one note per pass).
+- **Interactive models:** Radar Lab (a teaching model of scattering and wavelength) and Scatter Lab (drag thresholds on real pixels; the map updates live).
+- **Camera vs radar, same day:** NASA GIBS MODIS/VIIRS photos beside NISAR radar from the same date, showing what the clouds hid.
 
 ### Validity
 - **Real physics:** specular water (dark), volume scattering (HV), double bounce from water under trunks (bright HH, large HH−HV). Explained in plain language in the app.
@@ -52,6 +55,7 @@ In our Tonle Sap case study, clouds covered more than half the sky on 9 of 10 NI
 - **Challenge requirements met:** an interactive application using NISAR data to track surface change at locations worldwide.
 - **NISAR is the core,** not decoration: L2 GCOV HH/HV gamma-naught, PROVISIONAL, VALIDATED and urgent-response products, searched and read live from NASA's ASF DAAC.
 - **Every image is traceable:** each one shows its acquisition date, track, frame, release (CRID) and when the archive was checked.
+- **More NASA data:** GIBS / Worldview (MODIS Terra and Aqua, VIIRS) same-day imagery, used to show what optical sensors missed.
 
 ### Presentation
 - The **Your Story** mode is the presentation: a judge can type their own hometown and watch its story build.
@@ -71,6 +75,10 @@ In our Tonle Sap case study, clouds covered more than half the sky on 9 of 10 NI
 **Data**
 - NASA-ISRO NISAR L2 GCOV, NASA ASF DAAC: https://search.asf.alaska.edu, https://nisar-docs.asf.alaska.edu
 - ERA5 / ERA5T reanalysis (ECMWF), precipitation and cloud cover, via the Open-Meteo Historical Weather API (CC BY 4.0)
+- Current conditions: Open-Meteo forecast API (CC BY 4.0)
+- River discharge: GloFAS v4, Copernicus Emergency Management Service, via the Open-Meteo Flood API (CC BY 4.0)
+- NASA GIBS / Worldview: MODIS Terra and Aqua, VIIRS SNPP corrected reflectance true colour
+- AWS Terrain Tiles (Mapzen; SRTM, USGS and others)
 - OpenStreetMap Nominatim geocoding (© OpenStreetMap contributors, ODbL)
 - Esri World Dark Gray Base and World Imagery basemaps (© Esri and data providers)
 

@@ -38,7 +38,7 @@ sys.path[:0] = [str(HERE), str(ROOT / "scripts")]
 import nisar  # noqa: E402
 from analyze import AnalysisError, run_analysis, validate_request  # noqa: E402
 from geocode import geocode  # noqa: E402
-from weather import rainfall  # noqa: E402
+from weather import now as weather_now, rainfall, river  # noqa: E402
 from refresh import get_token  # noqa: E402
 
 RESULTS = ROOT / "data" / "live"
@@ -125,6 +125,23 @@ def api_weather(lat: float = Query(..., ge=-90, le=90), lon: float = Query(..., 
         raise HTTPException(400, str(e)) from e
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"weather service unavailable: {e}") from e
+
+
+@app.get("/api/river")
+def api_river(lat: float = Query(..., ge=-90, le=90), lon: float = Query(..., ge=-180, le=180),
+              past_days: int = Query(180, ge=7, le=366), forecast_days: int = Query(30, ge=0, le=30)):
+    try:
+        return river(lat, lon, past_days, forecast_days)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"river service unavailable: {public_error(e)}") from e
+
+
+@app.get("/api/now")
+def api_now(lat: float = Query(..., ge=-90, le=90), lon: float = Query(..., ge=-180, le=180)):
+    try:
+        return weather_now(lat, lon)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"weather service unavailable: {public_error(e)}") from e
 
 
 @app.get("/api/gallery")

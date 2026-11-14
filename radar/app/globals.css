@@ -60,3 +60,8 @@ input[type="range"] { accent-color: var(--cyan); }
 
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Radar Lab pulse animation */
+@keyframes labPulse { from { stroke-dashoffset: 40; } to { stroke-dashoffset: 0; } }
+.lab-pulse { stroke-dasharray: 10 6; animation: labPulse 1.2s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .lab-pulse { animation: none; } }

@@ -22,7 +22,8 @@ Every statement in the app is tagged **OBSERVED**, **CALCULATED**, **INTERPRETED
 5. **Explore anywhere:** type a place or coordinates, click the map, or pick from the live **Newest NISAR acquisitions worldwide** map. The backend searches NASA's archive live and analyses a 10–40 km window in about 10–15 s, reading only the needed chunks of the real files.
 6. **Your Story:** type any place and get an animated, data-driven story of the water hidden there (cloud cover at each pass, radar flipbook, hidden-water timeline, biggest change, evidence labels).
 7. **Impact** section and a **sensitivity test** showing the conclusions hold when the threshold moves ±2 dB.
-8. **Rainfall context** (ERA5 via Open-Meteo), **CSV / image / JSON downloads**, **share links**, a **recent analyses** gallery and an **opacity** slider.
+8. **Globe, Water Now, Scatter Lab, Radar Lab, 3D terrain** and **story sound**: a live 3D globe of new acquisitions; live weather, river flow with forecast and NASA same-day camera vs radar; draggable thresholds on real pixels; an interactive scattering model; narration and data sonification.
+9. **Rainfall context** (ERA5 via Open-Meteo), **CSV / image / JSON downloads**, **share links**, a **recent analyses** gallery and an **opacity** slider.
 
 ## Run the app
 ```bash

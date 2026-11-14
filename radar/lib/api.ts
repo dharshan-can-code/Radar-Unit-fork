@@ -88,3 +88,40 @@ export interface GalleryItem {
 export async function gallery(): Promise<GalleryItem[]> {
   return (await j<{ items: GalleryItem[] }>(await fetch(`${API}/api/gallery`))).items;
 }
+
+export interface River {
+  cell: [number, number]; source: string; dataset: string; units: string; today: string; license: string;
+  has_river: boolean; daily: { date: string; discharge_m3s: number | null; forecast: boolean }[];
+}
+export async function river(lat: number, lon: number): Promise<River> {
+  return j(await fetch(`${API}/api/river?lat=${lat}&lon=${lon}`));
+}
+export interface Now {
+  source: string; license: string;
+  current: { time: string; temperature_2m: number; precipitation: number; rain: number; cloud_cover: number; weather_code: number; is_day: number };
+}
+export async function nowWeather(lat: number, lon: number): Promise<Now> {
+  return j(await fetch(`${API}/api/now?lat=${lat}&lon=${lon}`));
+}
+
+/** NASA GIBS (Worldview) optical imagery for a bbox and date: no key needed. */
+export const GIBS_LAYERS: Record<string, string> = {
+  "MODIS Terra": "MODIS_Terra_CorrectedReflectance_TrueColor",
+  "MODIS Aqua": "MODIS_Aqua_CorrectedReflectance_TrueColor",
+  "VIIRS SNPP": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
+};
+export function gibsSnapshot(bbox: [number, number, number, number], date: string, layer = GIBS_LAYERS["MODIS Terra"], px = 768) {
+  const [w, s, e, n] = bbox;
+  const ratio = (n - s) / ((e - w) * Math.cos((((n + s) / 2) * Math.PI) / 180));
+  const W = px, H = Math.max(64, Math.round(px * ratio));
+  return `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=${layer}` +
+    `&CRS=EPSG:4326&BBOX=${s},${w},${n},${e}&WIDTH=${W}&HEIGHT=${H}&FORMAT=image/jpeg&TIME=${date}`;
+}
+export const gibsTiles = (date: string, layer = GIBS_LAYERS["MODIS Terra"]) =>
+  [`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${layer}/default/${date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`];
+export const WMO: Record<number, string> = {
+  0: "clear sky", 1: "mainly clear", 2: "partly cloudy", 3: "overcast", 45: "fog", 48: "fog", 51: "light drizzle", 53: "drizzle",
+  55: "heavy drizzle", 61: "light rain", 63: "rain", 65: "heavy rain", 66: "freezing rain", 67: "freezing rain", 71: "light snow",
+  73: "snow", 75: "heavy snow", 80: "rain showers", 81: "rain showers", 82: "violent rain showers", 95: "thunderstorm",
+  96: "thunderstorm with hail", 99: "thunderstorm with hail",
+};

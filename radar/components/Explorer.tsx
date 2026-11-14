@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { Map as MLMap, GeoJSONSource, StyleSpecification } from "maplibre-gl";
-import { BoxSelect, Crosshair, MousePointer2, Layers, SplitSquareHorizontal, Satellite, Map as MapIcon } from "lucide-react";
+import { BoxSelect, Crosshair, MousePointer2, Layers, Mountain, SplitSquareHorizontal } from "lucide-react";
+import { gibsTiles } from "@/lib/api";
 import type { Bounds, Channel, InventoryArea, Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
 
@@ -40,6 +41,13 @@ function setRadar(map: MLMap, url: string, coords: Quad, opacity: number) {
 
 function addOverlays(map: MLMap, m: Manifest, inv: InventoryArea | undefined) {
   const [w, s, e, n] = m.bbox;
+  // NASA GIBS daily true-colour imagery (date set later); hidden until chosen
+  map.addSource("nasa", { type: "raster", tiles: gibsTiles(m.observations[m.observations.length - 1].date), tileSize: 256, maxzoom: 9,
+    attribution: "Same-day optical: NASA GIBS / Worldview (MODIS Terra)" });
+  map.addLayer({ id: "nasa", type: "raster", source: "nasa", layout: { visibility: "none" } });
+  // terrain (AWS Open Data Terrain Tiles, terrarium encoding) for the 3D view
+  map.addSource("dem", { type: "raster-dem", tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+    encoding: "terrarium", tileSize: 256, maxzoom: 14, attribution: "Terrain: AWS Terrain Tiles (Mapzen, USGS, SRTM and others)" });
   map.addSource("aoi", { type: "geojson", data: boxPoly({ w, s, e, n }) });
   map.addLayer({ id: "aoi", type: "line", source: "aoi", paint: { "line-color": "#22d3ee", "line-width": 1.2, "line-dasharray": [3, 2] } });
   if (inv?.primary_footprint) {
@@ -68,7 +76,8 @@ export default function Explorer(p: Props) {
   const [ready, setReady] = useState(false);
   const [swipe, setSwipe] = useState(50);
   const [draw, setDraw] = useState(false);
-  const [base, setBase] = useState<keyof typeof BASEMAPS>("dark");
+  const [base, setBase] = useState<keyof typeof BASEMAPS | "nasa">("dark");
+  const [threeD, setThreeD] = useState(false);
   const [picking, setPicking] = useState(false);
   const [opacity, setOpacity] = useState(0.92);
   const drawRef = useRef(draw); drawRef.current = draw;
@@ -126,11 +135,27 @@ export default function Explorer(p: Props) {
   // basemap switch
   useEffect(() => {
     if (!ready || maps.current.ready < 2) return; // wait for the CURRENT map instances to load
+    const date = m.pairs[pairIdx]?.after ?? m.observations[m.observations.length - 1].date;
+    // only swap tiles when they actually change (setTiles aborts in-flight requests)
+    const baseTiles = BASEMAPS[base === "nasa" ? "dark" : base].tiles;
+    const nasaTiles = gibsTiles(date);
     for (const mp of [maps.current.a!, maps.current.b!]) {
       const src = mp.getSource("base") as maplibregl.RasterTileSource;
-      src.setTiles(BASEMAPS[base].tiles);
+      if (JSON.stringify(src.tiles) !== JSON.stringify(baseTiles)) src.setTiles(baseTiles);
+      const nasa = mp.getSource("nasa") as maplibregl.RasterTileSource | undefined;
+      if (nasa) {
+        if (base === "nasa" && JSON.stringify(nasa.tiles) !== JSON.stringify(nasaTiles)) nasa.setTiles(nasaTiles);
+        mp.setLayoutProperty("nasa", "visibility", base === "nasa" ? "visible" : "none");
+      }
     }
-  }, [base, ready]);
+  }, [base, ready, pairIdx, m]);
+
+  // 3D terrain: drape the radar over real elevation and tilt the view
+  useEffect(() => {
+    if (!ready || maps.current.ready < 2) return;
+    for (const mp of [maps.current.a!, maps.current.b!]) mp.setTerrain(threeD ? { source: "dem", exaggeration: 1.8 } : null);
+    maps.current.a!.easeTo({ pitch: threeD ? 62 : 0, bearing: threeD ? -20 : 0, duration: 900 });
+  }, [threeD, ready]);
 
   // update radar images
   useEffect(() => {
@@ -212,9 +237,15 @@ export default function Explorer(p: Props) {
           </button>
           <button onClick={() => p.onSelect({ kind: "area" })}
             className="rounded-md border border-line bg-panel px-3 py-1.5 hover:border-cyan/50">Whole area</button>
-          <button onClick={() => setBase((b) => (b === "dark" ? "optical" : "dark"))} title="Toggle basemap"
-            className="flex items-center gap-1.5 rounded-md border border-line bg-panel px-3 py-1.5 hover:border-cyan/50">
-            {base === "dark" ? <Satellite size={14} /> : <MapIcon size={14} />}{base === "dark" ? "Optical context" : "Dark basemap"}
+          <select value={base} onChange={(e) => setBase(e.target.value as typeof base)} aria-label="Basemap"
+            className="rounded-md border border-line bg-panel px-2 py-1.5 text-text">
+            <option value="dark">Basemap: dark</option>
+            <option value="optical">Basemap: optical (Esri, undated)</option>
+            <option value="nasa">Basemap: NASA same day ({(m.pairs[pairIdx]?.after ?? "").slice(5)})</option>
+          </select>
+          <button onClick={() => setThreeD((v) => !v)} aria-pressed={threeD}
+            className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 ${threeD ? "border-cyan bg-cyan/15 text-cyan" : "border-line bg-panel hover:border-cyan/50"}`}>
+            <Mountain size={14} />{threeD ? "3D on" : "3D terrain"}
           </button>
         </div>
       </div>

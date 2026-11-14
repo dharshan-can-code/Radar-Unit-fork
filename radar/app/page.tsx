@@ -21,6 +21,9 @@ import type { InventoryArea } from "@/lib/data";
 import Navbar from "@/components/Navbar";
 import Story from "@/components/Story";
 import Impact, { Sensitivity } from "@/components/Impact";
+import WaterNow from "@/components/WaterNow";
+import RadarLab from "@/components/RadarLab";
+import ScatterLab from "@/components/ScatterLab";
 
 const Explorer = dynamic(() => import("@/components/Explorer"), { ssr: false,
   loading: () => <div className="h-[62vh] animate-pulse rounded-xl border border-line bg-panel" /> });
@@ -189,7 +192,7 @@ export default function Home() {
         </div>
         {source === "case" && status && <DataStatus status={status} stacks={stacks} stackId={stackId} setStackId={setStackId} manifest={m ?? null} />}
         <div id="live" className="mt-4 scroll-mt-4"><LiveSearch onResult={showLive} active={source === "live"} externalPlace={externalPlace} /></div>
-        <div className="mt-4"><LatestFeed onPick={pickPlace} /></div>
+        <div id="globe" className="mt-4 scroll-mt-14"><LatestFeed onPick={pickPlace} /></div>
       </header>
       {help && <Help onClose={() => setHelp(false)} />}
 
@@ -219,21 +222,36 @@ export default function Home() {
       </Section>
 
       {/* timeline */}
-      <Section id="timeline" kicker="03" title="Observation Timeline"
+      <Section id="now" kicker="03" title="Water now: live conditions"
+        sub="Live weather right now, river flow with a 30-day forecast, and NASA's camera view from the same day as each radar pass, for the place on screen.">
+        <WaterNow m={m ?? null} rain={rain} />
+      </Section>
+
+      <Section id="scatter" kicker="04" title="Scatter Lab"
+        sub="Every real radar pixel plotted by its two channels. Drag the thresholds and watch the water map change.">
+        <ScatterLab m={m ?? null} grid={grid} />
+      </Section>
+
+      <Section id="timeline" kicker="05" title="Observation Timeline"
         sub="Every NISAR GCOV acquisition over the study areas, as listed in the ASF archive. Compare the two candidate sites.">
         {source === "case" && (inv ? <Timeline inventory={inv} manifest={m ?? null} pairIdx={pairIdx} setPairIdx={setPairIdx} /> : <p className="text-muted">Inventory not found — run scripts/refresh.py.</p>)}
         {m && m.pairs.length > 0 && <ChangeByInterval m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />}
       </Section>
 
-      <Section id="impact" kicker="04" title="Why it matters" sub="Who this helps, and what NISAR revealed. Every number comes from real data in this app.">
+      <Section id="lab" kicker="06" title="Radar Lab: how radar finds hidden water"
+        sub="An interactive teaching model. Add water, trees and wind, switch wavelength, and see why NISAR's L-band can find flooding under forest.">
+        <RadarLab screening={m?.screening ?? null} />
+      </Section>
+
+      <Section id="impact" kicker="07" title="Why it matters" sub="Who this helps, and what NISAR revealed. Every number comes from real data in this app.">
         <Impact m={m ?? null} grid={grid} />
       </Section>
 
-      <Section id="science" kicker="05" title="How radar sees wetlands" sub="The physics behind every number above.">
+      <Section id="science" kicker="08" title="How radar sees wetlands" sub="The physics behind every number above.">
         <ScienceExplainer />
       </Section>
 
-      <Section id="methods" kicker="06" title="Methods, data and limitations" sub="Everything needed to reproduce or challenge the analysis.">
+      <Section id="methods" kicker="09" title="Methods, data and limitations" sub="Everything needed to reproduce or challenge the analysis.">
         <Methods m={m ?? null} />
         <div className="mt-4"><Sensitivity m={m ?? null} grid={grid} /></div>
       </Section>

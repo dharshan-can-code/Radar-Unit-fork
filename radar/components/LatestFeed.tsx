@@ -20,6 +20,8 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const onPickRef = useRef(onPick); onPickRef.current = onPick;
+  const [globe, setGlobe] = useState(true);
+  const spinning = useRef(true);
 
   async function load(d = days) {
     setLoading(true); setErr(null);
@@ -30,8 +32,8 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
 
   useEffect(() => {
     const m = new maplibregl.Map({
-      container: el.current!, center: [20, 15], zoom: 0.6, attributionControl: { compact: true },
-      style: { version: 8, sources: { base: { type: "raster", tileSize: 256, attribution: "Basemap: Esri",
+      container: el.current!, center: [100, 12], zoom: 1.1, attributionControl: { compact: true },
+      style: { version: 8, projection: { type: "globe" }, sources: { base: { type: "raster", tileSize: 256, attribution: "Basemap: Esri",
         tiles: ["https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"] } },
         layers: [{ id: "base", type: "raster", source: "base" }] },
     });
@@ -52,7 +54,18 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
       map.current = m;
       setData((d) => (d ? { ...d } : d)); // trigger draw if data arrived first
     });
-    return () => { m.remove(); map.current = null; };
+    // slow spin until the user touches the globe
+    const stop = () => { spinning.current = false; };
+    m.on("mousedown", stop); m.on("touchstart", stop); m.on("wheel", stop);
+    let raf = 0;
+    const spin = () => {
+      if (spinning.current && m.isStyleLoaded() && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const c = m.getCenter(); m.setCenter([((c.lng + 0.08 + 540) % 360) - 180, c.lat]);
+      }
+      raf = requestAnimationFrame(spin);
+    };
+    raf = requestAnimationFrame(spin);
+    return () => { cancelAnimationFrame(raf); m.remove(); map.current = null; };
   }, []);
 
   useEffect(() => {
@@ -82,6 +95,10 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
               </button>
             ))}
           </div>
+          <button onClick={() => {
+            const m = map.current; if (!m) return;
+            const g = !globe; setGlobe(g); m.setProjection({ type: g ? "globe" : "mercator" }); spinning.current = g;
+          }} className="rounded-md border border-line px-2.5 py-1 text-[12px] text-muted hover:text-text">{globe ? "Flat map" : "3D globe"}</button>
           <button onClick={() => load()} title="Check the archive again" className="text-cyan hover:text-text">
             {loading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
           </button>
@@ -92,8 +109,8 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
         {data && <> (checked {data.checked_utc.slice(11, 16)} UTC · {data.n} products)</>}. Click a footprint or a row to explore it.
       </p>
       <div className="mt-3 grid gap-3 lg:grid-cols-5">
-        <div ref={el} className="h-64 overflow-hidden rounded-lg border border-line lg:col-span-3" />
-        <div className="max-h-64 overflow-auto rounded-lg border border-line lg:col-span-2">
+        <div ref={el} className="h-80 overflow-hidden rounded-lg border border-line bg-[#03060c] lg:col-span-3" />
+        <div className="max-h-80 overflow-auto rounded-lg border border-line lg:col-span-2">
           {err && <p className="p-3 text-[12px] text-rose">{err}</p>}
           {!data && !err && <p className="p-3 text-[12px] text-muted">Loading the newest acquisitions…</p>}
           {data && data.granules.length === 0 && <p className="p-3 text-[12px] text-muted">No GCOV products in this period yet.</p>}

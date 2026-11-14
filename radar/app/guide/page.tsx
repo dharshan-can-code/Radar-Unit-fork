@@ -79,7 +79,7 @@ export default function Guide() {
         <p className="mt-2 text-[14px] text-muted">You don&apos;t need to know anything about radar. This guide takes about 5 minutes to read.</p>
         <nav className="mt-6 flex flex-wrap gap-2 text-[13px]">
           {[["start", "Quick start"], ["map", "Reading the map"], ["fingerprint", "Understanding the results"],
-            ["anywhere", "Explore any place"], ["story", "Your Story"], ["save", "Save & share"], ["labels", "What the labels mean"], ["faq", "Questions"]].map(([id, t]) => (
+            ["anywhere", "Explore any place"], ["story", "Your Story"], ["more", "More to explore"], ["save", "Save & share"], ["labels", "What the labels mean"], ["faq", "Questions"]].map(([id, t]) => (
             <a key={id} href={`#${id}`} className="rounded-full border border-line px-3 py-1 text-muted hover:border-cyan/50 hover:text-text">{t}</a>
           ))}
         </nav>
@@ -201,6 +201,21 @@ export default function Guide() {
             <li><b>The moment it changed</b> and <b>How sure are we?</b>: the biggest change, and what would confirm it.</li>
           </ul>
           <p className="mt-3">Press <Btn><span>Share this story</span></Btn> at the end to copy a link to it.</p>
+        </div>
+      </Section>
+
+      <Section id="more" title="More things to explore">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {[
+            ["Sound in Your Story", "Press “Turn sound on”. A voice reads each chapter, soft rain follows the real rainfall, and “Hear the water” plays one note per satellite pass: higher notes mean more water."],
+            ["Globe", "A spinning 3D globe of every NISAR image taken in the last day, 3 days or week. Click any strip to explore it."],
+            ["Water Now", "Live weather at your place, river flow for the past 6 months plus a 30-day forecast, and NASA’s normal camera photo from the same day as each radar image. Drag the slider to see what the clouds hid."],
+            ["Scatter Lab", "Every real radar pixel as a dot. Drag the coloured lines to change what counts as water and watch the map change."],
+            ["Radar Lab", "Add water, trees and wind, switch the radar wavelength, and see why NISAR can find flooding under forest. (A teaching model, not data.)"],
+            ["3D terrain", "On the main map, press “3D terrain” to lay the radar over real hills and valleys. Choose “Basemap: NASA same day” to see NASA’s photo from that date underneath."],
+          ].map(([t, d]) => (
+            <div key={t} className="rounded-lg border border-line bg-panel p-4"><div className="text-sm font-semibold">{t}</div><p className="mt-1 text-[13px] text-text/75">{d}</p></div>
+          ))}
         </div>
       </Section>
 

@@ -9,6 +9,8 @@ import { Rainfall, acquisitions, geocode, job as getJob, loadResult, startAnalys
 import { StoryFacts, buildStory, fmtDate, fmtKm2 } from "@/lib/story";
 import { Tag } from "@/components/Fingerprint";
 import { MAT, MAT_LABEL, LiveResult } from "@/components/LiveSearch";
+import { storySound } from "@/lib/sound";
+import { Music, Volume2, VolumeX } from "lucide-react";
 
 /* ---------- small animation helpers ---------- */
 
@@ -43,8 +45,17 @@ function CountUp({ to, active, decimals = 0, ms = 1400 }: { to: number; active: 
   return <>{v.toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals })}</>;
 }
 
-function Chapter({ id, n, kicker, title, children }: { id: string; n: number; kicker: string; title: string; children: (seen: boolean) => React.ReactNode }) {
+function Chapter({ id, n, kicker, title, children, onEnter }: { id: string; n: number; kicker: string; title: string;
+  children: (seen: boolean) => React.ReactNode; onEnter?: () => void }) {
   const [ref, seen] = useInView<HTMLElement>(0.2);
+  const enterRef = useRef(onEnter); enterRef.current = onEnter;
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) enterRef.current?.(); }, { threshold: 0.55 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
   return (
     <section id={id} ref={ref} className={`story-chapter flex min-h-[85vh] flex-col justify-center py-16 ${seen ? "is-in" : ""}`}>
       <div className="reveal font-mono text-xs tracking-widest text-amber">CHAPTER {n} · {kicker}</div>
@@ -60,9 +71,9 @@ function Flipbook({ m, layer = "HH", interval = 1100, big = false }: { m: Manife
   const obs = m.observations;
   useEffect(() => {
     if (!playing || obs.length < 2) return;
-    const t = setInterval(() => setI((k) => (k + 1) % obs.length), interval);
+    const t = setInterval(() => { setI((k) => (k + 1) % obs.length); if (storySound.enabled && big) storySound.blip(); }, interval);
     return () => clearInterval(t);
-  }, [playing, obs.length, interval]);
+  }, [playing, obs.length, interval, big]);
   const ratio = m.display.ny / m.display.nx;
   const cur = obs.length ? i % obs.length : 0; // never index past the end (e.g. after switching places)
   return (
@@ -183,6 +194,38 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
   const f: StoryFacts | null = useMemo(() => (m && m.observations.length >= 2 ? buildStory(m, rain, grid) : null), [m, rain, grid]);
   const [auto, setAuto] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sound, setSound] = useState(false);
+  useEffect(() => () => storySound.stop(), []);
+  const toggleSound = () => {
+    if (sound) { storySound.stop(); setSound(false); return; }
+    storySound.start(); setSound(true);
+    if (f) storySound.speak(`The water we cannot see, in ${f.place}. Between ${fmtDate(f.first)} and ${fmtDate(f.last)}, NISAR passed over ${f.n} times, seeing through cloud, rain and darkness.`);
+  };
+  const rainLevel = f?.rainTotal != null ? Math.min(1, f.rainTotal / Math.max(300, f.spanDays * 8)) : 0;
+  const narrate = (id: string) => {
+    if (!sound || !f) return;
+    const r = (x: number) => Math.round(x).toLocaleString();
+    if (id === "sky") {
+      storySound.rain(rainLevel);
+      storySound.speak(f.cloudyPasses != null
+        ? `Chapter one. Above the clouds. At the exact hour the satellite flew over, clouds covered more than half the sky on ${f.cloudyPasses} of ${f.cloudKnown} passes.${f.rainTotal != null ? ` About ${r(f.rainTotal)} millimetres of rain fell.` : ""} A camera would have seen clouds. Radar saw the ground.`
+        : "Chapter one. Above the clouds. Radar does not need a clear sky.");
+    } else if (id === "radar") {
+      storySound.rain(rainLevel * 0.4);
+      storySound.speak(`Chapter two. What the radar saw. These are the real radar images, one for each pass. Calm water shows up black. Water hidden under trees can shine very bright.`);
+    } else if (id === "water") {
+      storySound.rain(rainLevel * 0.3);
+      const ms = storySound.playSeries(f.passes.map((p) => p.water_km2), 420, f.passes.map((p) => p.flooded_veg_km2));
+      storySound.speak(f.waterPeak.water_km2 < 1
+        ? "Chapter three. The hidden water. Almost no open water showed up here."
+        : `Chapter three. The hidden water. You just heard it. Each note was one pass, and higher means more water. Water-like ground went from ${r(f.waterFirst)} to ${r(f.waterLast)} square kilometres.`, ms);
+    } else if (id === "change" && f.biggest) {
+      storySound.speak(`Chapter four. The moment it changed. Between ${fmtDate(f.biggest.before)} and ${fmtDate(f.biggest.after)}, the radar changed more than at any other time.`);
+    } else if (id === "sure") {
+      storySound.rain(0);
+      storySound.speak(`Chapter five. How sure are we? ${f.verdict ? `The verdict: ${f.verdict}.` : ""} Every claim is labelled. We show what we measured, and what would still need checking on the ground.`);
+    }
+  };
 
   useEffect(() => {
     if (!auto) return;
@@ -219,6 +262,11 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
         {CHAPTERS.map((c) => <a key={c} href={`#${c}`} className="pointer-events-auto h-2 w-2 rounded-full bg-line hover:bg-amber" aria-label={`Go to ${c}`} />)}
       </div>
 
+      <button onClick={toggleSound} aria-label={sound ? "Turn sound off" : "Turn sound on"} title="Narration, data sound and rain"
+        className={`fixed right-4 bottom-4 z-50 flex items-center gap-1.5 rounded-full border px-3 py-2 text-[12px] shadow-lg backdrop-blur ${sound ? "border-cyan bg-cyan/20 text-cyan" : "border-line bg-bg/80 text-muted"}`}>
+        {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}{sound ? "Sound on" : "Sound off"}
+      </button>
+
       {/* COVER */}
       <section id="s-cover" className="story-chapter is-in relative flex min-h-[92vh] flex-col justify-center py-12">
         <div className="grid items-center gap-8 lg:grid-cols-2">
@@ -235,6 +283,10 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
               <button onClick={() => setAuto((a) => !a)} className="flex items-center gap-1.5 rounded-md bg-amber px-4 py-2 text-sm font-medium text-bg">
                 {auto ? <Pause size={14} /> : <Play size={14} />}{auto ? "Pause story" : "Play the story"}
               </button>
+              <button onClick={toggleSound} aria-pressed={sound}
+                className={`flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm ${sound ? "border-cyan bg-cyan/15 text-cyan" : "border-line text-text hover:border-cyan/50"}`}>
+                {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}{sound ? "Sound on" : "Turn sound on"}
+              </button>
               <a href="#s-sky" className="flex items-center gap-1.5 rounded-md border border-line px-4 py-2 text-sm text-text hover:border-amber/50"><ArrowDown size={14} />Scroll to read</a>
             </div>
             <div className="reveal reveal-d3 mt-6 flex flex-wrap gap-2 text-[11px]">
@@ -247,7 +299,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </section>
 
       {/* 1. SKY */}
-      <Chapter id="s-sky" n={1} kicker="ABOVE THE CLOUDS" title="A camera would have seen clouds.">
+      <Chapter id="s-sky" n={1} kicker="ABOVE THE CLOUDS" title="A camera would have seen clouds." onEnter={() => narrate("sky")}>
         {(seen) => (
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-4 text-lg text-text/85">
@@ -288,7 +340,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </Chapter>
 
       {/* 2. RADAR */}
-      <Chapter id="s-radar" n={2} kicker="WHAT THE RADAR SAW" title={`${f.n} looks at ${f.place}, through everything.`}>
+      <Chapter id="s-radar" n={2} kicker="WHAT THE RADAR SAW" title={`${f.n} looks at ${f.place}, through everything.`} onEnter={() => narrate("radar")}>
         {() => (
           <div className="grid items-center gap-8 lg:grid-cols-2">
             <Flipbook key={`${m.stack}-b`} m={m} big />
@@ -302,7 +354,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </Chapter>
 
       {/* 3. HIDDEN WATER */}
-      <Chapter id="s-water" n={3} kicker="THE HIDDEN WATER" title="How much water-like ground did the radar find?">
+      <Chapter id="s-water" n={3} kicker="THE HIDDEN WATER" title="How much water-like ground did the radar find?" onEnter={() => narrate("water")}>
         {(seen) => (
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-4 text-lg text-text/85">
@@ -328,6 +380,10 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                   Inside towns, buildings do the same, so check the map before reading it as water.
                 </p>
               )}
+              <button onClick={() => { if (!sound) { storySound.start(); setSound(true); } setTimeout(() => storySound.playSeries(f.passes.map((p) => p.water_km2), 420, f.passes.map((p) => p.flooded_veg_km2)), 60); }}
+                className="flex items-center gap-1.5 rounded-md border border-cyan/40 px-3 py-1.5 text-[13px] text-cyan hover:bg-cyan/10">
+                <Music size={14} />Hear the water: one note per pass, higher = more water
+              </button>
               {f.partialPasses.length > 0 && (
                 <p className="rounded-lg border border-line bg-panel p-3 text-[14px] text-text/80">
                   On {f.partialPasses.length} of {f.n} passes the satellite&apos;s imaging strip covered only part of this area
@@ -363,7 +419,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
 
       {/* 4. BIGGEST CHANGE */}
       {f.biggest && (
-        <Chapter id="s-change" n={4} kicker="THE MOMENT IT CHANGED" title={`${fmtDate(f.biggest.before)} → ${fmtDate(f.biggest.after)}`}>
+        <Chapter id="s-change" n={4} kicker="THE MOMENT IT CHANGED" title={`${fmtDate(f.biggest.before)} → ${fmtDate(f.biggest.after)}`} onEnter={() => narrate("change")}>
           {(seen) => {
             const big = f.biggest!;
             const c = (big as unknown as { HH_change?: { frac_increase: number; frac_decrease: number; mean_db: number } }).HH_change;
@@ -398,7 +454,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       )}
 
       {/* 5. HOW SURE */}
-      <Chapter id="s-sure" n={5} kicker="HOW SURE ARE WE?" title={f.verdict ? `Verdict: ${f.verdict.toLowerCase()}.` : "What we can, and cannot, say."}>
+      <Chapter id="s-sure" n={5} onEnter={() => narrate("sure")} kicker="HOW SURE ARE WE?" title={f.verdict ? `Verdict: ${f.verdict.toLowerCase()}.` : "What we can, and cannot, say."}>
         {() => (
           <div className="grid gap-8 lg:grid-cols-2">
             <ul className="space-y-3">

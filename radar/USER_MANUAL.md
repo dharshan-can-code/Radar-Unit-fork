@@ -117,13 +117,27 @@ Click **✦ Your Story** in the top bar, type a place (your hometown works) and 
 
 The **top bar** links to every section (Explore, Map, Fingerprint, Timeline, Impact, Science, Methods), Your Story, and the User guide.
 
+## 4c. More tabs
+| Tab | What it does |
+|---|---|
+| **Globe** | A spinning 3D globe of NISAR's newest images (last 24 h, 3 days or 7 days). Click one to explore it. |
+| **Water Now** | Live weather now; river flow for the past 6 months plus a 30-day forecast (GloFAS); NASA's camera photo from the same day as each radar pass, with a slider. If one satellite missed that day, the next is tried automatically. |
+| **Scatter Lab** | Every real radar pixel plotted HH vs HV. Drag the threshold lines to see the map and areas change. |
+| **Radar Lab** | An interactive teaching model: water, trees, wind and wavelength. It shows why L-band sees under forest. |
+| **3D terrain** (map toolbar) | Lays the radar over real elevation. "Basemap: NASA same day" shows NASA's photo from that date underneath. |
+| **Sound** (Your Story) | Narration, rain that follows real rainfall, and "Hear the water": one note per pass. |
+
 ## 5. Where the data comes from (nothing is simulated)
 
 | Data | Source | How fresh |
 |---|---|---|
 | NISAR L-band radar (GCOV) | NASA ASF DAAC archive, read live | Searched at the moment you ask. NISAR passes each place about every 12 days, and products appear after processing. |
 | Newest acquisitions feed | ASF archive search | Re-checked whenever you open it or press refresh |
-| Rainfall | ERA5 / ERA5T reanalysis via Open-Meteo | Updated daily. The last few days are preliminary. |
+| Rainfall and cloud cover | ERA5 / ERA5T reanalysis via Open-Meteo | Updated daily. The last few days are preliminary. |
+| Weather right now | Open-Meteo forecast API | Every 15 minutes |
+| River flow and forecast | GloFAS v4 (Copernicus Emergency Management Service) via Open-Meteo | Daily, with a 30-day forecast. Modelled, not a gauge. |
+| Same-day camera photos | NASA GIBS / Worldview (MODIS Terra and Aqua, VIIRS) | Daily |
+| Terrain for 3D | AWS Terrain Tiles (SRTM and others) | Static |
 | Place names | OpenStreetMap Nominatim | Live |
 | Basemaps | Esri | Background only |
 
