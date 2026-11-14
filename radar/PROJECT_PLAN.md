@@ -5,10 +5,11 @@
 - [x] Pipeline: download, HDF5 inspection, aligned binning, dB, change, screening, web export.
 - [x] 12 unit tests, including end-to-end on synthetic HDF5.
 - [x] App: Explorer, Fingerprint, Timeline (real metadata), Science, Methods.
+- [x] Real NISAR GCOV verified (structure, mask semantics) and processed (2026-06-19, 2026-07-01).
+- [x] Refresh workflow: discovery diff, size-verified downloads, per-release stacks, per-scene cache, status in the app.
 
 ## Next, in priority order
-1. **Earthdata access.** Create an account and token, download 1 pair, run `inspect_h5.py`, fix the reader if needed. *(Blocker for everything below.)*
-2. **Process the full 10-date stack.** Replace the demo data. The banner disappears automatically.
+1. **Run `scripts/refresh.py` with a token** to retrieve and process the remaining 8 PROVISIONAL dates (~15 GB).
 3. **Calibrate screening** against JRC permanent water and WorldCover. Record values and evidence in `screening.json`.
 4. **Add one validation source.** MRC lake level at the acquisition dates, shown alongside the region time series and kept visually separate.
 5. **Built-up mask** from WorldCover, to remove double-bounce look-alikes.

@@ -50,3 +50,5 @@ __pycache__/
 .netrc
 _netrc
 .earthdata_token
+# per-scene processing cache (regenerable from data/raw)
+data/processed/

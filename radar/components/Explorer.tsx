@@ -111,7 +111,7 @@ export default function Explorer(p: Props) {
     a.on("click", (ev) => { if (!drawRef.current) onSelectRef.current({ kind: "point", lng: ev.lngLat.lng, lat: ev.lngLat.lat }); });
     return () => { a.remove(); b.remove(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [m.area, m.generated_utc]);
+  }, [m.area, m.stack, m.generated_utc]);
 
   // basemap switch
   useEffect(() => {
@@ -133,8 +133,8 @@ export default function Explorer(p: Props) {
     if (mode === "compare") { left = `${pair.before}_${ch}`; right = `${pair.after}_${ch}`; }
     else if (mode === "screening") { left = `${pair.before}_class`; right = `${pair.after}_class`; }
     else { left = `${pair.before}_${ch}`; right = `d_${pair.id}_${ch}`; }
-    setRadar(maps.current.a!, imgUrl(m.area, left), c, mode === "change" ? 0.35 : 0.92);
-    setRadar(maps.current.b!, imgUrl(m.area, right), c, mode === "change" ? 1 : 0.92);
+    setRadar(maps.current.a!, imgUrl(m, left), c, mode === "change" ? 0.35 : 0.92);
+    setRadar(maps.current.b!, imgUrl(m, right), c, mode === "change" ? 1 : 0.92);
   }, [ready, pairIdx, channel, mode, m]);
 
   // selection outline

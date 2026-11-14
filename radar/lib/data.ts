@@ -18,6 +18,7 @@ export interface Observation {
   id: string; date: string; start_time: string; scene: string; crid: string | null;
   channels: Channel[]; maturity?: string; track?: number; frame?: number; direction?: string;
   collection?: string; valid_fraction: number;
+  first_listed_utc?: string | null; downloaded_utc?: string | null;
   screening_counts: { low_backscatter: number; double_bounce: number; valid_cells: number };
   cell_area_km2: number;
 }
@@ -28,7 +29,7 @@ export interface Pair {
 }
 
 export interface Manifest {
-  area: string; name: string; bbox: [number, number, number, number];
+  area: string; stack: string; name: string; bbox: [number, number, number, number];
   is_demonstration: boolean; demonstration_note: string | null; generated_utc: string;
   epsg: number;
   display: { res_m: number; nx: number; ny: number; corners: [number, number][] };
@@ -60,15 +61,39 @@ export async function loadInventory(): Promise<Inventory | null> {
   const r = await fetch(`${BASE}/inventory.json`);
   return r.ok ? r.json() : null;
 }
-export async function loadManifest(area: string): Promise<Manifest | null> {
-  const r = await fetch(`${BASE}/${area}/manifest.json`);
+export interface StackInfo {
+  id: string; crid: string; maturity: string; track: number; direction: string; frame: number;
+  dates_available: string[]; dates_downloaded: string[]; processed: boolean;
+  n_obs?: number; first?: string; last?: string; latest_pair?: string | null; reason?: string;
+}
+export interface Stacks { area: string; default: string | null; stacks: StackInfo[] }
+export interface AreaStatus {
+  area: string; name: string; checked_utc: string; source: string;
+  latest_listed_acquisition: string | null; new_since_previous_check: number | null;
+  tracked: { track: number; frame: number; range_bandwidth: string };
+  tracked_available: number; tracked_downloaded: number;
+  tracked_not_downloaded: { date: string; maturity: string; crid: string }[];
+  stacks: StackInfo[]; default_stack: string | null;
+}
+
+export async function loadStacks(area: string): Promise<Stacks | null> {
+  const r = await fetch(`${BASE}/${area}/stacks.json`, { cache: "no-store" });
   return r.ok ? r.json() : null;
 }
-export async function loadGrid(area: string, m: Manifest): Promise<Int16Array> {
-  const r = await fetch(`${BASE}/${area}/${m.grid.file}`);
+export async function loadStatus(): Promise<Record<string, AreaStatus> | null> {
+  const r = await fetch(`${BASE}/status.json`, { cache: "no-store" });
+  return r.ok ? r.json() : null;
+}
+export async function loadManifest(area: string, stack: string): Promise<Manifest | null> {
+  const r = await fetch(`${BASE}/${area}/${stack}/manifest.json`, { cache: "no-store" });
+  return r.ok ? r.json() : null;
+}
+export async function loadGrid(m: Manifest): Promise<Int16Array> {
+  const r = await fetch(`${BASE}/${m.area}/${m.stack}/${m.grid.file}?v=${encodeURIComponent(m.generated_utc)}`);
   return new Int16Array(await r.arrayBuffer());
 }
-export const imgUrl = (area: string, name: string) => `${BASE}/${area}/img/${name}.png`;
+export const imgUrl = (m: Manifest, name: string) =>
+  `${BASE}/${m.area}/${m.stack}/img/${name}.png?v=${encodeURIComponent(m.generated_utc)}`;
 
 // ---- geometry -------------------------------------------------------------
 

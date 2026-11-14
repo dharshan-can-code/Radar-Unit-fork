@@ -92,11 +92,11 @@ export function Methods({ m }: { m: Manifest | null }) {
         <div className="mt-4 text-sm font-semibold">Observations in this analysis</div>
         <div className="mt-2 max-h-56 overflow-auto rounded border border-line">
           <table className="w-full text-left font-mono text-[11px]">
-            <thead className="sticky top-0 bg-panel-2 text-muted"><tr><th className="p-1.5">date</th><th>channels</th><th>maturity</th><th>release</th><th>valid</th></tr></thead>
+            <thead className="sticky top-0 bg-panel-2 text-muted"><tr><th className="p-1.5">date</th><th>channels</th><th>maturity</th><th>release</th><th>valid</th><th>retrieved</th></tr></thead>
             <tbody>
               {m?.observations.map((o) => (
                 <tr key={o.id} className="border-t border-line/60" title={o.scene}>
-                  <td className="p-1.5">{o.date}</td><td>{o.channels.join("+")}</td><td>{o.maturity}</td><td>{o.crid}</td><td>{(o.valid_fraction * 100).toFixed(0)}%</td>
+                  <td className="p-1.5">{o.date}</td><td>{o.channels.join("+")}</td><td>{o.maturity}</td><td>{o.crid}</td><td>{(o.valid_fraction * 100).toFixed(0)}%</td><td>{o.downloaded_utc?.slice(0, 10) ?? "—"}</td>
                 </tr>
               ))}
             </tbody>

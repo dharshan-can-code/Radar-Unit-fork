@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "scripts" / "processing"))
 sys.path.insert(0, str(ROOT / "scripts" / "discovery"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 import radar  # noqa: E402
 from gcov_reader import open_info  # noqa: E402
@@ -120,7 +121,7 @@ def test_reader_parses_metadata(fixtures):
 
 def test_end_to_end_synthetic(fixtures, tmp_path):
     from process_stack import run
-    m = run("tonle_sap", [str(p) for p in fixtures], res=800.0, out_dir=tmp_path)
+    m = run("tonle_sap", [str(p) for p in fixtures], res=800.0, out_dir=tmp_path, cache_root=tmp_path)
     assert m["is_demonstration"] is True                 # demo data is always flagged
     assert [o["date"] for o in m["observations"]] == ["2026-07-13", "2026-07-25", "2026-08-18"]
     assert [p["delta_days"] for p in m["pairs"]] == [12, 24]
@@ -134,7 +135,7 @@ def test_end_to_end_synthetic(fixtures, tmp_path):
 def test_refuses_duplicate_dates(fixtures, tmp_path):
     from process_stack import run
     with pytest.raises(SystemExit):
-        run("tonle_sap", [str(fixtures[0]), str(fixtures[0])], res=800.0, out_dir=tmp_path)
+        run("tonle_sap", [str(fixtures[0]), str(fixtures[0])], res=800.0, out_dir=tmp_path, cache_root=tmp_path)
 
 
 def test_quality_mask_semantics():
@@ -143,3 +144,53 @@ def test_quality_mask_semantics():
     exc = np.array([0, 0, 2, 0], np.uint8)
     assert quality_ok(mask, exc).tolist() == [False, True, False, False]
     assert quality_ok(None, None) is True
+
+
+def test_cache_reuse_and_stale_prune(fixtures, tmp_path):
+    from process_stack import run
+    (tmp_path / "img").mkdir()
+    (tmp_path / "img" / "2000-01-01_HH.png").write_bytes(b"old")      # stale output from an earlier run
+    files = [str(p) for p in fixtures]
+    run("tonle_sap", files, res=800.0, out_dir=tmp_path, cache_root=tmp_path)
+    assert not (tmp_path / "img" / "2000-01-01_HH.png").exists()
+    n_cache = len(list((tmp_path / "cache").glob("*.npz")))
+    assert n_cache == 5                                                  # 3 dates x HH + 2 x HV
+    m1 = json.loads((tmp_path / "manifest.json").read_text())
+    run("tonle_sap", files, res=800.0, out_dir=tmp_path, cache_root=tmp_path)
+    m2 = json.loads((tmp_path / "manifest.json").read_text())
+    assert m1["pairs"] == m2["pairs"]                                    # cached result identical
+
+
+# --- refresh workflow ---------------------------------------------------
+
+def _inv(rows):
+    base = dict(start_time="", track=83, frame=8, direction="ASCENDING", maturity="PROVISIONAL", crid="P05023",
+                freqA_pols="HH+HV", range_bandwidth="20+5", h5_bytes=10, url="https://x/a.h5")
+    return pd.DataFrame([{**base, **r} for r in rows])
+
+
+def test_refresh_diff_records_first_seen_once():
+    import refresh
+    st = {"area": "t", "granules": {}, "downloads": {}, "checks": []}
+    inv = _inv([dict(scene_name="S1", date="2026-06-19"), dict(scene_name="S2", date="2026-07-01")])
+    assert refresh.diff_inventory(st, inv, "T1") == ["S1", "S2"]
+    inv2 = _inv([dict(scene_name="S1", date="2026-06-19"), dict(scene_name="S2", date="2026-07-01"),
+                 dict(scene_name="S3", date="2026-07-13")])
+    assert refresh.diff_inventory(st, inv2, "T2") == ["S3"]
+    assert st["granules"]["S1"]["first_seen_utc"] == "T1"                 # history preserved
+    assert st["granules"]["S1"]["last_seen_utc"] == "T2"
+
+
+def test_refresh_tracks_only_usable_matching_granules():
+    import refresh
+    inv = _inv([dict(scene_name="ok", date="d1"), dict(scene_name="beta", date="d2", maturity="BETA"),
+                dict(scene_name="otherbw", date="d3", range_bandwidth="40+5"), dict(scene_name="t76", date="d4", track=76)])
+    assert refresh.tracked_granules(inv, "tonle_sap").scene_name.tolist() == ["ok"]
+
+
+def test_local_status_detects_incomplete(tmp_path):
+    import refresh
+    (tmp_path / "a.h5").write_bytes(b"12345")
+    assert refresh.local_status({"url": "https://x/a.h5", "h5_bytes": 5}, tmp_path) == "complete"
+    assert refresh.local_status({"url": "https://x/a.h5", "h5_bytes": 9}, tmp_path) == "incomplete"
+    assert refresh.local_status({"url": "https://x/b.h5", "h5_bytes": 9}, tmp_path) == "missing"

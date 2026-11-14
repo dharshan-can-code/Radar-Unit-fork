@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import glob
+import hashlib
 import json
 import sys
 from datetime import date, datetime, timezone
@@ -29,7 +30,7 @@ from pyproj import Transformer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from config import METADATA, STUDY_AREAS, WEB_DATA  # noqa: E402
+from config import METADATA, PROCESSED, STUDY_AREAS, WEB_DATA  # noqa: E402
 from gcov_reader import open_info, read_window  # noqa: E402
 import radar  # noqa: E402
 
@@ -37,6 +38,19 @@ SCREENING = json.loads((Path(__file__).parent / "screening.json").read_text())
 STRETCH = {"HH": (-25.0, 0.0), "HV": (-32.0, -8.0)}  # fixed so dates are visually comparable
 CHANGE_RANGE = 6.0  # dB, colour saturates at +/- this
 INSPECT_FACTOR = 2   # inspection grid = display grid coarsened by this factor
+READER_VERSION = "2"  # bump when reading/masking logic changes -> invalidates the per-scene cache
+
+
+def stack_id_for(info, meta=None) -> str:
+    """Stack = same track, pass, frame and processing release (CRID)."""
+    if meta:
+        return f"t{int(meta['track'])}{str(meta['direction'])[0]}_f{int(meta['frame'])}_{meta['crid']}"
+    return f"synthetic_{info.crid}"
+
+
+def load_state(area):
+    p = METADATA / f"state_{area}.json"
+    return json.loads(p.read_text()) if p.exists() else {}
 
 
 def projected_bounds(bbox, epsg):
@@ -106,7 +120,8 @@ def load_inventory(area):
     return {r["scene_name"]: r for r in inv.to_dict("records")}
 
 
-def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = False, out_dir: Path | None = None):
+def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = False, out_dir: Path | None = None,
+        cache_root: Path | None = None):
     infos = sorted((open_info(f) for f in files), key=lambda i: i.start_time)
     seen = {}
     for i in infos:  # no duplicate dates counted twice
@@ -124,6 +139,8 @@ def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = Fal
         raise SystemExit("refusing to mix synthetic fixtures with real NISAR products")
     is_demo = synthetic.pop()
     epsg = epsgs.pop()
+    inv0 = load_inventory(area)
+    stack_id = stack_id_for(infos[0], inv0.get(infos[0].scene))
 
     bx0, by0, bx1, by1 = projected_bounds(STUDY_AREAS[area]["bbox"], epsg)
     k = INSPECT_FACTOR
@@ -132,15 +149,22 @@ def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = Fal
     nx = int(np.ceil((bx1 - x0) / (res * k))) * k
     ny = int(np.ceil((y1 - by0) / (res * k))) * k
 
-    out = out_dir or (WEB_DATA / area)
+    out = out_dir or (WEB_DATA / area / stack_id)
     (out / "img").mkdir(parents=True, exist_ok=True)
     inv = load_inventory(area)
     min_vf = SCREENING["min_valid_fraction"]["value"]
+    grid_key = hashlib.sha1(f"{READER_VERSION}|{epsg}|{x0}|{y1}|{res}|{nx}|{ny}".encode()).hexdigest()[:10]
+    cache_dir = (cache_root or (PROCESSED / area)) / "cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    n_cached = 0
+    state = load_state(area)
 
     obs, grids_db, inspect = [], [], []
     for i in infos:
         rec = {"id": i.date, "date": i.date, "start_time": i.start_time, "scene": i.scene,
-               "crid": i.crid, "epsg": i.epsg, "channels": i.channels}
+               "crid": i.crid, "epsg": i.epsg, "channels": i.channels,
+               "first_listed_utc": state.get("granules", {}).get(i.scene, {}).get("first_seen_utc"),
+               "downloaded_utc": state.get("downloads", {}).get(i.scene, {}).get("downloaded_utc")}
         meta = inv.get(i.scene)
         if meta:
             rec.update(track=int(meta["track"]), frame=int(meta["frame"]), direction=meta["direction"],
@@ -152,10 +176,20 @@ def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = Fal
         for pol in ("HH", "HV"):
             if pol not in i.channels:
                 continue
-            acc = radar.GridAccumulator(x0, y1, res, nx, ny)
-            for xs, ys, block, q in read_window(i, pol, (bx0 - res, bx1 + res), (by0 - res, by1 + res)):
-                acc.add(xs, ys, block, radar.valid_power(block, i.fill_values.get(pol)) & q)
-            p, vf = acc.mean(), acc.valid_fraction()
+            # Per-scene cache: re-running never re-reads a 1.8 GB file whose grid is unchanged.
+            cache = cache_dir / f"{i.scene}_{pol}_{grid_key}.npz"
+            if cache.exists():
+                z = np.load(cache)
+                p, vf = z["power"].astype(np.float64), z["valid_frac"].astype(np.float64)
+                n_cached += 1
+            else:
+                acc = radar.GridAccumulator(x0, y1, res, nx, ny)
+                for xs, ys, block, q in read_window(i, pol, (bx0 - res, bx1 + res), (by0 - res, by1 + res)):
+                    acc.add(xs, ys, block, radar.valid_power(block, i.fill_values.get(pol)) & q)
+                # float32 for both fresh and cached paths -> identical results either way
+                p = acc.mean().astype(np.float32).astype(np.float64)
+                vf = acc.valid_fraction().astype(np.float32).astype(np.float64)
+                np.savez_compressed(cache, power=p.astype(np.float32), valid_frac=vf.astype(np.float32))
             p[vf < min_vf] = np.nan
             dbs[pol], vfs[pol] = radar.to_db(p), vf
             _save(_rgba_gray(dbs[pol], *STRETCH[pol]), out / "img" / f"{i.date}_{pol}.png")
@@ -202,7 +236,7 @@ def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = Fal
     grid.tofile(out / "grid.bin")
 
     manifest = {
-        "area": area, "name": STUDY_AREAS[area]["name"], "bbox": STUDY_AREAS[area]["bbox"],
+        "area": area, "stack": stack_id, "name": STUDY_AREAS[area]["name"], "bbox": STUDY_AREAS[area]["bbox"],
         "is_demonstration": is_demo,
         "demonstration_note": ("SYNTHETIC values generated by scripts/processing/make_synthetic.py to exercise the "
                                "pipeline and interface. These are NOT NISAR measurements.") if is_demo else None,
@@ -228,8 +262,32 @@ def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = Fal
         },
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1, default=str))
-    print(f"wrote {out}  ({len(obs)} observations, {len(pairs)} pairs, demo={is_demo})")
+    removed = prune_outputs(out, obs, pairs)
+    print(f"wrote {out}  ({len(obs)} observations, {len(pairs)} pairs, demo={is_demo}, "
+          f"{n_cached} channel grids from cache, {removed} stale images removed)")
     return manifest
+
+
+def expected_images(obs, pairs):
+    names = set()
+    for o in obs:
+        names |= {f"{o['date']}_{c}.png" for c in o["channels"]} | {f"{o['date']}_class.png"}
+    for p in pairs:
+        names |= {f"d_{p['id']}_{c}.png" for c in p["channels"]}
+    return names
+
+
+def prune_outputs(out: Path, obs, pairs) -> int:
+    """Remove PNGs in THIS stack's img/ folder that the new manifest no longer
+    references (e.g. outputs from an earlier run), so the published data never
+    contains images that do not belong to the listed observations."""
+    keep = expected_images(obs, pairs)
+    n = 0
+    for f in (out / "img").glob("*.png"):
+        if f.name not in keep:
+            f.unlink()
+            n += 1
+    return n
 
 
 def main(argv=None):

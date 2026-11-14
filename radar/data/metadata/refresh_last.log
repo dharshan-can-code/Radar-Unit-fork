@@ -1,0 +1,25 @@
+tonle_sap: 62 granules, 22 dates, 47 pairs
+9 tracked granule(s) to download (16.9 GB)
+  downloading 2026-07-13 NISAR_L2_PR_GCOV_025_083_A_008_2005_DHDH_M_20260713T223636_20260713T223710_P05023_N_F_J_001.h5
+  downloading 2026-07-25 NISAR_L2_PR_GCOV_026_083_A_008_2005_DHDH_M_20260725T223635_20260725T223709_P05023_N_F_J_001.h5
+  downloading 2026-08-18 NISAR_L2_PR_GCOV_028_083_A_008_2005_DHDH_M_20260818T223634_20260818T223708_P05023_N_F_J_001.h5
+  downloading 2026-08-30 NISAR_L2_PR_GCOV_029_083_A_008_2005_DHDH_M_20260830T223633_20260830T223708_P05023_N_F_J_001.h5
+  downloading 2026-09-11 NISAR_L2_PR_GCOV_030_083_A_008_2005_DHDH_M_20260911T223633_20260911T223708_P05023_N_F_J_001.h5
+  downloading 2026-09-23 NISAR_L2_PR_GCOV_031_083_A_008_2005_DHDH_M_20260923T223633_20260923T223708_P05023_N_F_J_001.h5
+  downloading 2026-10-05 NISAR_L2_PR_GCOV_032_083_A_008_2005_DHDH_M_20261005T223633_20261005T223708_P05023_N_F_J_001.h5
+  downloading 2026-10-17 NISAR_L2_PR_GCOV_033_083_A_008_2005_DHDH_M_20261017T223633_20261017T223708_P05023_N_F_J_001.h5
+  downloading 2026-10-29 NISAR_L2_PR_GCOV_034_083_A_008_2005_DHDH_M_20261029T223634_20261029T223708_P05036_N_F_J_001.h5
+processing stack t83A_f8_P05023: 10 dates
+  2026-06-19: channels=['HH', 'HV'] valid=100.00%
+  2026-07-01: channels=['HH', 'HV'] valid=100.00%
+  2026-07-13: channels=['HH', 'HV'] valid=100.00%
+  2026-07-25: channels=['HH', 'HV'] valid=100.00%
+  2026-08-18: channels=['HH', 'HV'] valid=100.00%
+  2026-08-30: channels=['HH', 'HV'] valid=100.00%
+  2026-09-11: channels=['HH', 'HV'] valid=100.00%
+  2026-09-23: channels=['HH', 'HV'] valid=100.00%
+  2026-10-05: channels=['HH', 'HV'] valid=100.00%
+  2026-10-17: channels=['HH', 'HV'] valid=100.00%
+wrote C:\Users\thejo\OneDrive\Desktop\Hari\Hackathons\Nasa Space Apps Challenge\radar\public\data\tonle_sap\t83A_f8_P05023  (10 observations, 9 pairs, demo=False, 4 channel grids from cache, 0 stale images removed)
+wrote C:\Users\thejo\OneDrive\Desktop\Hari\Hackathons\Nasa Space Apps Challenge\radar\public\data\inventory.json
+refresh done: 0 new granule(s) listed; 11/11 tracked downloaded; stacks processed: ['t83A_f8_P05023']

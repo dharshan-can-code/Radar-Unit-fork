@@ -7,8 +7,11 @@ import Timeline from "@/components/Timeline";
 import { Methods, ScienceExplainer } from "@/components/Science";
 import type { Mode, Selection } from "@/components/Explorer";
 import {
-  Bounds, Channel, GridIndex, Inventory, Manifest, fingerprint, interpret, loadGrid, loadInventory, loadManifest, timeSeries,
+  AreaStatus, Bounds, Channel, GridIndex, Inventory, Manifest, Stacks, fingerprint, interpret, loadGrid, loadInventory,
+  loadManifest, loadStacks, loadStatus, timeSeries,
 } from "@/lib/data";
+import DataStatus from "@/components/DataStatus";
+import ChangeByInterval from "@/components/ChangeByInterval";
 
 const Explorer = dynamic(() => import("@/components/Explorer"), { ssr: false,
   loading: () => <div className="h-[62vh] animate-pulse rounded-xl border border-line bg-panel" /> });
@@ -23,17 +26,31 @@ export default function Home() {
   const [channel, setChannel] = useState<Channel>("HH");
   const [mode, setMode] = useState<Mode>("compare");
   const [sel, setSel] = useState<Selection>({ kind: "area" });
+  const [stacks, setStacks] = useState<Stacks | null>(null);
+  const [stackId, setStackId] = useState<string | null>(null);
+  const [status, setStatus] = useState<AreaStatus | null>(null);
 
   useEffect(() => {
     loadInventory().then(setInv).catch(() => setInv(null));
-    loadManifest(AREA).then(async (mm) => {
-      setM(mm);
-      if (mm) {
-        setGrid(new GridIndex(mm, await loadGrid(AREA, mm)));
-        setPairIdx(Math.max(0, mm.pairs.length - 1));
-      }
+    loadStatus().then((s) => setStatus(s?.[AREA] ?? null)).catch(() => setStatus(null));
+    loadStacks(AREA).then((s) => {
+      setStacks(s);
+      if (s?.default) setStackId(s.default); else setM(null);
     }).catch(() => setM(null));
   }, []);
+
+  // Load the selected stack; latest compatible pair is selected by default.
+  useEffect(() => {
+    if (!stackId) return;
+    setGrid(null);
+    loadManifest(AREA, stackId).then(async (mm) => {
+      setM(mm);
+      if (mm) {
+        setPairIdx(Math.max(0, mm.pairs.length - 1));
+        setGrid(new GridIndex(mm, await loadGrid(mm)));
+      }
+    }).catch(() => setM(null));
+  }, [stackId]);
 
   const pair = m?.pairs[pairIdx];
   const { rect, bounds, label } = useMemo(() => {
@@ -82,6 +99,7 @@ export default function Home() {
             }[k]}</span></span>
           ))}
         </div>
+        {status && <DataStatus status={status} stacks={stacks} stackId={stackId} setStackId={setStackId} manifest={m ?? null} />}
       </header>
 
       {/* explorer */}
@@ -110,7 +128,8 @@ export default function Home() {
       {/* timeline */}
       <Section id="timeline" kicker="03" title="Observation Timeline"
         sub="Every NISAR GCOV acquisition over the study areas, as listed in the ASF archive. Compare the two candidate sites.">
-        {inv ? <Timeline inventory={inv} manifest={m ?? null} pairIdx={pairIdx} setPairIdx={setPairIdx} /> : <p className="text-muted">Inventory not found — run scripts/processing/export_inventory.py.</p>}
+        {inv ? <Timeline inventory={inv} manifest={m ?? null} pairIdx={pairIdx} setPairIdx={setPairIdx} /> : <p className="text-muted">Inventory not found — run scripts/refresh.py.</p>}
+        {m && m.pairs.length > 0 && <ChangeByInterval m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />}
       </Section>
 
       <Section id="science" kicker="04" title="How radar sees wetlands" sub="The physics behind every number above.">
@@ -159,7 +178,7 @@ function NoData() {
   return (
     <div className="rounded-xl border border-line bg-panel p-8 text-sm text-muted">
       <div className="text-text">No processed radar data yet.</div>
-      <p className="mt-2">Download GCOV files with <code className="text-cyan">scripts/discovery/download.py</code>, then run <code className="text-cyan">scripts/processing/process_stack.py</code>. See README.md.</p>
+      <p className="mt-2">Run <code className="text-cyan">scripts/refresh.py</code> with an Earthdata token to retrieve and process NISAR GCOV acquisitions. See README.md.</p>
     </div>
   );
 }
