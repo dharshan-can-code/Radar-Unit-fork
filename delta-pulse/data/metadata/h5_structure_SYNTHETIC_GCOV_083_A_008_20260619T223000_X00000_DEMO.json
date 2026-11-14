@@ -1,0 +1,150 @@
+{
+  "file": "SYNTHETIC_GCOV_083_A_008_20260619T223000_X00000_DEMO.h5",
+  "synthetic_fixture": true,
+  "summary": {
+    "frequency_groups": [
+      "/science/LSAR/GCOV/grids/frequencyA"
+    ],
+    "diagonal_terms": {
+      "/science/LSAR/GCOV/grids/frequencyA/HHHH": {
+        "dtype": "float32",
+        "is_complex": false,
+        "n": 262144,
+        "frac_finite": 1.0,
+        "frac_le_zero": 0.0,
+        "min": 0.00043359966366551816,
+        "p50": 0.006674111820757389,
+        "max": 2.0681216716766357,
+        "representation_guess": "non-negative: consistent with linear power"
+      },
+      "/science/LSAR/GCOV/grids/frequencyA/HVHV": {
+        "dtype": "float32",
+        "is_complex": false,
+        "n": 262144,
+        "frac_finite": 1.0,
+        "frac_le_zero": 0.0,
+        "min": 4.460189302335493e-05,
+        "p50": 0.001060553127899766,
+        "max": 0.20210787653923035,
+        "representation_guess": "non-negative: consistent with linear power"
+      }
+    },
+    "off_diagonal_terms": {},
+    "projection": {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/projection",
+      "attrs": {
+        "epsg_code": 32648
+      },
+      "value": 32648
+    },
+    "identification": {
+      "frameNumber": 8,
+      "orbitPassDirection": "Ascending",
+      "trackNumber": 83
+    }
+  },
+  "tree": [
+    {
+      "path": "/science",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/HHHH",
+      "kind": "dataset",
+      "attrs": {},
+      "shape": [
+        2021,
+        1997
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/HVHV",
+      "kind": "dataset",
+      "attrs": {},
+      "shape": [
+        2021,
+        1997
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/projection",
+      "kind": "dataset",
+      "attrs": {
+        "epsg_code": 32648
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/xCoordinates",
+      "kind": "dataset",
+      "attrs": {},
+      "shape": [
+        1997
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/yCoordinates",
+      "kind": "dataset",
+      "attrs": {},
+      "shape": [
+        2021
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/identification",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/identification/frameNumber",
+      "kind": "dataset",
+      "attrs": {},
+      "shape": [],
+      "dtype": "int64",
+      "value": 8
+    },
+    {
+      "path": "/science/LSAR/identification/orbitPassDirection",
+      "kind": "dataset",
+      "attrs": {},
+      "shape": [],
+      "dtype": "|S9",
+      "value": "Ascending"
+    },
+    {
+      "path": "/science/LSAR/identification/trackNumber",
+      "kind": "dataset",
+      "attrs": {},
+      "shape": [],
+      "dtype": "int64",
+      "value": 83
+    }
+  ]
+}

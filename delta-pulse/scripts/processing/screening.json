@@ -1,0 +1,16 @@
+{
+  "status": "UNCALIBRATED",
+  "note": "Starting values for SCREENING only, chosen from the general behaviour of L-band backscatter (specular water is very dark; water-trunk double bounce gives strong HH with a large HH-HV difference). They are NOT validated thresholds. Calibrate them against reference areas (JRC Global Surface Water permanent water, ESA WorldCover tree cover) before quoting any area numbers, and record the calibrated values and the evidence here.",
+  "open_water": {
+    "hh_max_db": {"value": -18.0, "why": "Calm open water is a specular reflector; L-band HH is typically far below land returns. Wind roughening raises it, so this misses rough water."},
+    "hv_max_db": {"value": -25.0, "why": "Cross-pol return from water is near the noise floor; excludes dark-but-vegetated pixels."}
+  },
+  "double_bounce": {
+    "hh_min_db": {"value": -6.0, "why": "Water beneath trunks forms a corner reflector, giving unusually bright co-pol returns."},
+    "hh_minus_hv_min_db": {"value": 7.0, "why": "Double bounce boosts HH much more than HV; volume scattering from dry canopy raises HV instead. Buildings produce the same signature - mask urban areas."}
+  },
+  "change": {
+    "significant_db": {"value": 3.0, "why": "Changes smaller than ~3 dB at 100 m aggregation can be produced by speckle, moisture, and calibration differences. A doubling of power is +3 dB."}
+  },
+  "min_valid_fraction": {"value": 0.5, "why": "A cell is used only if at least half of its source pixels were valid."}
+}

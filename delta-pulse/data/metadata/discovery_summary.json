@@ -1,0 +1,227 @@
+{
+  "generated_utc": "2026-11-14T14:03:26+00:00",
+  "source": "ASF Search API via asf_search, dataset=NISAR, processingLevel=GCOV",
+  "areas": {
+    "tonle_sap": {
+      "name": "Tonle Sap Lake, Cambodia",
+      "bbox": [
+        103.55,
+        12.35,
+        104.55,
+        13.35
+      ],
+      "n_granules": 62,
+      "duplicates_removed": 0,
+      "n_unique_dates": 22,
+      "date_range": [
+        "2026-06-19",
+        "2026-11-03"
+      ],
+      "tracks": [
+        "148D",
+        "76D",
+        "83A"
+      ],
+      "by_maturity": {
+        "PROVISIONAL": 19,
+        "VALIDATED": 3
+      },
+      "n_dual_pol_granules": 52,
+      "n_pairs": 47,
+      "n_nominal_12day_pairs": 26,
+      "stacks": [
+        {
+          "track": 76,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 10,
+          "first": "2026-06-19",
+          "last": "2026-10-17",
+          "max_overlap": 0.2629
+        },
+        {
+          "track": 83,
+          "direction": "ASCENDING",
+          "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 10,
+          "first": "2026-06-19",
+          "last": "2026-10-17",
+          "max_overlap": 1.0
+        },
+        {
+          "track": 148,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 9,
+          "first": "2026-06-24",
+          "last": "2026-10-10",
+          "max_overlap": 0.9865
+        },
+        {
+          "track": 76,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+          "freqA_pols": "HH",
+          "n_dates": 5,
+          "first": "2026-06-19",
+          "last": "2026-10-17",
+          "max_overlap": 0.2634
+        },
+        {
+          "track": 148,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+          "freqA_pols": "HH",
+          "n_dates": 4,
+          "first": "2026-07-06",
+          "last": "2026-10-10",
+          "max_overlap": 0.9864
+        },
+        {
+          "track": 148,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 2,
+          "first": "2026-10-22",
+          "last": "2026-11-03",
+          "max_overlap": 0.9859
+        },
+        {
+          "track": 76,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 1,
+          "first": "2026-10-29",
+          "last": "2026-10-29",
+          "max_overlap": 0.2638
+        },
+        {
+          "track": 83,
+          "direction": "ASCENDING",
+          "collection": "NISAR_L2_GCOV_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 1,
+          "first": "2026-10-29",
+          "last": "2026-10-29",
+          "max_overlap": 1.0
+        },
+        {
+          "track": 148,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_V1",
+          "freqA_pols": "HH",
+          "n_dates": 1,
+          "first": "2026-11-03",
+          "last": "2026-11-03",
+          "max_overlap": 0.9863
+        }
+      ]
+    },
+    "barataria": {
+      "name": "Barataria Bay, Louisiana, USA",
+      "bbox": [
+        -90.25,
+        29.2,
+        -89.75,
+        29.7
+      ],
+      "n_granules": 72,
+      "duplicates_removed": 0,
+      "n_unique_dates": 34,
+      "date_range": [
+        "2025-11-17",
+        "2026-11-04"
+      ],
+      "tracks": [
+        "105A",
+        "156D"
+      ],
+      "by_maturity": {
+        "BETA": 12,
+        "OTHER": 2,
+        "PROVISIONAL": 19,
+        "VALIDATED": 3
+      },
+      "n_dual_pol_granules": 72,
+      "n_pairs": 56,
+      "n_nominal_12day_pairs": 52,
+      "stacks": [
+        {
+          "track": 105,
+          "direction": "ASCENDING",
+          "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 10,
+          "first": "2026-06-21",
+          "last": "2026-10-19",
+          "max_overlap": 1.0
+        },
+        {
+          "track": 156,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 9,
+          "first": "2026-06-25",
+          "last": "2026-10-11",
+          "max_overlap": 1.0
+        },
+        {
+          "track": 105,
+          "direction": "ASCENDING",
+          "collection": "NISAR_L2_GCOV_BETA_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 6,
+          "first": "2025-11-17",
+          "last": "2026-01-16",
+          "max_overlap": 1.0
+        },
+        {
+          "track": 156,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_BETA_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 6,
+          "first": "2025-11-21",
+          "last": "2026-01-20",
+          "max_overlap": 1.0
+        },
+        {
+          "track": 156,
+          "direction": "DESCENDING",
+          "collection": "NISAR_L2_GCOV_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 2,
+          "first": "2026-10-23",
+          "last": "2026-11-04",
+          "max_overlap": 1.0
+        },
+        {
+          "track": 156,
+          "direction": "DESCENDING",
+          "collection": "NISAR_UR_L2",
+          "freqA_pols": "HH+HV",
+          "n_dates": 2,
+          "first": "2026-10-11",
+          "last": "2026-10-23",
+          "max_overlap": 0.1932
+        },
+        {
+          "track": 105,
+          "direction": "ASCENDING",
+          "collection": "NISAR_L2_GCOV_V1",
+          "freqA_pols": "HH+HV",
+          "n_dates": 1,
+          "first": "2026-10-31",
+          "last": "2026-10-31",
+          "max_overlap": 0.9984
+        }
+      ]
+    }
+  }
+}
