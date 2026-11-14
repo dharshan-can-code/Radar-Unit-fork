@@ -82,6 +82,7 @@ export default function Explorer(p: Props) {
     const sync = () => b.jumpTo({ center: a.getCenter(), zoom: a.getZoom(), bearing: a.getBearing(), pitch: a.getPitch() });
     a.on("move", sync);
     maps.current = { a, b, ready: 0 };
+    setReady(false);
     if (process.env.NODE_ENV === "development") (window as unknown as { __dp: unknown }).__dp = { a, b };
     const onLoad = (mp: MLMap) => () => {
       addOverlays(mp, m, p.inventory);
@@ -109,13 +110,13 @@ export default function Explorer(p: Props) {
       if (bb.e - bb.w > 0.002 && bb.n - bb.s > 0.002) onSelectRef.current({ kind: "box", bounds: bb });
     });
     a.on("click", (ev) => { if (!drawRef.current) onSelectRef.current({ kind: "point", lng: ev.lngLat.lng, lat: ev.lngLat.lat }); });
-    return () => { a.remove(); b.remove(); };
+    return () => { maps.current.ready = 0; setReady(false); a.remove(); b.remove(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [m.area, m.stack, m.generated_utc]);
 
   // basemap switch
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || maps.current.ready < 2) return; // wait for the CURRENT map instances to load
     for (const mp of [maps.current.a!, maps.current.b!]) {
       const src = mp.getSource("base") as maplibregl.RasterTileSource;
       src.setTiles(BASEMAPS[base].tiles);
@@ -124,7 +125,7 @@ export default function Explorer(p: Props) {
 
   // update radar images
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || maps.current.ready < 2) return; // wait for the CURRENT map instances to load
     const pair = m.pairs[pairIdx];
     if (!pair) return;
     const c = m.display.corners as Quad;
@@ -139,7 +140,7 @@ export default function Explorer(p: Props) {
 
   // selection outline
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || maps.current.ready < 2) return; // wait for the CURRENT map instances to load
     const data: GeoJSON.Feature | GeoJSON.FeatureCollection = p.selectionBounds ? boxPoly(p.selectionBounds)
       : { type: "FeatureCollection", features: [] };
     for (const mp of [maps.current.a!, maps.current.b!]) (mp.getSource("sel") as GeoJSONSource).setData(data);

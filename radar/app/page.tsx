@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Radar, Waves } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Globe2, Radar, Waves } from "lucide-react";
 import Fingerprint, { Tag } from "@/components/Fingerprint";
 import Timeline from "@/components/Timeline";
 import { Methods, ScienceExplainer } from "@/components/Science";
@@ -12,6 +12,8 @@ import {
 } from "@/lib/data";
 import DataStatus from "@/components/DataStatus";
 import ChangeByInterval from "@/components/ChangeByInterval";
+import LiveSearch, { LiveResult } from "@/components/LiveSearch";
+import type { InventoryArea } from "@/lib/data";
 
 const Explorer = dynamic(() => import("@/components/Explorer"), { ssr: false,
   loading: () => <div className="h-[62vh] animate-pulse rounded-xl border border-line bg-panel" /> });
@@ -29,6 +31,9 @@ export default function Home() {
   const [stacks, setStacks] = useState<Stacks | null>(null);
   const [stackId, setStackId] = useState<string | null>(null);
   const [status, setStatus] = useState<AreaStatus | null>(null);
+  const [source, setSource] = useState<"case" | "live">("case");
+  const [live, setLive] = useState<LiveResult | null>(null);
+  const [caseReload, setCaseReload] = useState(0);
 
   useEffect(() => {
     loadInventory().then(setInv).catch(() => setInv(null));
@@ -41,8 +46,9 @@ export default function Home() {
 
   // Load the selected stack; latest compatible pair is selected by default.
   useEffect(() => {
-    if (!stackId) return;
+    if (!stackId || source !== "case") return;
     setGrid(null);
+    setSel({ kind: "area" });
     loadManifest(AREA, stackId).then(async (mm) => {
       setM(mm);
       if (mm) {
@@ -50,14 +56,26 @@ export default function Home() {
         setGrid(new GridIndex(mm, await loadGrid(mm)));
       }
     }).catch(() => setM(null));
-  }, [stackId]);
+  }, [stackId, source, caseReload]);
+
+  // A live analysis result replaces the case-study data in every section.
+  function showLive(r: LiveResult) {
+    setSource("live"); setLive(r); setSel({ kind: "area" }); setGrid(null); setM(r.manifest);
+    setPairIdx(Math.max(0, r.manifest.pairs.length - 1));
+    loadGrid(r.manifest).then((g) => setGrid(new GridIndex(r.manifest, g))).catch(() => setGrid(null));
+    document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" });
+  }
+  function backToCase() { setSource("case"); setLive(null); setM(undefined); setGrid(null); setCaseReload((n) => n + 1); }
+  const inventoryForMap: InventoryArea | undefined = source === "live"
+    ? ({ primary_footprint: live?.footprint ?? null } as InventoryArea)
+    : m ? inv?.areas[m.area] : undefined;
 
   const pair = m?.pairs[pairIdx];
   const { rect, bounds, label } = useMemo(() => {
     if (!grid || !m) return { rect: null, bounds: null as Bounds | null, label: "" };
     if (sel.kind === "area") {
       const [w, s, e, n] = m.bbox;
-      return { rect: grid.rectOf({ w, s, e, n }), bounds: null, label: "whole study area" };
+      return { rect: grid.rectOf({ w, s, e, n }), bounds: null, label: source === "live" ? `whole ${m.size_km ?? ""} km window` : "whole study area" };
     }
     if (sel.kind === "box") return { rect: grid.rectOf(sel.bounds), bounds: sel.bounds,
       label: `box ${sel.bounds.w.toFixed(3)}…${sel.bounds.e.toFixed(3)}°E, ${sel.bounds.s.toFixed(3)}…${sel.bounds.n.toFixed(3)}°N` };
@@ -68,7 +86,7 @@ export default function Home() {
     const dl = d / Math.cos((sel.lat * Math.PI) / 180);
     return { rect: r, bounds: { w: sel.lng - dl, e: sel.lng + dl, s: sel.lat - d, n: sel.lat + d },
       label: `point ${sel.lat.toFixed(4)}°N ${sel.lng.toFixed(4)}°E (3×3 cells, ${3 * m.grid.res_m} m)` };
-  }, [grid, m, sel]);
+  }, [grid, m, sel, source]);
 
   const analysis = useMemo(() => {
     if (!grid || !m || !pair || !rect) return null;
@@ -91,7 +109,7 @@ export default function Home() {
       <header className="pt-10 pb-8">
         <div className="flex items-center gap-2 font-mono text-xs tracking-widest text-cyan"><Radar size={14} />RADAR UNIT · NASA SPACE APPS 2026 · NISAR L-BAND</div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">DELTA PULSE <span className="text-muted">— Hidden Water</span></h1>
-        <p className="mt-3 max-w-3xl text-lg text-text/80">Revealing the water we cannot easily see. NISAR&apos;s radar measures Tonle Sap&apos;s wetlands through cloud, every 12 days. We show what changed, what it might mean, and how sure we can be.</p>
+        <p className="mt-3 max-w-3xl text-lg text-text/80">Revealing the water we cannot easily see. NISAR&apos;s radar sees wetlands through cloud, every 12 days. Start with our Tonle Sap case study, or search any place on Earth for live NISAR data. We show what changed, what it might mean, and how sure we can be.</p>
         <div className="mt-5 flex flex-wrap gap-2 text-[12px]">
           {(["OBSERVED", "CALCULATED", "INTERPRETED", "UNCONFIRMED"] as const).map((k) => (
             <span key={k} className="flex items-center gap-1.5"><Tag kind={k} /><span className="text-muted">{{
@@ -99,7 +117,8 @@ export default function Home() {
             }[k]}</span></span>
           ))}
         </div>
-        {status && <DataStatus status={status} stacks={stacks} stackId={stackId} setStackId={setStackId} manifest={m ?? null} />}
+        {source === "case" && status && <DataStatus status={status} stacks={stacks} stackId={stackId} setStackId={setStackId} manifest={m ?? null} />}
+        <div className="mt-4"><LiveSearch onResult={showLive} active={source === "live"} /></div>
       </header>
 
       {/* explorer */}
@@ -109,8 +128,9 @@ export default function Home() {
         {m === null && <NoData />}
         {m && (
           <>
+            <SourceBar m={m} source={source} live={live} onBack={backToCase} />
             <PairPicker m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />
-            <Explorer manifest={m} inventory={inv?.areas[m.area]} pairIdx={pairIdx} channel={channel} mode={mode}
+            <Explorer manifest={m} inventory={inventoryForMap} pairIdx={pairIdx} channel={channel} mode={mode}
               setChannel={setChannel} setMode={setMode} selection={sel} onSelect={setSel} selectionBounds={bounds} />
           </>
         )}
@@ -128,7 +148,7 @@ export default function Home() {
       {/* timeline */}
       <Section id="timeline" kicker="03" title="Observation Timeline"
         sub="Every NISAR GCOV acquisition over the study areas, as listed in the ASF archive. Compare the two candidate sites.">
-        {inv ? <Timeline inventory={inv} manifest={m ?? null} pairIdx={pairIdx} setPairIdx={setPairIdx} /> : <p className="text-muted">Inventory not found — run scripts/refresh.py.</p>}
+        {source === "case" && (inv ? <Timeline inventory={inv} manifest={m ?? null} pairIdx={pairIdx} setPairIdx={setPairIdx} /> : <p className="text-muted">Inventory not found — run scripts/refresh.py.</p>)}
         {m && m.pairs.length > 0 && <ChangeByInterval m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />}
       </Section>
 
@@ -157,6 +177,30 @@ function Section({ id, kicker, title, sub, children }: { id: string; kicker: str
       </div>
       {children}
     </section>
+  );
+}
+
+function SourceBar({ m, source, live, onBack }: { m: Manifest; source: "case" | "live"; live: LiveResult | null; onBack: () => void }) {
+  const o = m.observations;
+  const pr = m.processing;
+  return (
+    <div className={`mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border px-3 py-2 text-[12px] ${source === "live" ? "border-cyan/40 bg-cyan/5" : "border-line bg-panel"}`}>
+      <span className="flex items-center gap-1.5 font-semibold text-text">
+        {source === "live" ? <Globe2 size={14} className="text-cyan" /> : <Radar size={14} className="text-cyan" />}
+        {source === "live" ? `Live: ${m.name}` : `Case study: ${m.name}`}
+      </span>
+      <span className="text-muted">
+        {o.length} NISAR acquisitions {o[0]?.date} → {o[o.length - 1]?.date} · track {o[0]?.track}{o[0]?.direction?.[0]} · {o[0]?.maturity} {o[0]?.crid} · {m.display.res_m} m cells
+      </span>
+      {source === "live" && live && (
+        <span className="text-muted">
+          archive checked {live.checkedUtc.slice(0, 16).replace("T", " ")} UTC · read {pr.bytes_fetched ? `${Math.round(pr.bytes_fetched / 1e6)} MB` : ""} in {pr.elapsed_s ?? "?"} s
+        </span>
+      )}
+      {source === "live" && (
+        <button onClick={onBack} className="ml-auto flex items-center gap-1 text-cyan hover:text-text"><ArrowLeft size={13} />Tonle Sap case study</button>
+      )}
+    </div>
   );
 }
 

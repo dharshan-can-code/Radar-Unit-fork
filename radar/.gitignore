@@ -52,3 +52,6 @@ _netrc
 .earthdata_token
 # per-scene processing cache (regenerable from data/raw)
 data/processed/
+# live analysis results (regenerable)
+data/live/
+data/metadata/backend.log

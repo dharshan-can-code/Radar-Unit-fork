@@ -1,0 +1,4930 @@
+{
+  "file": "NISAR_L2_PR_GCOV_034_083_A_008_2005_DHDH_M_20261029T223634_20261029T223708_P05036_N_F_J_001.h5",
+  "synthetic_fixture": false,
+  "summary": {
+    "frequency_groups": [
+      "/science/LSAR/GCOV/grids/frequencyA",
+      "/science/LSAR/GCOV/grids/frequencyB"
+    ],
+    "diagonal_terms": {
+      "/science/LSAR/GCOV/grids/frequencyA/HHHH": {
+        "dtype": "float32",
+        "is_complex": false,
+        "n": 262144,
+        "frac_finite": 1.0,
+        "frac_le_zero": 0.0,
+        "min": 0.0016241669654846191,
+        "p50": 0.010310709476470947,
+        "max": 9.4207763671875,
+        "representation_guess": "non-negative: consistent with linear power"
+      },
+      "/science/LSAR/GCOV/grids/frequencyA/HVHV": {
+        "dtype": "float32",
+        "is_complex": false,
+        "n": 262144,
+        "frac_finite": 1.0,
+        "frac_le_zero": 0.0,
+        "min": 0.0004567764699459076,
+        "p50": 0.0029451847076416016,
+        "max": 0.3466682434082031,
+        "representation_guess": "non-negative: consistent with linear power"
+      },
+      "/science/LSAR/GCOV/grids/frequencyB/HHHH": {
+        "dtype": "float32",
+        "is_complex": false,
+        "n": 262144,
+        "frac_finite": 1.0,
+        "frac_le_zero": 0.0,
+        "min": 0.0023190677165985107,
+        "p50": 0.01708817481994629,
+        "max": 13.898193359375,
+        "representation_guess": "non-negative: consistent with linear power"
+      },
+      "/science/LSAR/GCOV/grids/frequencyB/HVHV": {
+        "dtype": "float32",
+        "is_complex": false,
+        "n": 262144,
+        "frac_finite": 1.0,
+        "frac_le_zero": 0.0,
+        "min": 0.0012205839157104492,
+        "p50": 0.004482179880142212,
+        "max": 0.33478546142578125,
+        "representation_guess": "non-negative: consistent with linear power"
+      }
+    },
+    "off_diagonal_terms": {},
+    "projection": {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/projection",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "value": 32648
+    },
+    "listOfCovarianceTerms": {
+      "/science/LSAR/GCOV/grids/frequencyA/listOfCovarianceTerms": [
+        "HHHH",
+        "HVHV"
+      ],
+      "/science/LSAR/GCOV/grids/frequencyB/listOfCovarianceTerms": [
+        "HHHH",
+        "HVHV"
+      ]
+    },
+    "listOfPolarizations": {
+      "/science/LSAR/GCOV/grids/frequencyA/listOfPolarizations": [
+        "HH",
+        "HV"
+      ],
+      "/science/LSAR/GCOV/grids/frequencyB/listOfPolarizations": [
+        "HH",
+        "HV"
+      ],
+      "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/listOfPolarizations": [
+        "HV",
+        "HH"
+      ],
+      "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/listOfPolarizations": [
+        "HH",
+        "HV"
+      ]
+    },
+    "spacing": {
+      "/science/LSAR/GCOV/grids/frequencyA/xCoordinateSpacing": 20.0,
+      "/science/LSAR/GCOV/grids/frequencyA/yCoordinateSpacing": -20.0,
+      "/science/LSAR/GCOV/grids/frequencyB/xCoordinateSpacing": 80.0,
+      "/science/LSAR/GCOV/grids/frequencyB/yCoordinateSpacing": -80.0
+    },
+    "identification": {
+      "productVersion": "1.0.20",
+      "zeroDopplerStartTime": "2026-10-29T22:36:34.000000000",
+      "frameNumber": 8,
+      "isFullFrame": "True",
+      "listOfFrequencies": [
+        "A",
+        "B"
+      ],
+      "orbitPassDirection": "Ascending",
+      "processingType": "Nominal",
+      "trackNumber": 83
+    }
+  },
+  "tree": [
+    {
+      "path": "/science",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/HHHH",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Covariance between HH and HH",
+        "grid_mapping": "projection",
+        "long_name": "Geocoded polarimetric covariance term HHHH",
+        "max_value": 2227.251953125,
+        "mean_value": 0.18472908437252045,
+        "min_value": 0.0,
+        "sample_stddev": 0.7760912179946899,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        16560,
+        16920
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/HVHV",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Covariance between HV and HV",
+        "grid_mapping": "projection",
+        "long_name": "Geocoded polarimetric covariance term HVHV",
+        "max_value": 410.9056091308594,
+        "mean_value": 0.04158035293221474,
+        "min_value": 0.0,
+        "sample_stddev": 0.11203140020370483,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        16560,
+        16920
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/inputDataExceptionMask",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": 65535,
+        "description": "Bitwise OR of input data exception codes for each image pixel (0: no anomaly, 2: NISAR LSAR qFSP-H1 sample slip). Also includes OR of validity mask bits, where each bit is set on for fully-focused data or off for partially focused or missing data (256:HH, 512:HV, 1024:VH, 2048:VV, 4096:LH, 8192:LV, 16384:RH, 32768:RV)",
+        "grid_mapping": "projection",
+        "raw_valid_pulse_fraction_hh": 1.0,
+        "raw_valid_pulse_fraction_hv": 1.0,
+        "rslc_valid_pixel_fraction_hh": 0.9691115160962653,
+        "rslc_valid_pixel_fraction_hv": 0.9691115160962653,
+        "valid_min": 0
+      },
+      "shape": [
+        16560,
+        16920
+      ],
+      "dtype": "uint16"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/listOfCovarianceTerms",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of processed covariance terms"
+      },
+      "shape": [
+        2
+      ],
+      "dtype": "|S4",
+      "value": [
+        "HHHH",
+        "HVHV"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/listOfPolarizations",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of processed polarization layers with frequency A"
+      },
+      "shape": [
+        2
+      ],
+      "dtype": "|S2",
+      "value": [
+        "HH",
+        "HV"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/mask",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": 255,
+        "description": "Mask indicating the subswath number associated with valid GCOV samples. A GCOV sample is only considered valid if it is generated from fully-focused radar samples. If at least one radar sample in the averaging set is partially focused or invalid, the corresponding mask pixel will contain the value 0. GCOV pixels outside of the radar acquisition extent are filled with the value 255",
+        "grid_mapping": "projection",
+        "long_name": "Valid samples subswath mask",
+        "valid_min": 0
+      },
+      "shape": [
+        16560,
+        16920
+      ],
+      "dtype": "uint8"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/numberOfLooks",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Number of averaged radar-grid pixels for covariance estimation",
+        "grid_mapping": "projection",
+        "long_name": "Number of radar looks",
+        "max_value": 24.119037628173828,
+        "mean_value": 9.343181610107422,
+        "min_value": 1.0919376514095802e-10,
+        "sample_stddev": 1.2955958843231201,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        16560,
+        16920
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/numberOfSubSwaths",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of swaths of continuous imagery, due to transmit gaps",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint8",
+      "value": 1
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/rtcGammaToSigmaFactor",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Radiometric terrain correction (RTC) scaling factor to normalize backscatter coefficients from gamma0 to sigma0, accounting for local terrain",
+        "grid_mapping": "projection",
+        "long_name": "Radiometric terrain correction area normalization factor gamma0 to sigma0",
+        "max_value": 0.9980668425559998,
+        "mean_value": 0.7440411448478699,
+        "min_value": 0.0010071736760437489,
+        "sample_stddev": 0.08033575117588043,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        16560,
+        16920
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/xCoordinateSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal spacing in meters between consecutive pixels",
+        "long_name": "X coordinates spacing",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 20.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "pixel_coordinate_convention": "center",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        16920
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/yCoordinateSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal spacing in meters between consecutive lines",
+        "long_name": "Y coordinates spacing",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -20.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyA/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "pixel_coordinate_convention": "center",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        16560
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/HHHH",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Covariance between HH and HH",
+        "grid_mapping": "projection",
+        "long_name": "Geocoded polarimetric covariance term HHHH",
+        "max_value": 589.5610961914062,
+        "mean_value": 0.20592768490314484,
+        "min_value": 0.0,
+        "sample_stddev": 0.48845455050468445,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        4140,
+        4230
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/HVHV",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Covariance between HV and HV",
+        "grid_mapping": "projection",
+        "long_name": "Geocoded polarimetric covariance term HVHV",
+        "max_value": 109.93623352050781,
+        "mean_value": 0.04688568040728569,
+        "min_value": 0.0,
+        "sample_stddev": 0.08165331929922104,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        4140,
+        4230
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/inputDataExceptionMask",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": 65535,
+        "description": "Bitwise OR of input data exception codes for each image pixel (0: no anomaly, 2: NISAR LSAR qFSP-H1 sample slip). Also includes OR of validity mask bits, where each bit is set on for fully-focused data or off for partially focused or missing data (256:HH, 512:HV, 1024:VH, 2048:VV, 4096:LH, 8192:LV, 16384:RH, 32768:RV)",
+        "grid_mapping": "projection",
+        "raw_valid_pulse_fraction_hh": 1.0,
+        "raw_valid_pulse_fraction_hv": 1.0,
+        "rslc_valid_pixel_fraction_hh": 0.9887005681707692,
+        "rslc_valid_pixel_fraction_hv": 0.9887005681707692,
+        "valid_min": 0
+      },
+      "shape": [
+        4140,
+        4230
+      ],
+      "dtype": "uint16"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/listOfCovarianceTerms",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of processed covariance terms"
+      },
+      "shape": [
+        2
+      ],
+      "dtype": "|S4",
+      "value": [
+        "HHHH",
+        "HVHV"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/listOfPolarizations",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of processed polarization layers with frequency B"
+      },
+      "shape": [
+        2
+      ],
+      "dtype": "|S2",
+      "value": [
+        "HH",
+        "HV"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/mask",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": 255,
+        "description": "Mask indicating the subswath number associated with valid GCOV samples. A GCOV sample is only considered valid if it is generated from fully-focused radar samples. If at least one radar sample in the averaging set is partially focused or invalid, the corresponding mask pixel will contain the value 0. GCOV pixels outside of the radar acquisition extent are filled with the value 255",
+        "grid_mapping": "projection",
+        "long_name": "Valid samples subswath mask",
+        "valid_min": 0
+      },
+      "shape": [
+        4140,
+        4230
+      ],
+      "dtype": "uint8"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/numberOfLooks",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Number of averaged radar-grid pixels for covariance estimation",
+        "grid_mapping": "projection",
+        "long_name": "Number of radar looks",
+        "max_value": 79.18770599365234,
+        "mean_value": 37.349700927734375,
+        "min_value": 1.925950954273503e-08,
+        "sample_stddev": 4.818702697753906,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        4140,
+        4230
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/numberOfSubSwaths",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of swaths of continuous imagery, due to transmit gaps",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint8",
+      "value": 1
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/rtcGammaToSigmaFactor",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Radiometric terrain correction (RTC) scaling factor to normalize backscatter coefficients from gamma0 to sigma0, accounting for local terrain",
+        "grid_mapping": "projection",
+        "long_name": "Radiometric terrain correction area normalization factor gamma0 to sigma0",
+        "max_value": 0.9922705292701721,
+        "mean_value": 0.7480377554893494,
+        "min_value": 0.0028522219508886337,
+        "sample_stddev": 0.0744880884885788,
+        "units": "1",
+        "valid_min": 0.0
+      },
+      "shape": [
+        4140,
+        4230
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/xCoordinateSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal spacing in meters between consecutive pixels",
+        "long_name": "X coordinates spacing",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 80.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "pixel_coordinate_convention": "center",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        4230
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/yCoordinateSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal spacing in meters between consecutive lines",
+        "long_name": "Y coordinates spacing",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -80.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/grids/frequencyB/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "pixel_coordinate_convention": "center",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        4140
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/attitude",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/attitude/attitudeType",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Attitude type, either \"FRP\", \"NRP\", \"PRP, or \"Custom\", where \"FRP\" stands for Forecast Radar Pointing, \"NRP\" is Near Real-time Pointing, and \"PRP\" is Precise Radar Pointing"
+      },
+      "shape": [],
+      "dtype": "|S10",
+      "value": "Custom"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/attitude/eulerAngles",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Attitude Euler angles (roll, pitch, yaw)",
+        "units": "degrees"
+      },
+      "shape": [
+        172,
+        3
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/attitude/quaternions",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Attitude quaternions (q0, q1, q2, q3)",
+        "units": "1"
+      },
+      "shape": [
+        172,
+        4
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/attitude/time",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Time vector record. This record contains the time since UTC epoch corresponding to attitude and quaternion records",
+        "units": "seconds since 2026-10-29T00:00:00"
+      },
+      "shape": [
+        172
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk/rxHorizontalCrosspol",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Crosstalk in H-receive channel expressed as ratio rxV / rxH",
+        "grid_mapping": "projection",
+        "max_imag_value": 0.0,
+        "max_real_value": 0.0,
+        "mean_imag_value": 0.0,
+        "mean_real_value": 0.0,
+        "min_imag_value": 0.0,
+        "min_real_value": 0.0,
+        "sample_stddev_imag": 0.0,
+        "sample_stddev_real": 0.0,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk/rxVerticalCrosspol",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Crosstalk in V-receive channel expressed as ratio rxH / rxV",
+        "grid_mapping": "projection",
+        "max_imag_value": 0.0,
+        "max_real_value": 0.0,
+        "mean_imag_value": 0.0,
+        "mean_real_value": 0.0,
+        "min_imag_value": 0.0,
+        "min_real_value": 0.0,
+        "sample_stddev_imag": 0.0,
+        "sample_stddev_real": 0.0,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk/txHorizontalCrosspol",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Crosstalk in H-transmit channel expressed as ratio txV / txH",
+        "grid_mapping": "projection",
+        "max_imag_value": 0.0,
+        "max_real_value": 0.0,
+        "mean_imag_value": 0.0,
+        "mean_real_value": 0.0,
+        "min_imag_value": 0.0,
+        "min_real_value": 0.0,
+        "sample_stddev_imag": 0.0,
+        "sample_stddev_real": 0.0,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk/txVerticalCrosspol",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Crosstalk in V-transmit channel expressed as ratio txH / txV",
+        "grid_mapping": "projection",
+        "max_imag_value": 0.0,
+        "max_real_value": 0.0,
+        "mean_imag_value": 0.0,
+        "mean_real_value": 0.0,
+        "min_imag_value": 0.0,
+        "min_real_value": 0.0,
+        "sample_stddev_imag": 0.0,
+        "sample_stddev_real": 0.0,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/crosstalk/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HH",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HH/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to HH channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HH/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to HH channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HH/rfiLikelihood",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Severity of radio frequency interference (RFI) contamination in the data. Value is in the interval [0,1], where 0: lowest severity, and 1: highest severity (or NaN if RFI detection was skipped)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.5611615824999377
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HH/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to HH channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 27030.051422175486
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HH/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to HH channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HV",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HV/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to HV channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HV/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to HV channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -2.91469985083053
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HV/rfiLikelihood",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Severity of radio frequency interference (RFI) contamination in the data. Value is in the interval [0,1], where 0: lowest severity, and 1: highest severity (or NaN if RFI detection was skipped)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.6855968388827713
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HV/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to HV channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 27830.271371186518
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/HV/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to HV channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VH",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VH/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to VH channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VH/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to VH channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.19198621771937624
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VH/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to VH channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 26868.267666307194
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VH/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to VH channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VV",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VV/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to VV channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VV/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to VV channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -2.722713633111154
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VV/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to VV channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 27663.058562835096
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/VV/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to VV channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/commonDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to all polarimetric channels",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -53.24
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/elevationAntennaPattern",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/elevationAntennaPattern/HH",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Complex two-way elevation antenna pattern",
+        "grid_mapping": "projection",
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/elevationAntennaPattern/HV",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Complex two-way elevation antenna pattern",
+        "grid_mapping": "projection",
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/elevationAntennaPattern/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/elevationAntennaPattern/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/elevationAntennaPattern/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/faradayRotation",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Faraday rotation correction applied in processing",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/noiseEquivalentBackscatter",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/noiseEquivalentBackscatter/HH",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Noise equivalent backscatter in linear scale (units of DN^2)",
+        "grid_mapping": "projection",
+        "max_value": 0.005897078197449446,
+        "mean_value": 0.002075970871374011,
+        "min_value": 0.0010212239576503634,
+        "sample_stddev": 0.0007305617909878492,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/noiseEquivalentBackscatter/HV",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Noise equivalent backscatter in linear scale (units of DN^2)",
+        "grid_mapping": "projection",
+        "max_value": 0.00644658412784338,
+        "mean_value": 0.0023418504279106855,
+        "min_value": 0.0010542059317231178,
+        "sample_stddev": 0.0008826661505736411,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/noiseEquivalentBackscatter/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/noiseEquivalentBackscatter/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyA/noiseEquivalentBackscatter/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HH",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HH/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to HH channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HH/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to HH channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HH/rfiLikelihood",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Severity of radio frequency interference (RFI) contamination in the data. Value is in the interval [0,1], where 0: lowest severity, and 1: highest severity (or NaN if RFI detection was skipped)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.11289801808185061
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HH/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to HH channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 28877.79221288178
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HH/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to HH channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HV",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HV/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to HV channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HV/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to HV channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -2.91469985083053
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HV/rfiLikelihood",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Severity of radio frequency interference (RFI) contamination in the data. Value is in the interval [0,1], where 0: lowest severity, and 1: highest severity (or NaN if RFI detection was skipped)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.45387233707672225
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HV/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to HV channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 29732.45734538552
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/HV/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to HV channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VH",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VH/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to VH channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VH/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to VH channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.19198621771937624
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VH/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to VH channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 28705.060684059994
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VH/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to VH channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VV",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VV/differentialDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to VV channel",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VV/differentialPhase",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Phase correction applied to VV channel",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -2.722713633111154
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VV/scaleFactor",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Scale factor applied to VV channel complex amplitude (at antenna boresite)",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 29554.022200903135
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/VV/scaleFactorSlope",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slope of scale factor applied to VV channel complex amplitude with respect to elevation angle",
+        "units": "radians^-1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/commonDelay",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Range delay correction applied to all polarimetric channels",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -19.65
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/elevationAntennaPattern",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/elevationAntennaPattern/HH",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Complex two-way elevation antenna pattern",
+        "grid_mapping": "projection",
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/elevationAntennaPattern/HV",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": "(nan+nanj)",
+        "description": "Complex two-way elevation antenna pattern",
+        "grid_mapping": "projection",
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "complex64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/elevationAntennaPattern/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/elevationAntennaPattern/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/elevationAntennaPattern/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/faradayRotation",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Faraday rotation correction applied in processing",
+        "units": "radians"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/noiseEquivalentBackscatter",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/noiseEquivalentBackscatter/HH",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Noise equivalent backscatter in linear scale (units of DN^2)",
+        "grid_mapping": "projection",
+        "max_value": 0.006245960481464863,
+        "mean_value": 0.0024309775326400995,
+        "min_value": 0.001246935804374516,
+        "sample_stddev": 0.0007336047128774226,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/noiseEquivalentBackscatter/HV",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Noise equivalent backscatter in linear scale (units of DN^2)",
+        "grid_mapping": "projection",
+        "max_value": 0.00695064477622509,
+        "mean_value": 0.0026974810753017664,
+        "min_value": 0.0013938058400526643,
+        "sample_stddev": 0.0008536552777513862,
+        "units": "1"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/noiseEquivalentBackscatter/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/noiseEquivalentBackscatter/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/calibrationInformation/frequencyB/noiseEquivalentBackscatter/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/boundingBox",
+      "kind": "dataset",
+      "attrs": {
+        "description": "OGR compatible WKT representing the bounding box of the product (the union of the geocoded grid for available frequency A and frequency B image datasets). Horizontal coordinates are X and Y directions of the geocoded grid coordinate system, and the vertical coordinate is the height above the WGS84 ellipsoid in meters. The first point corresponds to the top left edge of the bounding box. The remaining points are traversed in counterclockwise order on the map. The fifth point closes the bounding box by repeating the first point",
+        "epsg": 32648
+      },
+      "shape": [],
+      "dtype": "|S96",
+      "value": "POLYGON ((218160 1585440 0,218160 1254240 0,556560 1254240 0,556560 1585440 0,218160 1585440 0))"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/ceosAnalysisReadyDataDocumentIdentifier",
+      "kind": "dataset",
+      "attrs": {
+        "description": "CEOS Analysis Ready Data (CARD) document identifier"
+      },
+      "shape": [],
+      "dtype": "|S86",
+      "value": "https://ceos.org/ard/files/PFS/SAR/v1.0/CEOS-ARD_PFS_Synthetic_Aperture_Radar_v1.0.pdf"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/ceosAnalysisReadyDataProductType",
+      "kind": "dataset",
+      "attrs": {
+        "description": "CEOS Analysis Ready Data (CARD) product type"
+      },
+      "shape": [],
+      "dtype": "|S34",
+      "value": "Normalised Radar Backscatter (NRB)"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/geometricAccuracy",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/geometricAccuracy/bias",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/geometricAccuracy/bias/x",
+      "kind": "dataset",
+      "attrs": {
+        "description": "An estimate of the localization error bias in the X/easting direction",
+        "epsg": 32648,
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float32",
+      "value": NaN
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/geometricAccuracy/bias/y",
+      "kind": "dataset",
+      "attrs": {
+        "description": "An estimate of the localization error bias in the Y/northing direction",
+        "epsg": 32648,
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float32",
+      "value": NaN
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/geometricAccuracy/standardDeviation",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/geometricAccuracy/standardDeviation/x",
+      "kind": "dataset",
+      "attrs": {
+        "description": "An estimate of the localization error standard deviation in the X/easting direction",
+        "epsg": 32648,
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float32",
+      "value": NaN
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/geometricAccuracy/standardDeviation/y",
+      "kind": "dataset",
+      "attrs": {
+        "description": "An estimate of the localization error standard deviation in the Y/northing direction",
+        "epsg": 32648,
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float32",
+      "value": NaN
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/ceosAnalysisReadyData/outputBackscatterDecibelConversionFormula",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Formula to convert provided backscatter to decibel (dB)"
+      },
+      "shape": [],
+      "dtype": "|S21",
+      "value": "10*log10(<GCOV_TERM>)"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/orbit",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/orbit/interpMethod",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Orbit interpolation method, either \"Hermite\" or \"Legendre\""
+      },
+      "shape": [],
+      "dtype": "|S7",
+      "value": "Hermite"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/orbit/orbitType",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Orbit product type, either \"FOE\", \"NOE\", \"MOE\", \"POE\", or \"Custom\", where \"FOE\" stands for Forecast Orbit Ephemeris, \"NOE\" is Near real-time Orbit Ephemeris, \"MOE\" is Medium precision Orbit Ephemeris, and \"POE\" is Precise Orbit Ephemeris"
+      },
+      "shape": [],
+      "dtype": "|S3",
+      "value": "MOE"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/orbit/position",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Position vector record. This record contains the platform position data with respect to WGS84 G1762 reference frame",
+        "units": "meters"
+      },
+      "shape": [
+        49,
+        3
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/orbit/time",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Time vector record. This record contains the time since UTC epoch corresponding to position and velocity records",
+        "units": "seconds since 2026-10-29T00:00:00"
+      },
+      "shape": [
+        49
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/orbit/velocity",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Velocity vector record. This record contains the platform velocity data with respect to WGS84 G1762 reference frame",
+        "units": "meters / second"
+      },
+      "shape": [
+        49,
+        3
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms/demInterpolation",
+      "kind": "dataset",
+      "attrs": {
+        "description": "DEM interpolation method"
+      },
+      "shape": [],
+      "dtype": "|S9",
+      "value": "biquintic"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms/geocoding",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Geocoding algorithm"
+      },
+      "shape": [],
+      "dtype": "|S92",
+      "value": "Area-Based SAR Geocoding with Adaptive Multilooking (GEO-AP). DOI: 10.1109/TGRS.2022.3147472"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms/geocodingAlgorithmReference",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Reference to the geocoding algorithm applied (if applicable)"
+      },
+      "shape": [],
+      "dtype": "|S278",
+      "value": "Gustavo H. X. Shiroma, Marco Lavalle, and Sean M. Buckley, \"An Area-Based Projection Algorithm for SAR Radiometric Terrain Correction and Geocoding,\" in IEEE Transactions on Geoscience and Remote Sensing, vol. 60, pp. 1-23, 2022, Art no. 5222723, doi: 10.1109/TGRS.2022.3147472."
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms/polarimetricSymmetrization",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Polarimetric symmetrization algorithm"
+      },
+      "shape": [],
+      "dtype": "|S8",
+      "value": "disabled"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms/radiometricTerrainCorrection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Radiometric terrain correction (RTC) algorithm"
+      },
+      "shape": [],
+      "dtype": "|S86",
+      "value": "Area-Based SAR Radiometric Terrain Correction (RTC-AP). DOI: 10.1109/TGRS.2022.3147472"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms/radiometricTerrainCorrectionAlgorithmReference",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Reference to the radiometric terrain correction (RTC) algorithm applied (if applicable)"
+      },
+      "shape": [],
+      "dtype": "|S278",
+      "value": "Gustavo H. X. Shiroma, Marco Lavalle, and Sean M. Buckley, \"An Area-Based Projection Algorithm for SAR Radiometric Terrain Correction and Geocoding,\" in IEEE Transactions on Geoscience and Remote Sensing, vol. 60, pp. 1-23, 2022, Art no. 5222723, doi: 10.1109/TGRS.2022.3147472."
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/algorithms/softwareVersion",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Software version used for processing"
+      },
+      "shape": [],
+      "dtype": "|S7",
+      "value": "0.25.21"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/inputs",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/inputs/configFiles",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of input config files used"
+      },
+      "shape": [
+        1
+      ],
+      "dtype": "|S163",
+      "value": [
+        "/data/work/jobs/2026/11/10/23/18/SCIFLO_GCOV__release-r05.03.5-gcov_gslc_034_083_008_full_mixed_L_20_DH_05_DH_0_state-config-20261110T174219.655670Z/RunConfig.yaml"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/inputs/demSource",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Description of the input digital elevation model (DEM)"
+      },
+      "shape": [],
+      "dtype": "|S1185",
+      "value": "Modified Copernicus Digital Elevation Model for the NASA-ISRO NISAR mission, version 1.3, based on the Copernicus DEM 30-m (2023_1), referenced to the WGS 84 ellipsoid and provided in geographic coordinates (EPSG:4326). This digital elevation model (DEM) was prepared at the Jet Propulsion Laboratory, California Institute of Technology, under contract with the National Aeronautics and Space Administration, using the Copernicus DEM 30-m COP-DEM_GLO-30-DGED/2023_1 model provided by the European Space Agency (ESA). The Copernicus DEM 30-m was produced using Copernicus WorldDEM-30  DLR e.V. 2010-2014 and  Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. The organizations in charge of the NISAR mission or the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30. Users, including those who redistribute, adapt, modify, or combine the data contained in this DEM, must comply with the terms of the Copernicus DEM 30-m License Agreement. For additional information, please refer to https://doi.org/10.5067/NIDEM-1 and https://doi.org/10.5270/ESA-c5d3d65."
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/inputs/l1SlcGranules",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of input L1 RSLC products used"
+      },
+      "shape": [
+        1
+      ],
+      "dtype": "|S94",
+      "value": [
+        "NISAR_L1_PR_RSLC_034_083_A_008_2005_DHDH_M_20261029T223634_20261029T223708_P05036_N_F_J_001.h5"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/inputs/orbitFiles",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of input orbit files used"
+      },
+      "shape": [
+        1
+      ],
+      "dtype": "|S219",
+      "value": [
+        "/data/work/jobs/2026/11/10/23/18/SCIFLO_GCOV__release-r05.03.5-gcov_gslc_034_083_008_full_mixed_L_20_DH_05_DH_0_state-config-20261110T174219.655670Z/NISAR_ANC_J_PR_MOE_20261031T132536_20261029T205942_20261031T025942.xml"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/inputs/tecFiles",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of input total electron content (TEC) files used"
+      },
+      "shape": [
+        1
+      ],
+      "dtype": "|S220",
+      "value": [
+        "/data/work/jobs/2026/11/10/23/18/SCIFLO_GCOV__release-r05.03.5-gcov_gslc_034_083_008_full_mixed_L_20_DH_05_DH_0_state-config-20261110T174219.655670Z/NISAR_ANC_TEC_20261030T211409_20261028T230002_20261029T235952_s015.json"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/azimuthIonosphericGeolocationCorrectionApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the azimuth ionospheric correction has been applied"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/dryTroposphericGeolocationCorrectionApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the dry tropospheric correction was applied during the generation of the input RSLC to improve geolocation"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/faradayRotationApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the Faraday rotation correction has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyA/dopplerCentroid",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "2D LUT of Doppler centroid for frequency A",
+        "grid_mapping": "projection",
+        "units": "hertz"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyA/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyA/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyA/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyB",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyB/dopplerCentroid",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "2D LUT of Doppler centroid for frequency B",
+        "grid_mapping": "projection",
+        "units": "hertz"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyB/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyB/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/frequencyB/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geo2rdr",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geo2rdr/convergenceThreshold",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slant range convergence threshold for geo2rdr transformation",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 1e-07
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geo2rdr/deltaRange",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Step size for computing numerical gradient of Doppler in meters for geo2rdr transformation",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 1e-08
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geo2rdr/maxNumberOfIterations",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Maximum number of iterations for geo2rdr transformation",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 50
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geocoding",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geocoding/geogridUpsampling",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Geocoding geogrid upsampling",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 1.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geocoding/isSourceDataUpsampled",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the source data is upsampled for geocoding"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geocoding/maxBlockSize",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Maximum block size in megabytes (MB) per thread",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 268435456
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geocoding/memoryMode",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Geocoding memory mode"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "auto"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/geocoding/minBlockSize",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Minimum block size in megabytes (MB) per thread",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 33554432
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/isFullCovariance",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the product is full-covariance"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/noiseCorrectionApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if noise correction has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/polarimetricSymmetrizationApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the polarimetric symmetrization has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/polarizationOrientationCorrectionApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the polarization orientation correction has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/postProcessingFilteringApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the post-processing filtering has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessing",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessing/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessing/frequencyA/numberOfAzimuthLooks",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of azimuth looks applied to the RSLC before geocoding",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 1
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessing/frequencyA/numberOfRangeLooks",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of range looks applied to the RSLC before geocoding",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 1
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessing/frequencyB",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessing/frequencyB/numberOfAzimuthLooks",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of azimuth looks applied to the RSLC before geocoding",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 1
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessing/frequencyB/numberOfRangeLooks",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of range looks applied to the RSLC before geocoding",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 1
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/preprocessingMultilookingApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if a preprocessing multilooking has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/radiometricTerrainCorrectionApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the radiometric terrain correction has been applied"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rangeIonosphericGeolocationCorrectionApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the range ionospheric correction has been applied"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/referenceTerrainHeight",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Reference terrain height as a function of map coordinates",
+        "grid_mapping": "projection",
+        "units": "meters"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rfiMitigationApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if radio frequency interference (RFI) mitigation was applied during the generation of the input RSLC"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rtc",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rtc/geogridUpsampling",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Radiometric terrain correction (RTC) geogrid upsampling",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 2.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rtc/inputBackscatterNormalizationConvention",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Backscatter normalization convention of the source data"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "beta0"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rtc/memoryMode",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Radiometric terrain correction (RTC) memory mode"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "auto"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rtc/minRtcAreaNormalizationFactorInDB",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Radiometric terrain correction (RTC) minimum area normalization factor value in dB computed as `10 * log10(area_out / area_in)` where `area_in` and `area_out` are the reference surfaces associated with the source data (input) and GCOV terms (output) backscatter conventions, respectively",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": -30.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rtc/outputBackscatterExpressionConvention",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Backscatter expression convention"
+      },
+      "shape": [],
+      "dtype": "|S12",
+      "value": "Linear power"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/rtc/outputBackscatterNormalizationConvention",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Backscatter normalization convention of the primary data associated with this product"
+      },
+      "shape": [],
+      "dtype": "|S6",
+      "value": "gamma0"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/runConfigurationContents",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Contents of the run configuration file with parameters used for processing"
+      },
+      "shape": [],
+      "dtype": "|S5969",
+      "value": "#s3://nisar-static-repo/LSAR_PARAMETER_SET/05036/GCOV/NISAR_ParameterSet_GCOV_20000101_diag_20_v0.1.yaml was used to generate this runconfig.\nrunconfig:\n    name: NISAR_GCOV_RUNCONFIG\n    groups:\n        pge_name_group:\n            pge_name: GCOV_L_PGE\n        input_file_group:\n            input_file_path: \n                /data/work/jobs/2026/11/10/23/18/SCIFLO_GCOV__release-r05.03.5-gcov_gslc_034_083_008_full_mixed_L_20_DH_05_DH_0_state-config-20261110T174219.655670Z/NISAR_L1_PR_RSLC_034_083_A_008_2005_DHDH_M_20261029T223634_20261029T223708_P05036_N_F_J_001.h5\n            qa_input_file: output/gcov.h5\n        dynamic_ancillary_file_group:\n            dem_file: \n                /data/work/jobs/2026/11/10/23/18/SCIFLO_GCOV__release-r05.03.5-gcov_gslc_034_083_008_full_mixed_L_20_DH_05_DH_0_state-config-20261110T174219.655670Z/dem.vrt\n            dem_file_description: Modified Copernicus Digital Elevation Model \n                for the NASA-ISRO NISAR mission, version 1.3, based on the \n                Copernicus DEM 30-m (2023_1), referenced to the WGS 84 ellipsoid\n                and provided in geographic coordinates (EPSG:4326). This digital\n                elevation model (DEM) was prepared at the Jet Propulsion \n                Laboratory, California Institute of Technology, under contract \n                with the National Aeronautics and Space Administration, using \n                the Copernicus DEM 30-m COP-DEM_GLO-30-DGED/2023_1 model \n                provided by the European Space Agency (ESA). The Copernicus DEM \n                30-m was produced using Copernicus WorldDEM-30  DLR e.V. \n                2010-2014 and  Airbus Defence and Space GmbH 2014-2018 provided \n                under COPERNICUS by the European Union and ESA; all rights \n                reserved. The organizations in charge of the NISAR mission or \n                the Copernicus programme by law or by delegation do not incur \n                any liability for any use of the Copernicus WorldDEM-30. Users, \n                including those who redistribute, adapt, modify, or combine the \n                data contained in this DEM, must comply with the terms of the \n                Copernicus DEM 30-m License Agreement. For additional \n                information, please refer to https://doi.org/10.5067/NIDEM-1 and\n                https://doi.org/10.5270/ESA-c5d3d65.\n            orbit_file: \n                /data/work/jobs/2026/11/10/23/18/SCIFLO_GCOV__release-r05.03.5-gcov_gslc_034_083_008_full_mixed_L_20_DH_05_DH_0_state-config-20261110T174219.655670Z/NISAR_ANC_J_PR_MOE_20261031T132536_20261029T205942_20261031T025942.xml\n            tec_file: \n                /data/work/jobs/2026/11/10/23/18/SCIFLO_GCOV__release-r05.03.5-gcov_gslc_034_083_008_full_mixed_L_20_DH_05_DH_0_state-config-20261110T174219.655670Z/NISAR_ANC_TEC_20261030T211409_20261028T230002_20261029T235952_s015.json\n        primary_executable:\n            product_type: GCOV\n            product_version: 1.0.20\n            product_doi: 10.5067/NIL2GCOV-V1\n            composite_release_id: P05036\n            processing_type: PR\n            product_accuracy: N\n            urgent_request_id:\n            processing_center: J\n            data_source: M\n            static_layers_data_access: \n                https://nisar-services.earthdata.nasa.gov/redirect/NISAR_L2_STATIC/{granule_id}.h5\n            partial_granule_id: \n                NISAR_L2_PR_GCOV_034_083_A_008_{MODE}_{POLE}_M_{StartDateTime}_{EndDateTime}_P05036_N_F_J_001\n        product_path_group:\n            product_path: output\n            scratch_path: scratch\n            sas_output_file: output/gcov.h5\n            product_counter: 1\n            qa_output_dir: output\n        debug_level_group:\n            debug_switch: false\n        processing:\n      #s3://nisar-static-repo/LSAR_PARAMETER_SET/05036/GCOV/NISAR_ParameterSet_GCOV_20000101_diag_20_v0.1.yaml was used to generate this runconfig.\n      #s3://nisar-static-repo/PRODUCT_VERSION/NISAR_ProductVersion_20261102_v1.0.30.yaml is the location of the product version file.\n            input_subset:\n                list_of_frequencies:\n                symmetrize_cross_pol_channels: false\n            dem_download:\n                source:\n                top_left:\n                    x:\n                    y:\n                bottom_right:\n                    x:\n                    y:\n            geocode:\n                output_posting:\n                    A:\n                        x_posting: 20\n                        y_posting: 20\n                    B:\n                        x_posting: 80\n                        y_posting: 80\n                output_epsg: 32648\n                top_left:\n                    y_abs: 1585440.0\n                    x_abs: 218160.0\n                bottom_right:\n                    y_abs: 1254240.0\n                    x_abs: 556560.0\n            radar_grid_cubes:\n                output_epsg: 32648\n                output_posting:\n                    x_posting:\n                    y_posting:\n                top_left:\n                    y_abs:\n                    x_abs:\n                bottom_right:\n                    y_abs:\n                    x_abs:\n            rtc:\n                rtc_min_value_db: -30\n            tec_correction:\n                ignore_invalid_topside_tec: true\n                polyfit_tec_profile: true\n                num_sigma: 1.5\n        worker:\n            internet_access: false\n            gpu_enabled: false\n        logging:\n            path: scratch/gcov.log\n            write_mode: w\n        output:\n            output_gcov_terms:\n                mantissa_nbits: 16\n                compression_level: 1\n            output_secondary_layers:\n                compression_level: 1\n        qa:\n            qa_reports:\n                backscatter_img:\n                    output_individual_pngs: true\n                browse_latlon:\n                    output_browse_latlon: true\n\n"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/shadowMaskingApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the shadow masking has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/validSamplesSubSwathMaskingApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the valid samples subswath masking has been applied"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/wetTroposphericGeolocationCorrectionApplied",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the wet tropospheric correction was applied during the generation of the input RSLC to improve geolocation"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/parameters/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyA/azimuthIonosphere",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Azimuth ionospheric timing correction, derived from Total Electron Content (TEC) data",
+        "grid_mapping": "projection",
+        "max_value": 7.483742000002352e-05,
+        "mean_value": 3.428044141543559e-05,
+        "min_value": -5.20527116868251e-06,
+        "sample_stddev": 1.7759376002522687e-05,
+        "units": "seconds"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyA/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyA/slantRangeIonosphere",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Slant range ionospheric timing correction, derived from Total Electron Content (TEC) data",
+        "grid_mapping": "projection",
+        "max_value": -0.316979504505148,
+        "mean_value": -0.43611389235992043,
+        "min_value": -0.5059910714229517,
+        "sample_stddev": 0.04156334338220374,
+        "units": "meters"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyA/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyA/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyB",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyB/azimuthIonosphere",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Azimuth ionospheric timing correction, derived from Total Electron Content (TEC) data",
+        "grid_mapping": "projection",
+        "max_value": 6.756024887625246e-05,
+        "mean_value": 3.094569132709747e-05,
+        "min_value": -4.699069530796901e-06,
+        "sample_stddev": 1.6031756763722253e-05,
+        "units": "seconds"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyB/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyB/slantRangeIonosphere",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Slant range ionospheric timing correction, derived from Total Electron Content (TEC) data",
+        "grid_mapping": "projection",
+        "max_value": -0.28614700243183094,
+        "mean_value": -0.39370398869082385,
+        "min_value": -0.4567810850501632,
+        "sample_stddev": 0.03752024727723367,
+        "units": "meters"
+      },
+      "shape": [
+        332,
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyB/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        339
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/processingInformation/timingCorrections/frequencyB/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        332
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/alongTrackUnitVectorX",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "East component of the along-track unit vector at the target location, expressed in the east-north-up (ENU) coordinate system and projected onto the horizontal plane (i.e., excluding the up component)",
+        "grid_mapping": "projection",
+        "long_name": "Along-track unit vector X",
+        "units": "1",
+        "valid_max": 1.0,
+        "valid_min": -1.0
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/alongTrackUnitVectorY",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "North component of the along-track unit vector at the target location, expressed in the east-north-up (ENU) coordinate system and projected onto the horizontal plane (i.e., excluding the up component)",
+        "grid_mapping": "projection",
+        "long_name": "Along-track unit vector Y",
+        "units": "1",
+        "valid_max": 1.0,
+        "valid_min": -1.0
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/elevationAngle",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Elevation angle is defined as the angle between the LOS vector and the normal to the ellipsoid at the sensor",
+        "grid_mapping": "projection",
+        "long_name": "Elevation angle",
+        "units": "degrees",
+        "valid_max": 90.0,
+        "valid_min": 0.0
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/groundTrackVelocity",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Absolute value of the platform velocity scaled at the target height",
+        "grid_mapping": "projection",
+        "long_name": "Ground track velocity",
+        "units": "meters / second"
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/heightAboveEllipsoid",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ],
+          [
+            "<HDF5 object reference>",
+            0
+          ]
+        ],
+        "description": "Height values above WGS84 Ellipsoid corresponding to the radar grid",
+        "standard_name": "height_above_reference_ellipsoid",
+        "units": "meters"
+      },
+      "shape": [
+        21
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/incidenceAngle",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Incidence angle is defined as the angle between the LOS vector and the normal to the ellipsoid at the target height",
+        "grid_mapping": "projection",
+        "long_name": "Incidence angle",
+        "units": "degrees",
+        "valid_max": 90.0,
+        "valid_min": 0.0
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/losUnitVectorX",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "East component of the line-of-sight (LOS) unit vector, defined from the target to the sensor, expressed in the east-north-up (ENU) coordinate system with its origin at the target location",
+        "grid_mapping": "projection",
+        "long_name": "LOS unit vector X",
+        "units": "1",
+        "valid_max": 1.0,
+        "valid_min": -1.0
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/losUnitVectorY",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "North component of the line-of-sight (LOS) unit vector, defined from the target to the sensor, expressed in the east-north-up (ENU) coordinate system with its origin at the target location",
+        "grid_mapping": "projection",
+        "long_name": "LOS unit vector Y",
+        "units": "1",
+        "valid_max": 1.0,
+        "valid_min": -1.0
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/projection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product map grid projection: EPSG code, with additional projection information as HDF5 Attributes",
+        "ellipsoid": "WGS84",
+        "epsg_code": 32648,
+        "false_easting": 500000.0,
+        "false_northing": 0.0,
+        "grid_mapping_name": "transverse_mercator",
+        "inverse_flattening": 298.257223563,
+        "latitude_of_projection_origin": 0.0,
+        "longitude_of_central_meridian": 105.0,
+        "longitude_of_projection_origin": 0.0,
+        "scale_factor_at_central_meridian": 0.9996,
+        "semi_major_axis": 6378137.0,
+        "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 48N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32648\"]]",
+        "utm_zone_number": 48
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 32648
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/slantRange",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Slant range in meters",
+        "grid_mapping": "projection",
+        "long_name": "Slant range",
+        "units": "meters"
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/xCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ],
+          [
+            "<HDF5 object reference>",
+            2
+          ]
+        ],
+        "description": "X coordinates in specified projection",
+        "long_name": "X coordinates of projection",
+        "standard_name": "projection_x_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        689
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/yCoordinates",
+      "kind": "dataset",
+      "attrs": {
+        "CLASS": "DIMENSION_SCALE",
+        "NAME": "",
+        "REFERENCE_LIST": [
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ],
+          [
+            "<HDF5 object reference>",
+            1
+          ]
+        ],
+        "description": "Y coordinates in specified projection",
+        "long_name": "Y coordinates of projection",
+        "standard_name": "projection_y_coordinate",
+        "units": "meters"
+      },
+      "shape": [
+        674
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/radarGrid/zeroDopplerAzimuthTime",
+      "kind": "dataset",
+      "attrs": {
+        "DIMENSION_LIST": [
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ],
+          [
+            "<HDF5 object reference>"
+          ]
+        ],
+        "_FillValue": NaN,
+        "description": "Zero Doppler azimuth time in seconds since UTC epoch",
+        "grid_mapping": "projection",
+        "long_name": "Zero Doppler azimuth time",
+        "units": "seconds since 2026-10-29T00:00:00"
+      },
+      "shape": [
+        21,
+        674,
+        689
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/granuleId",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Unique granule identification name of the source data"
+      },
+      "shape": [],
+      "dtype": "|S91",
+      "value": "NISAR_L1_PR_RSLC_034_083_A_008_2005_DHDH_M_20261029T223634_20261029T223708_P05036_N_F_J_001"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/lookDirection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Look direction, either \"Left\" or \"Right\""
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "Left"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingCenter",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data processing center"
+      },
+      "shape": [],
+      "dtype": "|S1",
+      "value": "J"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingDateTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data processing date and time (in UTC) in the format YYYY-mm-ddTHH:MM:SS"
+      },
+      "shape": [],
+      "dtype": "|S19",
+      "value": "2026-11-10T16:25:23"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/azimuthCompression",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm for focusing the data in the azimuth direction corresponding to the source data processing information records"
+      },
+      "shape": [],
+      "dtype": "|S26",
+      "value": "time-domain backprojection"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/azimuthPresumming",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm for regridding and filling gaps in the raw data in azimuth corresponding to the source data processing information records"
+      },
+      "shape": [],
+      "dtype": "|S3",
+      "value": "BLU"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/dopplerCentroidEstimation",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm for calculating Doppler centroid corresponding to the source data processing information records"
+      },
+      "shape": [],
+      "dtype": "|S9",
+      "value": "geometric"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/elevationAntennaPatternCorrection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm for calibrating the antenna pattern corresponding to the source data processing information records"
+      },
+      "shape": [],
+      "dtype": "|S7",
+      "value": "enabled"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/rangeCompression",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm for focusing the data in the range direction corresponding to the source data processing information records"
+      },
+      "shape": [],
+      "dtype": "|S15",
+      "value": "FFT convolution"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/rangeSpreadingLossCorrection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm for calibrating range fading corresponding to the source data processing information records"
+      },
+      "shape": [],
+      "dtype": "|S7",
+      "value": "enabled"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/rfiDetection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm used for radio frequency interference (RFI) detection corresponding to the source data processing information records"
+      },
+      "shape": [],
+      "dtype": "|S9",
+      "value": "tone-rank"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/rfiMitigation",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Algorithm used for radio frequency interference (RFI) mitigation corresponding to the source data processing information records, either \"ST-EVD\" or \"FDNF\" (or \"disabled\" if no RFI mitigation was applied)"
+      },
+      "shape": [],
+      "dtype": "|S9",
+      "value": "tone-rank"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/algorithms/softwareVersion",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Software version used for processing the source data"
+      },
+      "shape": [],
+      "dtype": "|S7",
+      "value": "0.25.21"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyA/dopplerCentroid",
+      "kind": "dataset",
+      "attrs": {
+        "description": "2D LUT of Doppler centroid for frequency A corresponding to the source data processing information records",
+        "units": "hertz"
+      },
+      "shape": [
+        171,
+        108
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyA/slantRange",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slant range dimension corresponding to the source data processing information records",
+        "units": "meters"
+      },
+      "shape": [
+        108
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyA/zeroDopplerTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Vector of zero Doppler azimuth times, measured relative to a UTC epoch, corresponding to source data processing information records",
+        "units": "seconds since 2026-10-29T00:00:00"
+      },
+      "shape": [
+        171
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyB",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyB/dopplerCentroid",
+      "kind": "dataset",
+      "attrs": {
+        "description": "2D LUT of Doppler centroid for frequency B corresponding to the source data processing information records",
+        "units": "hertz"
+      },
+      "shape": [
+        171,
+        108
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyB/slantRange",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slant range dimension corresponding to source data processing information records",
+        "units": "meters"
+      },
+      "shape": [
+        108
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/frequencyB/zeroDopplerTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Vector of zero Doppler azimuth times, measured relative to a UTC epoch, corresponding to source data processing information records",
+        "units": "seconds since 2026-10-29T00:00:00"
+      },
+      "shape": [
+        171
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/referenceTerrainHeight",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Reference terrain height corresponding to the source data processing information records",
+        "units": "meters"
+      },
+      "shape": [
+        171
+      ],
+      "dtype": "float32"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/runConfigurationContents",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Contents of the run configuration file associated with the processing of the source data"
+      },
+      "shape": [],
+      "dtype": "|S10967",
+      "value": "input_file_group:\n    input_file_path:\n    -   /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_L0_PR_RRSD_034_083_A_156S_20261029T223553_20261029T223641_P05036_F_J_001.h5\n    -   /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_L0_PR_RRSD_034_083_A_148S_20261029T223641_20261029T223701_P05036_F_J_001.h5\n    -   /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_L0_PR_RRSD_034_083_A_156S_20261029T223701_20261029T223821_P05036_F_J_001.h5\n    qa_input_file: output/rslc.h5\ndynamic_ancillary_file_group:\n    dem_file: \n        /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/dem.vrt\n    dem_file_description: Modified Copernicus Digital Elevation Model for the \n        NASA-ISRO NISAR mission, version 1.3, based on the Copernicus DEM 30-m \n        (2023_1), referenced to the WGS 84 ellipsoid and provided in geographic \n        coordinates (EPSG:4326). This digital elevation model (DEM) was prepared\n        at the Jet Propulsion Laboratory, California Institute of Technology, \n        under contract with the National Aeronautics and Space Administration, \n        using the Copernicus DEM 30-m COP-DEM_GLO-30-DGED/2023_1 model provided \n        by the European Space Agency (ESA). The Copernicus DEM 30-m was produced\n        using Copernicus WorldDEM-30  DLR e.V. 2010-2014 and  Airbus Defence and\n        Space GmbH 2014-2018 provided under COPERNICUS by the European Union and\n        ESA; all rights reserved. The organizations in charge of the NISAR \n        mission or the Copernicus programme by law or by delegation do not incur\n        any liability for any use of the Copernicus WorldDEM-30. Users, \n        including those who redistribute, adapt, modify, or combine the data \n        contained in this DEM, must comply with the terms of the Copernicus DEM \n        30-m License Agreement. For additional information, please refer to \n        https://doi.org/10.5067/NIDEM-1 and https://doi.org/10.5270/ESA-c5d3d65.\n    orbit: \n        /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_ANC_J_PR_MOE_20261031T132536_20261029T205942_20261031T025942.xml\n    pointing: \n        /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_ANC_L_PR_NRP_20261031T060351_20261029T215942_20261031T035942.xml\n    external_calibration: \n        /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_LSAR_EXT_CAL_20250730T000000_05.yaml\n    internal_calibration: \n        /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_LSAR_INT_CAL_20250730T000000_04.h5\n    antenna_pattern: \n        /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_ANTPAT_20231129T093104_01.h5\n    corner_reflector_file: \n        /data/work/jobs/2026/11/10/16/22/SCIFLO_RSLC__release-r05.03.5-track_frame_034_083_008_0_state-config-20261107T234424.426016Z/NISAR_ANC_CORNER_REFLECTORS_008.csv\nproduct_path_group:\n    product_path: output\n    scratch_path: scratch\n    sas_output_file: output/rslc.h5\n    sas_config_file: output/rslc_config.yaml\n    qa_output_dir: output\n    product_counter: 1\nprimary_executable:\n    product_type: RSLC\n    product_version: 1.0.20\n    product_doi: 10.5067/NIL1RSLC-V1\n    composite_release_id: P05036\n    processing_type: PR\n    mission_id: NISAR\n    processing_center: J\n    partial_granule_id: \n        NISAR_L1_PR_RSLC_034_083_A_008_{MODE}_{POLE}_M_{StartDateTime}_{EndDateTime}_P05036_N_{C}_J_001\n    product_accuracy: N\n    data_source: M\ngeometry:\n    relative_orbit_number: 83\n    frame_number: 8\n    track_frame_polygon: '{\"coordinates\": [[[[105.33433683774248, 12.048540525643766],\n        [104.63000057210945, 11.884011464673138], [104.20565195885592, 11.783938977803427],\n        [103.11037666724465, 11.522390991225672], [102.97960303301319, 12.04816638052893],\n        [102.84788728699637, 12.573831045446573], [102.71520827703286, 13.099381155250791],\n        [102.58154433129077, 13.624812815095881], [103.68467017271318, 13.891195761528085],\n        [104.11217606089285, 13.992932163189947], [104.82189268258746, 14.159964478133649],\n        [104.9511523053351, 13.632240827879038], [105.07963282961181, 13.104426843476634],\n        [105.20735442952683, 12.576525699292366], [105.33433683774248, 12.048540525643766]]]],\n        \"type\": \"MultiPolygon\"}'\n    full_coverage_threshold_percent: 75.0\n    cycle_number: 34\n    orbit_direction: Ascending\nworker:\n    gpu_enabled: true\n    gpu_id: 0\nprocessing:\n    output_grid:\n        start_time: 2026-10-29 22:36:34+00:00\n        end_time: 2026-10-29 22:37:09+00:00\n        start_range:\n        end_range:\n        output_prf: 1520\n        time_snap_interval:\n        range_snap_interval: 24.982704833333333\n    ephemeris_crop_pad: 10.0\n    range_window:\n        kind: Kaiser\n        shape: 1.6\n    azimuth_window:\n        kind: Kaiser\n        shape: 0.0\n    elevation_antenna_pattern:\n        spacing: 24.982704833333333\n    noise_equivalent_backscatter:\n        algorithm: MEE\n        num_range_block: 80\n        threshold_invalid_range_block: 10.0\n        fill_nan_ends: true\n        cpi: 10\n        median_ev: true\n        diff: true\n        diff_method: single\n    radio_frequency_interference:\n        detection_enabled: true\n        mitigation_enabled: true\n        mitigation_algorithm: tone-rank\n        num_samples_rng_blk: 256\n        use_entire_pulse: false\n        slow_time_evd:\n            cpi_length: 16\n            max_emitters: 4\n            num_max_trim: 0\n            num_min_trim: 0\n            max_num_rfi_ev: 2\n            num_cpi_per_threshold_block: 15\n            off_diag_overlap_ratio: 0.25\n            diag_valid_ratio: 0.2\n            min_rank_frac: 0.7\n            rx_dynamic_range_db: 50.0\n            threshold_hyperparameters:\n                x:\n                -   2.0\n                -   20.0\n                y:\n                -   5.0\n                -   2.0\n        freq_notch_filter:\n            num_pulses_az: 1000\n            az_winsize: 256\n            rng_winsize: 100\n            trim_frac: 0.01\n            pvalue_threshold: 0.005\n            cdf_threshold: 0.1\n            nb_detect: true\n            wb_detect: true\n        tone_rank:\n            block_dims:\n            -   512\n            -   1024\n            nominal_false_positive_rate: 0.0005\n            reference_quantile: 0.5\n            interpolate: true\n            fill_value: zero\n            max_gap_fraction: 0.5\n    range_common_band_filter:\n        attenuation: 40.0\n        width: 0.15\n    rdr2geo:\n        tol_height: 1e-05\n        look_min_deg: 0.0\n        look_max_deg: 90.0\n    geo2rdr:\n        tol_aztime: 1e-07\n        time_start: 81312.0\n        time_end: 81542.0\n    lookup_tables:\n        downsampling_factor:\n            azimuth: 50\n            range: 50\n        margin_in_pixels:\n            azimuth: 11\n            range: 11\n    doppler:\n        azimuth_boresight_deg: 0.9\n        interp_method: bilinear\n        spacing:\n            range: 2000.0\n            azimuth: 1.0\n        margin_in_pixels:\n            azimuth: 11\n            range: 11\n    rangecomp:\n        mode: full\n        block_size:\n            range: 0\n            azimuth: 1024\n        notches: []\n    azcomp:\n        block_size:\n            range: 32768\n            azimuth: 1024\n        azimuth_resolution: 6.0\n        kernel:\n            type: Knab\n            halfwidth: 4\n            approx_oversample: 1.7\n            fit: Table\n            fit_order: 2048\n    dry_troposphere_model: tsx\n    dem:\n        reference_height: 0.0\n        interp_method: biquintic\n        require_full_coverage: true\n    metadata_cube_epsg: 4326\n    nominal_antenna_size:\n        range: 12.0\n        azimuth: 12.0\n    encoding_scale_factor: 1.0\n    delete_tempfiles: true\n    debug_dump_height: false\n    zero_fill_gaps: true\n    valid_data_mask:\n        polygon_segment_length: 50.0\n        num_ignore: 25\n        max_observation_gap: 0.002\n        min_segment_fraction: 0.25\n        max_pulse_gap: 1\n    caltone:\n        algorithm: auto\n        frequency:\n        wavelet_size: 64\n    is_enabled:\n        presum_blu: true\n        rangecomp: true\n        eap: true\n        range_cor: true\n        azcomp: true\noutput:\n    data_type: complex64_zero_mantissa\n    compression_enabled: true\n    compression_type: gzip\n    compression_level: 4\n    chunk_size:\n    -   512\n    -   512\n    shuffle: true\n    mantissa_nbits: 10\n    fs_strategy: page\n    fs_page_size: 4194304\nqa:\n    workflows:\n        validate: true\n        qa_reports: true\n        point_target_analyzer: true\n        absolute_radiometric_calibration: true\n        noise_equivalent_backscatter: true\n    software_config:\n        use_cache: true\n        delete_qa_scratch_files: true\n    validation:\n        metadata_luts_fail_if_all_nan: true\n    qa_reports:\n        backscatter_img:\n            linear_units: true\n            nlooks_freqa:\n            nlooks_freqb:\n            longest_side_max: 2048\n            percentile_for_clipping:\n            -   5.0\n            -   95.0\n            gamma: 0.5\n            nan_color_in_pdf: blue\n            tile_shape:\n            -   1024\n            -   1024\n            output_individual_pngs: true\n        browse_latlon:\n            output_browse_latlon: true\n            resample: bilinear\n        histogram:\n            decimation_ratio:\n            -   8\n            -   8\n            backscatter_histogram_bin_edges_range:\n            -   -80.0\n            -   20.0\n            phase_histogram_y_axis_range:\n            -   0.0\n            -   0.5\n            phs_in_radians: true\n            tile_shape:\n            -   1024\n            -   -1\n        range_spectra:\n            az_decimation: 8\n            hz_to_mhz: true\n            tile_height: 512\n        azimuth_spectra:\n            num_columns: 1024\n            hz_to_mhz: false\n            tile_width: 256\n    point_target_analyzer:\n        nchip: 64\n        upsample_factor: 64\n        peak_find_domain: time\n        num_sidelobes: 10\n        predict_null: false\n        fs_bw_ratio: 1.2\n        window_type: rect\n        window_parameter: 0.0\n    absolute_radiometric_calibration:\n        nchip: 64\n        upsample_factor: 64\n        peak_find_domain: time\n        nfit: 5\n        power_method: adjusted_box\n        power_threshold: 3.0\npge_name_group:\n    pge_name: RSLC_L_PGE\ndebug_level_group:\n    debug_switch: false\n"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/slantRange",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slant range dimension corresponding to source data processing information records",
+        "units": "meters"
+      },
+      "shape": [
+        108
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/processingInformation/parameters/zeroDopplerTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Vector of zero Doppler azimuth times, measured relative to a UTC epoch, corresponding to source data processing information records",
+        "units": "seconds since 2026-10-29T00:00:00"
+      },
+      "shape": [
+        171
+      ],
+      "dtype": "float64"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/productDoi",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Digital Object Identifier (DOI) of the source product"
+      },
+      "shape": [],
+      "dtype": "|S19",
+      "value": "10.5067/NIL1RSLC-V1"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/productGeometry",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data product geometry, either \"Slant range\" or \"Ground range\""
+      },
+      "shape": [],
+      "dtype": "|S11",
+      "value": "Slant range"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/productLevel",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data product level. Product level. \"L0A\": Unprocessed instrument data; \"L0B\": Reformatted, unprocessed instrument data; \"L1\": Processed instrument data in radar coordinates system; and \"L2\": Processed instrument data in geocoded coordinates system"
+      },
+      "shape": [],
+      "dtype": "|S2",
+      "value": "L1"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/productType",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product type of the source data"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "RSLC"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/productVersion",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product version of the source data"
+      },
+      "shape": [],
+      "dtype": "|S6",
+      "value": "1.0.20"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/acquiredRangeBandwidth",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data acquisition range bandwidth in hertz. In case of mode combination, this corresponds to mode with largest bandwidth",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 40000000.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/centerFrequency",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Center frequency of the processed source data image in hertz",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 1229000000.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/farRangeIncidenceAngle",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Far-range incidence angle in degrees at the central azimuth line. The incidence angle is defined as the angle between the LOS vector and the normal to the ellipsoid at the target height",
+        "units": "degrees"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 47.21837360347121
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/listOfPolarizations",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of polarization layers with frequency A within the source data product"
+      },
+      "shape": [
+        2
+      ],
+      "dtype": "|S2",
+      "value": [
+        "HV",
+        "HH"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/nearRangeIncidenceAngle",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Near-range incidence angle in degrees at the central azimuth line. The incidence angle is defined as the angle between the LOS vector and the normal to the ellipsoid at the target height",
+        "units": "degrees"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 33.514107944027884
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/numberOfRangeSamples",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of slant range samples for each azimuth line within the source data",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 26292
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/processedAzimuthBandwidth",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data processed azimuth bandwidth in hertz",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 1262.165612588661
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/processedRangeBandwidth",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data processed range bandwidth in hertz",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 20000000.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/rangeResolution",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal range resolution in meters of the source data",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 7.49481145
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/sceneCenterAlongTrackResolution",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal along-track resolution in meters of the source data at scene center",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 5.366285992527377
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/sceneCenterAlongTrackSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal along-track spacing in meters between consecutive lines near mid swath of the source data",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 4.456014241502807
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/sceneCenterGroundRangeSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal ground range spacing in meters between consecutive pixels near mid swath of the source data",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 9.449839085076873
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/slantRangeSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slant range spacing of the source data in meters",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 6.245676208333333
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyA/slantRangeStart",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data slant range start distance",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 882364.1520085
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/acquiredRangeBandwidth",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data acquisition range bandwidth in hertz. In case of mode combination, this corresponds to mode with largest bandwidth",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 5000000.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/centerFrequency",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Center frequency of the processed source data image in hertz",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 1293500000.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/farRangeIncidenceAngle",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Far-range incidence angle in degrees at the central azimuth line. The incidence angle is defined as the angle between the LOS vector and the normal to the ellipsoid at the target height",
+        "units": "degrees"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 47.21719491876255
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/listOfPolarizations",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of polarization layers with frequency B within the source data product"
+      },
+      "shape": [
+        2
+      ],
+      "dtype": "|S2",
+      "value": [
+        "HH",
+        "HV"
+      ]
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/nearRangeIncidenceAngle",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Near-range incidence angle in degrees at the central azimuth line. The incidence angle is defined as the angle between the LOS vector and the normal to the ellipsoid at the target height",
+        "units": "degrees"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 33.514107944027884
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/numberOfRangeSamples",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of slant range samples for each azimuth line within the source data",
+        "units": "1"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 6573
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/processedAzimuthBandwidth",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data processed azimuth bandwidth in hertz",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 1262.165612588661
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/processedRangeBandwidth",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data processed range bandwidth in hertz",
+        "units": "hertz"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 5000000.0
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/rangeResolution",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal range resolution in meters of the source data",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 29.9792458
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/sceneCenterAlongTrackResolution",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal along-track resolution in meters of the source data at scene center",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 5.366285988468191
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/sceneCenterAlongTrackSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal along-track spacing in meters between consecutive lines near mid swath of the source data",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 4.456014238132172
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/sceneCenterGroundRangeSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Nominal ground range spacing in meters between consecutive pixels near mid swath of the source data",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 37.799925131243484
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/slantRangeSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Slant range spacing of the source data in meters",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 24.982704833333333
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/frequencyB/slantRangeStart",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Source data slant range start distance",
+        "units": "meters"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 882364.1520085
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/numberOfAzimuthLines",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Number of azimuth lines within the source data product",
+        "units": "seconds"
+      },
+      "shape": [],
+      "dtype": "uint64",
+      "value": 53200
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/zeroDopplerEndTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Azimuth stop time (in UTC) of the source data product in the format YYYY-mm-ddTHH:MM:SS.sssssssss"
+      },
+      "shape": [],
+      "dtype": "|S29",
+      "value": "2026-10-29T22:37:08.999342105"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/zeroDopplerStartTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Azimuth start time (in UTC) of the source data product in the format YYYY-mm-ddTHH:MM:SS.sssssssss"
+      },
+      "shape": [],
+      "dtype": "|S29",
+      "value": "2026-10-29T22:36:34.000000000"
+    },
+    {
+      "path": "/science/LSAR/GCOV/metadata/sourceData/swaths/zeroDopplerTimeSpacing",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Time interval in the along-track direction of the source data in seconds",
+        "units": "seconds"
+      },
+      "shape": [],
+      "dtype": "float64",
+      "value": 0.0006578947368421052
+    },
+    {
+      "path": "/science/LSAR/identification",
+      "kind": "group",
+      "attrs": {}
+    },
+    {
+      "path": "/science/LSAR/identification/absoluteOrbitNumber",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Absolute orbit number"
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 6583
+    },
+    {
+      "path": "/science/LSAR/identification/boundingPolygon",
+      "kind": "dataset",
+      "attrs": {
+        "description": "OGR compatible WKT representing the bounding polygon of the image. Horizontal coordinates are WGS84 longitude followed by latitude (both in degrees), and the vertical coordinate is the height above the WGS84 ellipsoid in meters. The first point corresponds to the start-time, near-range radar coordinate, and the perimeter is traversed in counterclockwise order on the map. This means the traversal order in radar coordinates differs for left-looking and right-looking sensors. The polygon includes the four corners of the radar grid, with equal numbers of points distributed evenly in radar coordinates along each edge",
+        "epsg": 4326,
+        "ogr_geometry": "polygon"
+      },
+      "shape": [],
+      "dtype": "|S2092",
+      "value": "POLYGON ((105.410005512453 12.026263034819 32.6017222807196,105.359117236997 12.2345558612821 98.5633596339086,105.309795907792 12.4432249612357 40.8246660069623,105.259986338991 12.651793829706 11.5586607018911,105.209338193764 12.8601816871187 36.4749564172908,105.158897764949 13.0686307705623 38.1332906465093,105.107691875505 13.2769150707994 88.2917546352086,105.057433434791 13.4854338981354 60.4484799191095,105.005938430106 13.6936778603976 115.612930486355,104.956230846507 13.9023524132997 30.8749126307925,104.90506248726 14.1107006472816 45.3894116856629,104.643524496398 14.0495150142926 43.8977052940607,104.392857182955 13.9905760871815 60.7168085763002,104.15159455514 13.9335752373335 71.5596542563912,103.918607214793 13.878275854406 52.7717604265651,103.692696646705 13.8244187906264 11.4427720227223,103.472518466034 13.771704047495 -6.33505930649999,103.25748527576 13.7200079804297 -9.91131931843554,103.047106693282 13.6692276385205 -8.2185332953265,102.840951135504 13.6192720871997 -7.82069488413364,102.638466118298 13.5700189967478 7.21324130032532,102.691192794798 13.3625247416046 11.0768222541458,102.743778429506 13.1550150794477 14.2791903640467,102.795559850115 12.9473288076412 97.1039734992781,102.848026907579 12.7398269913551 79.7840364283683,102.899489578606 12.5321004883712 166.721755608696,102.948464079613 12.3237907811261 538.229552075432,102.997683282706 12.1155596023504 863.963075184965,103.054045179705 11.9090711425838 305.921569823027,103.105930350001 11.7015189541107 274.411284787256,103.159051816833 11.4942811311446 76.26506198575,103.358655482888 11.5422527980414 233.180220749152,103.563225190659 11.5912581726288 241.117813775818,103.769234520713 11.640445145597 542.201109297307,103.986913043061 11.6922378940499 91.0969163091344,104.205244856909 11.7440013424 131.133804629028,104.430529503853 11.797217608847 71.7832946481353,104.662693671704 11.8518505209309 10.8165836380476,104.902263817478 11.9080036953739 -4.63080377231974,105.150858567426 11.9660322992059 -2.12278409860143,105.410005512453 12.026263034819 32.6017222807196))"
+    },
+    {
+      "path": "/science/LSAR/identification/compositeReleaseId",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Unique version identifier of the science data production system"
+      },
+      "shape": [],
+      "dtype": "|S6",
+      "value": "P05036"
+    },
+    {
+      "path": "/science/LSAR/identification/diagnosticModeFlag",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Indicates if the radar operation mode is a diagnostic mode (1-2) or DBFed science (0): 0, 1, or 2"
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 0
+    },
+    {
+      "path": "/science/LSAR/identification/frameNumber",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Frame number"
+      },
+      "shape": [],
+      "dtype": "uint16",
+      "value": 8
+    },
+    {
+      "path": "/science/LSAR/identification/granuleId",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Unique granule identification name"
+      },
+      "shape": [],
+      "dtype": "|S91",
+      "value": "NISAR_L2_PR_GCOV_034_083_A_008_2005_DHDH_M_20261029T223634_20261029T223708_P05036_N_F_J_001"
+    },
+    {
+      "path": "/science/LSAR/identification/hasInputDataException",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Indication of input data exceptions or anomalies present in this granule. Bitwise OR of instrument exception codes for all image pixels (0: no anomaly, 2: NISAR LSAR qFSP-H1 sample slip)"
+      },
+      "shape": [],
+      "dtype": "uint8",
+      "value": 0
+    },
+    {
+      "path": "/science/LSAR/identification/instrumentName",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Name of the instrument used to collect the remote sensing data provided in this product"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "LSAR"
+    },
+    {
+      "path": "/science/LSAR/identification/isDithered",
+      "kind": "dataset",
+      "attrs": {
+        "description": "\"True\" if the pulse timing was varied (dithered) during acquisition, \"False\" otherwise"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/identification/isFullFrame",
+      "kind": "dataset",
+      "attrs": {
+        "description": "\"True\" if the product fully covers a NISAR frame, \"False\" if partial coverage",
+        "frameCoveragePercentage": 95.26386365468085,
+        "thresholdPercentage": 75.0
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/identification/isGeocoded",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag to indicate if the product data is in the radar geometry (\"False\") or in the map geometry (\"True\")"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/identification/isJointObservation",
+      "kind": "dataset",
+      "attrs": {
+        "description": "\"True\" if any portion of this product was acquired in a joint observation mode (e.g., L-band and S-band simultaneously), \"False\" otherwise"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/identification/isMixedMode",
+      "kind": "dataset",
+      "attrs": {
+        "description": "\"True\" if this product is a composite of data collected in multiple radar modes, \"False\" otherwise"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "True"
+    },
+    {
+      "path": "/science/LSAR/identification/isUrgentObservation",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Flag indicating if observation is nominal (\"False\") or urgent (\"True\")"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "False"
+    },
+    {
+      "path": "/science/LSAR/identification/listOfFrequencies",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of frequency layers available in the product"
+      },
+      "shape": [
+        2
+      ],
+      "dtype": "|S1",
+      "value": [
+        "A",
+        "B"
+      ]
+    },
+    {
+      "path": "/science/LSAR/identification/listOfObservationModes",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of observation modes of the L0B granules used to generate the input RSLC (one mode per L0B)"
+      },
+      "shape": [
+        1
+      ],
+      "dtype": "|S15",
+      "value": [
+        "(NOT SPECIFIED)"
+      ]
+    },
+    {
+      "path": "/science/LSAR/identification/lookDirection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Look direction, either \"Left\" or \"Right\""
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "Left"
+    },
+    {
+      "path": "/science/LSAR/identification/missionId",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Mission identifier"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "NISAR"
+    },
+    {
+      "path": "/science/LSAR/identification/orbitPassDirection",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Orbit direction, either \"Ascending\" or \"Descending\""
+      },
+      "shape": [],
+      "dtype": "|S9",
+      "value": "Ascending"
+    },
+    {
+      "path": "/science/LSAR/identification/plannedDatatakeId",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of planned datatakes included in the product"
+      },
+      "shape": [
+        3
+      ],
+      "dtype": "|S18",
+      "value": [
+        "dtid_2026302223532",
+        "dtid_2026302223532",
+        "dtid_2026302223532"
+      ]
+    },
+    {
+      "path": "/science/LSAR/identification/plannedObservationId",
+      "kind": "dataset",
+      "attrs": {
+        "description": "List of planned observations included in the product"
+      },
+      "shape": [
+        3
+      ],
+      "dtype": "|S17",
+      "value": [
+        "oid_2026302223556",
+        "oid_2026302223644",
+        "oid_2026302223704"
+      ]
+    },
+    {
+      "path": "/science/LSAR/identification/platformName",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Name of the platform used to collect the remote sensing data provided in this product"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "NISAR"
+    },
+    {
+      "path": "/science/LSAR/identification/processingCenter",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Data processing center"
+      },
+      "shape": [],
+      "dtype": "|S3",
+      "value": "JPL"
+    },
+    {
+      "path": "/science/LSAR/identification/processingDateTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Processing date and time (in UTC) in the format YYYY-mm-ddTHH:MM:SS"
+      },
+      "shape": [],
+      "dtype": "|S19",
+      "value": "2026-11-10T23:32:13"
+    },
+    {
+      "path": "/science/LSAR/identification/processingType",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Processing pipeline used to generate this granule. \"Nominal\": standard production system; \"Urgent\": time-sensitive processing in response to urgent response events; \"Custom\": user-initiated processing outside the nominal production system"
+      },
+      "shape": [],
+      "dtype": "|S7",
+      "value": "Nominal"
+    },
+    {
+      "path": "/science/LSAR/identification/productDoi",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Digital Object Identifier (DOI) for the product"
+      },
+      "shape": [],
+      "dtype": "|S19",
+      "value": "10.5067/NIL2GCOV-V1"
+    },
+    {
+      "path": "/science/LSAR/identification/productLevel",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product level. \"L0A\": Unprocessed instrument data; \"L0B\": Reformatted, unprocessed instrument data; \"L1\": Processed instrument data in radar coordinates system; and \"L2\": Processed instrument data in geocoded coordinates system"
+      },
+      "shape": [],
+      "dtype": "|S2",
+      "value": "L2"
+    },
+    {
+      "path": "/science/LSAR/identification/productSpecificationVersion",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product specification version which represents the schema of this product"
+      },
+      "shape": [],
+      "dtype": "|S5",
+      "value": "1.6.0"
+    },
+    {
+      "path": "/science/LSAR/identification/productType",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product type"
+      },
+      "shape": [],
+      "dtype": "|S4",
+      "value": "GCOV"
+    },
+    {
+      "path": "/science/LSAR/identification/productVersion",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Product version which represents the structure of the product and the science content governed by the algorithm, input data, and processing parameters"
+      },
+      "shape": [],
+      "dtype": "|S6",
+      "value": "1.0.20"
+    },
+    {
+      "path": "/science/LSAR/identification/radarBand",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Acquired frequency band, either \"L\" or \"S\""
+      },
+      "shape": [],
+      "dtype": "|S1",
+      "value": "L"
+    },
+    {
+      "path": "/science/LSAR/identification/staticLayersDataAccess",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Location of the static layers product associated with this product (URL or DOI)"
+      },
+      "shape": [],
+      "dtype": "|S161",
+      "value": "https://nisar-services.earthdata.nasa.gov/redirect/NISAR_L2_STATIC/NISAR_L2_PR_GCOV_034_083_A_008_2005_DHDH_M_20261029T223634_20261029T223708_P05036_N_F_J_001.h5"
+    },
+    {
+      "path": "/science/LSAR/identification/trackNumber",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Track number"
+      },
+      "shape": [],
+      "dtype": "uint32",
+      "value": 83
+    },
+    {
+      "path": "/science/LSAR/identification/zeroDopplerEndTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Azimuth stop time (in UTC) of the product in the format YYYY-mm-ddTHH:MM:SS.sssssssss"
+      },
+      "shape": [],
+      "dtype": "|S29",
+      "value": "2026-10-29T22:37:08.999342105"
+    },
+    {
+      "path": "/science/LSAR/identification/zeroDopplerStartTime",
+      "kind": "dataset",
+      "attrs": {
+        "description": "Azimuth start time (in UTC) of the product in the format YYYY-mm-ddTHH:MM:SS.sssssssss"
+      },
+      "shape": [],
+      "dtype": "|S29",
+      "value": "2026-10-29T22:36:34.000000000"
+    }
+  ]
+}

@@ -12,8 +12,9 @@ interface Props {
 }
 
 export default function Timeline({ inventory, manifest, pairIdx, setPairIdx }: Props) {
-  const [area, setArea] = useState<string>(manifest?.area ?? "tonle_sap");
-  const inv = inventory.areas[area];
+  const first = Object.keys(inventory.areas)[0];
+  const [area, setArea] = useState<string>(manifest && inventory.areas[manifest.area] ? manifest.area : first);
+  const inv = inventory.areas[area] ?? inventory.areas[first];
   const { lanes, t0, t1 } = useMemo(() => {
     const g = inv.granules;
     const keys = [...new Set(g.map((x) => `${x.track}${x.direction[0]} · f${x.frame} · ${x.range_bandwidth} MHz`))].sort();

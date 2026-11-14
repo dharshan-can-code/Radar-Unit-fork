@@ -194,3 +194,12 @@ def test_local_status_detects_incomplete(tmp_path):
     assert refresh.local_status({"url": "https://x/a.h5", "h5_bytes": 5}, tmp_path) == "complete"
     assert refresh.local_status({"url": "https://x/a.h5", "h5_bytes": 9}, tmp_path) == "incomplete"
     assert refresh.local_status({"url": "https://x/b.h5", "h5_bytes": 9}, tmp_path) == "missing"
+
+
+def test_quality_mask_uint16_validity_bits():
+    """P05036 layout: low byte = anomaly codes, 256/512 = HH/HV fully focused, 65535 = fill."""
+    from gcov_reader import quality_ok
+    mask = np.array([1, 1, 1, 1, 1], np.uint8)
+    exc = np.array([768, 256, 770, 65535, 0], np.uint16)
+    assert quality_ok(mask, exc, "HH").tolist() == [True, True, False, False, False]
+    assert quality_ok(mask, exc, "HV").tolist() == [True, False, False, False, False]

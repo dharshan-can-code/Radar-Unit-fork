@@ -1,0 +1,12 @@
+asf_search==14.1.0
+fastapi==0.115.6
+h5py==3.16.0
+numpy==2.5.4
+pandas==3.1.1
+pillow==13.0.0
+pydantic==2.14.3
+pyproj==3.8.0
+pytest==9.2.0
+requests==2.34.2
+shapely==2.2.0
+uvicorn==0.32.1

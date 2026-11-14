@@ -24,6 +24,9 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
+## Backend: search anywhere on Earth
+`npm.cmd run api` starts the FastAPI server on http://localhost:8000. Type a place, list the NISAR acquisitions over it live from ASF, and analyse a 2–40 km window read remotely, with no full downloads. See [BACKEND.md](BACKEND.md).
+
 ## Refresh the data (one command)
 Needs an Earthdata token, either in `$env:EARTHDATA_TOKEN` or in the git-ignored file `.earthdata_token` (see DATA_FEASIBILITY_REPORT.md).
 ```powershell
@@ -42,7 +45,7 @@ The refresh only runs when you run it, or when you schedule it yourself (e.g. Wi
 ## Run the data pipeline step by step (Python 3.11+)
 ```bash
 python -m venv .venv
-.venv/Scripts/python -m pip install asf_search h5py numpy pandas shapely pyproj pillow pytest   # Windows path; use .venv/bin on macOS/Linux
+.venv/Scripts/python -m pip install -r requirements.txt   # Windows path; use .venv/bin on macOS/Linux
 
 # 1. Discover acquisitions (public metadata, no login)
 .venv/Scripts/python scripts/discovery/discover.py

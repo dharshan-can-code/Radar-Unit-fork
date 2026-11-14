@@ -18,7 +18,7 @@ export interface Observation {
   id: string; date: string; start_time: string; scene: string; crid: string | null;
   channels: Channel[]; maturity?: string; track?: number; frame?: number; direction?: string;
   collection?: string; valid_fraction: number;
-  first_listed_utc?: string | null; downloaded_utc?: string | null;
+  first_listed_utc?: string | null; downloaded_utc?: string | null; read_utc?: string | null;
   screening_counts: { low_backscatter: number; double_bounce: number; valid_cells: number };
   cell_area_km2: number;
 }
@@ -30,6 +30,7 @@ export interface Pair {
 
 export interface Manifest {
   area: string; stack: string; name: string; bbox: [number, number, number, number];
+  center?: [number, number]; size_km?: number;
   is_demonstration: boolean; demonstration_note: string | null; generated_utc: string;
   epsg: number;
   display: { res_m: number; nx: number; ny: number; corners: [number, number][] };
@@ -40,7 +41,7 @@ export interface Manifest {
   screening: Screening;
   observations: Observation[];
   pairs: Pair[];
-  processing: { steps: string[]; script: string };
+  processing: { steps: string[]; script: string; elapsed_s?: number; bytes_fetched?: number; range_requests?: number };
 }
 
 export interface Granule {
@@ -88,12 +89,17 @@ export async function loadManifest(area: string, stack: string): Promise<Manifes
   const r = await fetch(`${BASE}/${area}/${stack}/manifest.json`, { cache: "no-store" });
   return r.ok ? r.json() : null;
 }
+export const API = process.env.NEXT_PUBLIC_API ?? "http://localhost:8000";
+/** Batch results live under /data/<area>/<stack>; live results are served by the backend. */
+export const dataBase = (m: Manifest) =>
+  m.area === "live" ? `${API}/api/results/${m.stack}` : `${BASE}/${m.area}/${m.stack}`;
 export async function loadGrid(m: Manifest): Promise<Int16Array> {
-  const r = await fetch(`${BASE}/${m.area}/${m.stack}/${m.grid.file}?v=${encodeURIComponent(m.generated_utc)}`);
+  const r = await fetch(`${dataBase(m)}/${m.grid.file}?v=${encodeURIComponent(m.generated_utc)}`);
+  if (!r.ok) throw new Error(`grid not found (${r.status})`);
   return new Int16Array(await r.arrayBuffer());
 }
 export const imgUrl = (m: Manifest, name: string) =>
-  `${BASE}/${m.area}/${m.stack}/img/${name}.png?v=${encodeURIComponent(m.generated_utc)}`;
+  `${dataBase(m)}/img/${name}.png?v=${encodeURIComponent(m.generated_utc)}`;
 
 // ---- geometry -------------------------------------------------------------
 

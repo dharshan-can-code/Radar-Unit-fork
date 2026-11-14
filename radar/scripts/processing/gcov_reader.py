@@ -113,19 +113,34 @@ def open_info(path: str | Path) -> GCOVInfo:
     return info
 
 
-def quality_ok(mask_block, exception_block):
+VALIDITY_BITS = {"HH": 256, "HV": 512, "VH": 1024, "VV": 2048}
+
+
+def quality_ok(mask_block, exception_block, pol: str | None = None):
     """Product quality flags -> boolean 'usable' array (verified against a real
     P05023 GCOV file, 2026-11-14):
       mask: subswath number (1..254) for valid samples; 0 = partially focused /
             invalid (values there are still finite, so they MUST be excluded);
             255 = outside the acquisition (fill).
-      inputDataExceptionMask: 0 = no anomaly; any bit set = exclude.
+      inputDataExceptionMask (two layouts, both verified on real files):
+        * uint8 (P05023, product 1.0.11): anomaly codes only; 0 = no anomaly.
+        * uint16 (P05036, product 1.0.20): low byte = anomaly codes (0 = none,
+          2 = sample slip); high bits = validity per polarisation, set ON for
+          fully-focused data (256 HH, 512 HV, 1024 VH, 2048 VV); 65535 = fill.
+        A sample is usable if it has no anomaly code and, when validity bits
+        are present, the bit of the polarisation being read is set.
     Missing layers (e.g. synthetic fixtures) impose no restriction."""
     ok = True
     if mask_block is not None:
         ok = (mask_block >= 1) & (mask_block <= 254)
     if exception_block is not None:
-        ok = ok & (exception_block == 0)
+        e = np.asarray(exception_block)
+        if e.dtype.itemsize >= 2:
+            ok = ok & (e != 0xFFFF) & ((e & 0x00FF) == 0)
+            if pol in VALIDITY_BITS:
+                ok = ok & ((e & VALIDITY_BITS[pol]) != 0)
+        else:
+            ok = ok & (e == 0)
     return ok
 
 
@@ -146,5 +161,5 @@ def read_window(info: GCOVInfo, pol: str, xlim: tuple, ylim: tuple, row_chunk: i
         for r in range(r0, r1, row_chunk):
             re_ = min(r + row_chunk, r1)
             q = quality_ok(mk[r:re_, c0:c1] if mk is not None else None,
-                           ex[r:re_, c0:c1] if ex is not None else None)
+                           ex[r:re_, c0:c1] if ex is not None else None, pol)
             yield info.x[c0:c1], info.y[r:re_], ds[r:re_, c0:c1], q
