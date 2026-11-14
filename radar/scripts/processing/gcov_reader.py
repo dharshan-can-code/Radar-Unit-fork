@@ -113,9 +113,25 @@ def open_info(path: str | Path) -> GCOVInfo:
     return info
 
 
+def quality_ok(mask_block, exception_block):
+    """Product quality flags -> boolean 'usable' array (verified against a real
+    P05023 GCOV file, 2026-11-14):
+      mask: subswath number (1..254) for valid samples; 0 = partially focused /
+            invalid (values there are still finite, so they MUST be excluded);
+            255 = outside the acquisition (fill).
+      inputDataExceptionMask: 0 = no anomaly; any bit set = exclude.
+    Missing layers (e.g. synthetic fixtures) impose no restriction."""
+    ok = True
+    if mask_block is not None:
+        ok = (mask_block >= 1) & (mask_block <= 254)
+    if exception_block is not None:
+        ok = ok & (exception_block == 0)
+    return ok
+
+
 def read_window(info: GCOVInfo, pol: str, xlim: tuple, ylim: tuple, row_chunk: int = 512):
-    """Yield (x_sub, y_sub, power_block) for the part of the grid inside the
-    given projected x/y limits, in row chunks to bound memory."""
+    """Yield (x_sub, y_sub, power_block, quality_ok_block) for the part of the
+    grid inside the given projected x/y limits, in row chunks to bound memory."""
     xi = np.where((info.x >= xlim[0]) & (info.x <= xlim[1]))[0]
     yi = np.where((info.y >= ylim[0]) & (info.y <= ylim[1]))[0]
     if xi.size == 0 or yi.size == 0:
@@ -123,7 +139,12 @@ def read_window(info: GCOVInfo, pol: str, xlim: tuple, ylim: tuple, row_chunk: i
     c0, c1 = xi.min(), xi.max() + 1
     r0, r1 = yi.min(), yi.max() + 1
     with h5py.File(info.path, "r") as f:
-        ds = f[_find_grid_group(f)][DIAGONAL_TERMS[pol]]
+        g = f[_find_grid_group(f)]
+        ds = g[DIAGONAL_TERMS[pol]]
+        mk = g["mask"] if "mask" in g else None
+        ex = g["inputDataExceptionMask"] if "inputDataExceptionMask" in g else None
         for r in range(r0, r1, row_chunk):
             re_ = min(r + row_chunk, r1)
-            yield info.x[c0:c1], info.y[r:re_], ds[r:re_, c0:c1]
+            q = quality_ok(mk[r:re_, c0:c1] if mk is not None else None,
+                           ex[r:re_, c0:c1] if ex is not None else None)
+            yield info.x[c0:c1], info.y[r:re_], ds[r:re_, c0:c1], q

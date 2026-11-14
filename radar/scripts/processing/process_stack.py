@@ -153,8 +153,8 @@ def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = Fal
             if pol not in i.channels:
                 continue
             acc = radar.GridAccumulator(x0, y1, res, nx, ny)
-            for xs, ys, block in read_window(i, pol, (bx0 - res, bx1 + res), (by0 - res, by1 + res)):
-                acc.add(xs, ys, block, radar.valid_power(block, i.fill_values.get(pol)))
+            for xs, ys, block, q in read_window(i, pol, (bx0 - res, bx1 + res), (by0 - res, by1 + res)):
+                acc.add(xs, ys, block, radar.valid_power(block, i.fill_values.get(pol)) & q)
             p, vf = acc.mean(), acc.valid_fraction()
             p[vf < min_vf] = np.nan
             dbs[pol], vfs[pol] = radar.to_db(p), vf
@@ -218,6 +218,8 @@ def run(area: str, files: list[str], res: float = 100.0, allow_mixed: bool = Fal
         "processing": {
             "steps": ["read GCOV frequencyA diagonal terms (linear gamma-naught power)",
                       "exclude non-finite, <=0 and _FillValue samples",
+                      "exclude samples with product mask 0 (partially focused) or 255 (outside swath), "
+                      "or any inputDataExceptionMask bit set",
                       f"bin onto common {res:.0f} m grid in EPSG:{epsg} by mean linear power",
                       f"drop cells with valid fraction < {min_vf}",
                       "dB = 10*log10(power)", "change = dB(after) - dB(before), consecutive dates only",

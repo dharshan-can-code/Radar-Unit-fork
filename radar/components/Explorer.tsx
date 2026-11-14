@@ -165,7 +165,7 @@ export default function Explorer(p: Props) {
   return (
     <div className="flex flex-col gap-3">
       {/* toolbar */}
-      <div className="flex flex-wrap items-center gap-2 text-sm">
+      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
         <Seg value={mode} onChange={(v) => p.setMode(v as Mode)} options={[
           { v: "compare", label: "Before / After", icon: <SplitSquareHorizontal size={14} /> },
           { v: "change", label: "Measured change", icon: <Layers size={14} /> },
@@ -176,7 +176,7 @@ export default function Explorer(p: Props) {
             { v: "HH", label: "HH" }, { v: "HV", label: "HV", disabled: !hvOk },
           ]} />
         )}
-        <div className="ml-auto flex gap-2">
+        <div className="flex flex-wrap gap-2 sm:ml-auto">
           <button onClick={() => setDraw((d) => !d)}
             className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 ${draw ? "border-amber bg-amber/15 text-amber" : "border-line bg-panel text-text hover:border-cyan/50"}`}>
             {draw ? <BoxSelect size={14} /> : <MousePointer2 size={14} />}{draw ? "Drag a box on the map…" : "Draw region"}
@@ -199,8 +199,8 @@ export default function Explorer(p: Props) {
         </div>
         {mode !== "change" && pair && (
           <>
-            <div className="pointer-events-none absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-xs text-muted">BEFORE · {pair.before}</div>
-            <div className="pointer-events-none absolute top-3 right-14 rounded bg-bg/80 px-2 py-1 font-mono text-xs text-muted">AFTER · {pair.after}</div>
+            <div className="pointer-events-none absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-[10px] text-muted sm:text-xs"><span className="hidden sm:inline">BEFORE · </span>{pair.before}</div>
+            <div className="pointer-events-none absolute top-3 right-14 rounded bg-bg/80 px-2 py-1 font-mono text-[10px] text-muted sm:text-xs"><span className="hidden sm:inline">AFTER · </span>{pair.after}</div>
             <div className="absolute top-0 bottom-0 z-10 w-0.5 bg-cyan/80" style={{ left: `${swipe}%` }}>
               <button aria-label="Drag to compare" onPointerDown={onHandle}
                 className="absolute top-1/2 -left-4 h-8 w-8 -translate-y-1/2 cursor-ew-resize rounded-full border-2 border-cyan bg-bg text-cyan">⇔</button>
@@ -224,7 +224,7 @@ function Seg({ value, onChange, options }: { value: string; onChange: (v: string
       {options.map((o) => (
         <button key={o.v} disabled={o.disabled} onClick={() => onChange(o.v)}
           title={o.disabled ? "Not available for this pair" : undefined}
-          className={`flex items-center gap-1.5 px-3 py-1.5 ${value === o.v ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"} disabled:cursor-not-allowed disabled:opacity-35`}>
+          className={`flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1.5 sm:px-3 ${value === o.v ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"} disabled:cursor-not-allowed disabled:opacity-35`}>
           {o.icon}{o.label}
         </button>
       ))}
@@ -235,7 +235,7 @@ function Seg({ value, onChange, options }: { value: string; onChange: (v: string
 function Legend({ m, mode, channel }: { m: Manifest; mode: Mode; channel: Channel }) {
   const [lo, hi] = m.stretch_db[channel];
   return (
-    <div className="absolute bottom-8 left-3 z-10 w-64 rounded-lg border border-line bg-bg/90 p-3 text-xs backdrop-blur">
+    <div className="absolute bottom-8 left-3 z-10 w-56 rounded-lg sm:w-64 border border-line bg-bg/90 p-3 text-xs backdrop-blur">
       {mode === "screening" ? (
         <>
           <div className="mb-1.5 font-semibold text-text">Screening (interpreted, uncalibrated)</div>

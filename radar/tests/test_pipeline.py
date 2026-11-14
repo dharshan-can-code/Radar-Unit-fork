@@ -135,3 +135,11 @@ def test_refuses_duplicate_dates(fixtures, tmp_path):
     from process_stack import run
     with pytest.raises(SystemExit):
         run("tonle_sap", [str(fixtures[0]), str(fixtures[0])], res=800.0, out_dir=tmp_path)
+
+
+def test_quality_mask_semantics():
+    from gcov_reader import quality_ok
+    mask = np.array([0, 1, 2, 255], np.uint8)
+    exc = np.array([0, 0, 2, 0], np.uint8)
+    assert quality_ok(mask, exc).tolist() == [False, True, False, False]
+    assert quality_ok(None, None) is True
