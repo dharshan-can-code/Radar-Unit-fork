@@ -10,6 +10,8 @@ npm.cmd run api
 ```
 Open http://localhost:8000/docs for interactive API docs. Analysis needs the Earthdata token in `.earthdata_token`; search works without it.
 
+**Hosted front end.** The front end builds to static files (`npm run build`) and can be hosted on its own. Without the backend, the Tonle Sap case study, Your Story, rainfall, cloud and river data still work, because the browser calls Open-Meteo directly. Only live search and live analysis need this server. To let a hosted front end use a backend, set `NEXT_PUBLIC_API` to the backend URL at build time, and allow the front end's address on the server with `DELTA_PULSE_ORIGINS="https://your-demo.example"` (comma-separated).
+
 ## How "live" works (and what it is not)
 - **Search is live.** Every new location queries the ASF archive at request time (results cached for 15 min; `?fresh=true` bypasses the cache).
 - **Analysis reads the real file remotely.** ASF redirects the authenticated request to a short-lived signed URL. The backend then fetches only the needed 1 MB blocks with HTTP Range requests. GCOV is chunked 512×512 with paged metadata, so a 20 km window costs about 30–90 MB per acquisition instead of 1.9 GB.

@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import re
 import json
+import os
 import sys
 import threading
 import time
@@ -47,8 +48,10 @@ WATCH_FILE = ROOT / "data" / "metadata" / "watchlist.json"
 CHECK_INTERVAL_S = 6 * 3600
 
 app = FastAPI(title="DELTA PULSE API", version="0.2")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000", "http://localhost:3001",
-                                                  "http://127.0.0.1:3000"], allow_methods=["*"], allow_headers=["*"])
+# Extra front-end origins (e.g. a hosted demo) via DELTA_PULSE_ORIGINS="https://a.example,https://b.example".
+ORIGINS = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"] + \
+    [o.strip().rstrip("/") for o in os.environ.get("DELTA_PULSE_ORIGINS", "").split(",") if o.strip()]
+app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_methods=["*"], allow_headers=["*"])
 app.mount("/api/results", StaticFiles(directory=RESULTS), name="results")
 
 JOBS: dict[str, dict] = {}

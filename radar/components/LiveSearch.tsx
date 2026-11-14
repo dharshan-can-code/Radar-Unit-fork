@@ -145,9 +145,15 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
       </p>
 
       {backend && !backend.ok && (
-        <div className="mt-3 flex gap-2 rounded-md border border-rose/40 bg-rose/5 p-2 text-[12px] text-rose">
+        <div className="mt-3 flex gap-2 rounded-md border border-amber/40 bg-amber/5 p-2 text-[12px] text-amber">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-          Backend not reachable. In the radar folder run <code className="text-text">npm.cmd run api</code>, then reload.
+          <span>
+            Live search is offline in this copy of the app. Live search needs our server, which reads NASA&apos;s archive with an
+            Earthdata login. The Tonle Sap case study, Your Story, weather and river data all still work.
+            {typeof window !== "undefined" && /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname) && (
+              <span className="mt-1 block text-muted">Developers: in the radar folder run <code className="text-text">npm.cmd run api</code>, then reload.</span>
+            )}
+          </span>
         </div>
       )}
       {backend?.ok && !backend.token && (

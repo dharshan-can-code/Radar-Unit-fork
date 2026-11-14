@@ -21,6 +21,12 @@ export interface Job {
   result?: string; cached?: boolean; elapsed_s?: number;
 }
 
+/** User-facing text for an error; network failures mean the live server is not running. */
+export function errorText(x: unknown): string {
+  if (x instanceof TypeError) return "Live search is offline in this copy of the app (the server that reads NASA's archive is not running). The Tonle Sap case study still works.";
+  return x instanceof Error ? x.message : String(x);
+}
+
 async function j<T>(r: Response): Promise<T> {
   if (!r.ok) {
     let msg = `${r.status}`;
@@ -77,8 +83,39 @@ export interface Rainfall {
   daily: { date: string; precip_mm: number | null; cloud_pct?: number | null }[];
   hourly_cloud?: { time: string; cloud_pct: number }[];
 }
+// Weather and river context comes from Open-Meteo (free, no key, CORS-enabled). The backend proxies
+// and caches it; when the backend is not running (e.g. a static deployment) the browser asks
+// Open-Meteo directly, with the same transforms as backend/weather.py.
+const r3 = (x: number) => Math.round(x * 1000) / 1000;
+async function viaBackend<T>(path: string, direct: () => Promise<T>): Promise<T> {
+  try {
+    return await j<T>(await fetch(`${API}${path}`));
+  } catch {
+    return direct();
+  }
+}
+async function openMeteo(url: string, params: Record<string, string | number>) {
+  const q = new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)]));
+  const r = await fetch(`${url}?${q}`);
+  if (!r.ok) throw new Error(`weather service unavailable (${r.status})`);
+  return r.json();
+}
+
 export async function rainfall(lat: number, lon: number, start: string, end: string): Promise<Rainfall> {
-  return j(await fetch(`${API}/api/weather?lat=${lat}&lon=${lon}&start=${start}&end=${end}`));
+  return viaBackend(`/api/weather?lat=${lat}&lon=${lon}&start=${start}&end=${end}`, async () => {
+    const js = await openMeteo("https://archive-api.open-meteo.com/v1/archive", {
+      latitude: r3(lat), longitude: r3(lon), start_date: start, end_date: end,
+      daily: "precipitation_sum,cloud_cover_mean", hourly: "cloud_cover", timezone: "UTC" });
+    const d = js.daily ?? { time: [], precipitation_sum: [] };
+    const daily = (d.time as string[]).map((t, i) => ({ date: t, precip_mm: d.precipitation_sum?.[i] ?? null, cloud_pct: d.cloud_cover_mean?.[i] ?? null }));
+    const h = js.hourly ?? {};
+    const hourly = ((h.time ?? []) as string[]).map((t, i) => ({ time: t, cloud_pct: h.cloud_cover?.[i] }))
+      .filter((x): x is { time: string; cloud_pct: number } => x.cloud_pct != null);
+    const avail = daily.filter((x) => x.precip_mm != null).map((x) => x.date);
+    return { source: "Open-Meteo historical weather API", license: "CC BY 4.0", units: "mm/day",
+      dataset: "ERA5 / ERA5T reanalysis (ECMWF): daily precipitation and cloud cover; the most recent days are preliminary",
+      latest_available: avail.length ? avail[avail.length - 1] : null, daily, hourly_cloud: hourly };
+  });
 }
 
 export interface GalleryItem {
@@ -94,14 +131,29 @@ export interface River {
   has_river: boolean; daily: { date: string; discharge_m3s: number | null; forecast: boolean }[];
 }
 export async function river(lat: number, lon: number): Promise<River> {
-  return j(await fetch(`${API}/api/river?lat=${lat}&lon=${lon}`));
+  return viaBackend(`/api/river?lat=${lat}&lon=${lon}`, async () => {
+    const js = await openMeteo("https://flood-api.open-meteo.com/v1/flood", {
+      latitude: r3(lat), longitude: r3(lon), daily: "river_discharge", past_days: 180, forecast_days: 30 });
+    const today = new Date().toISOString().slice(0, 10);
+    const d = js.daily ?? {};
+    const daily = ((d.time ?? []) as string[]).map((t, i) => ({ date: t, discharge_m3s: d.river_discharge?.[i] ?? null, forecast: t > today }));
+    const vals = daily.filter((x) => x.discharge_m3s != null && !x.forecast).map((x) => x.discharge_m3s as number);
+    return { cell: [js.latitude, js.longitude], source: "Open-Meteo Flood API", units: "m³/s", today, license: "CC BY 4.0",
+      dataset: "GloFAS v4 river discharge (Copernicus EMS), modelled; includes forecast",
+      has_river: vals.length > 0 && Math.max(...vals) > 0.5, daily };
+  });
 }
 export interface Now {
   source: string; license: string;
   current: { time: string; temperature_2m: number; precipitation: number; rain: number; cloud_cover: number; weather_code: number; is_day: number };
 }
 export async function nowWeather(lat: number, lon: number): Promise<Now> {
-  return j(await fetch(`${API}/api/now?lat=${lat}&lon=${lon}`));
+  return viaBackend(`/api/now?lat=${lat}&lon=${lon}`, async () => {
+    const js = await openMeteo("https://api.open-meteo.com/v1/forecast", {
+      latitude: r3(lat), longitude: r3(lon), timezone: "UTC",
+      current: "temperature_2m,precipitation,rain,cloud_cover,weather_code,is_day" });
+    return { source: "Open-Meteo forecast API (current conditions, 15-minute updates)", license: "CC BY 4.0", current: js.current ?? {} };
+  });
 }
 
 /** NASA GIBS (Worldview) optical imagery for a bbox and date: no key needed. */

@@ -60,7 +60,7 @@ export default function Help({ onClose }: { onClose: () => void }) {
           <li>Everything shown is real data: NISAR from NASA&apos;s ASF archive, rainfall from ERA5 via Open-Meteo. Nothing is simulated.</li>
           <li>NISAR passes over a place about every 12 days. &quot;Live&quot; means the archive is searched right now; the newest image may be days old.</li>
           <li>Radar change alone never proves flooding. The app tells you what extra evidence would be needed.</li>
-          <li>If search says the backend is not reachable, start it with <code className="text-text">npm.cmd run api</code> in the radar folder.</li>
+          <li>If live search is offline, the Tonle Sap case study still works. To run live search yourself, start the server with <code className="text-text">npm.cmd run api</code> in the radar folder.</li>
         </ul>
         <div className="mt-6 flex gap-3">
           <button onClick={onClose} className="rounded-md bg-cyan px-4 py-2 text-sm font-medium text-bg">Got it</button>

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { GeoJSONSource, Map as MLMap } from "maplibre-gl";
 import { Loader2, RefreshCw, Satellite } from "lucide-react";
-import { Latest, LatestGranule, Place, latest } from "@/lib/api";
+import { Latest, LatestGranule, Place, errorText, latest } from "@/lib/api";
 import { MAT, MAT_LABEL } from "@/components/LiveSearch";
 
 const DAYS = [1, 3, 7];
@@ -25,7 +25,7 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
 
   async function load(d = days) {
     setLoading(true); setErr(null);
-    try { setData(await latest(d)); } catch (x) { setErr((x as Error).message); } finally { setLoading(false); }
+    try { setData(await latest(d)); } catch (x) { setErr(errorText(x)); } finally { setLoading(false); }
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(days); }, [days]);

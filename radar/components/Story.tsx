@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import type { GridIndex, Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
-import { Rainfall, acquisitions, geocode, job as getJob, loadResult, startAnalysis } from "@/lib/api";
+import { Rainfall, acquisitions, errorText, geocode, job as getJob, loadResult, startAnalysis } from "@/lib/api";
 import { StoryFacts, buildStory, fmtDate, fmtKm2 } from "@/lib/story";
 import { Tag } from "@/components/Fingerprint";
 import { MAT, MAT_LABEL, LiveResult } from "@/components/LiveSearch";
@@ -147,7 +147,7 @@ function Builder({ onResult, compact }: { onResult: (r: LiveResult) => void; com
       onResult({ manifest: m, footprint: stack.footprint, checkedUtc: a.checked_utc });
       setSteps((s) => s.map((x) => ({ ...x, done: true })));
     } catch (x) {
-      setErr((x as Error).message);
+      setErr(errorText(x));
     } finally { setBusy(false); }
   }
 
@@ -202,6 +202,15 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
     if (f) storySound.speak(`The water we cannot see, in ${f.place}. Between ${fmtDate(f.first)} and ${fmtDate(f.last)}, NISAR passed over ${f.n} times, seeing through cloud, rain and darkness.`);
   };
   const rainLevel = f?.rainTotal != null ? Math.min(1, f.rainTotal / Math.max(300, f.spanDays * 8)) : 0;
+  // Approximate local solar time of the pass (UTC + longitude/15). NISAR's orbit crosses at dawn/dusk,
+  // so many passes happen in darkness, when no camera could see the ground anyway.
+  const passLocal = (() => {
+    if (!f?.passes.length) return null;
+    const t = new Date(f.passes[0].start_time);
+    if (Number.isNaN(t.getTime())) return null;
+    const h = (((t.getUTCHours() + t.getUTCMinutes() / 60 + f.center[0] / 15) % 24) + 24) % 24;
+    return { label: `${String(Math.floor(h)).padStart(2, "0")}:${String(Math.floor((h % 1) * 60)).padStart(2, "0")}`, dark: h < 6.5 || h >= 18.5 };
+  })();
   const narrate = (id: string) => {
     if (!sound || !f) return;
     const r = (x: number) => Math.round(x).toLocaleString();
@@ -299,7 +308,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </section>
 
       {/* 1. SKY */}
-      <Chapter id="s-sky" n={1} kicker="ABOVE THE CLOUDS" title="A camera would have seen clouds." onEnter={() => narrate("sky")}>
+      <Chapter id="s-sky" n={1} kicker="ABOVE THE CLOUDS" title={passLocal?.dark ? "A camera would have seen clouds, or nothing at all." : "A camera would have seen clouds."} onEnter={() => narrate("sky")}>
         {(seen) => (
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-4 text-lg text-text/85">
@@ -311,6 +320,12 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                   see only the top of those clouds.
                 </p>
               ) : <p>Cloud records for these dates are not available yet, but radar does not need a clear sky either way.</p>}
+              {passLocal?.dark && (
+                <p>
+                  NISAR also flew over at about <b>{passLocal.label}</b> local solar time, in darkness. A camera would have seen nothing at all.
+                  Radar brings its own light.
+                </p>
+              )}
               {f.rainTotal != null && (
                 <p>
                   Over the same period about <b className="text-blue"><CountUp to={f.rainTotal} active={seen} /> mm</b> of rain fell here

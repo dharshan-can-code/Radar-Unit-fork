@@ -10,13 +10,13 @@ Copy the sections below into the Project Submission page. Every number quoted co
 **DELTA PULSE: Revealing the Water We Cannot See**
 
 ## High-level summary (≈150 words)
-Floods and wetlands change fastest when it's cloudy, exactly when ordinary satellite photos see nothing. Water spreading under forests is hidden even on clear days. DELTA PULSE makes NASA-ISRO **NISAR** L-band radar usable by anyone.
+When rivers and lakes flood into forests, the water spreads under the trees, where cameras cannot see it even on a clear day. NASA-ISRO **NISAR**'s long-wavelength L-band radar sees through the canopy: water under trunks bounces the signal back brightly. It also sees through cloud and darkness. DELTA PULSE makes NISAR usable by anyone.
 
 - **Any place, live:** type a place on Earth. The app searches NASA's ASF archive live, reads only the needed parts of the real NISAR GCOV files (no 1.9 GB downloads), and in about 10–15 seconds shows what changed: maps, a "Radar Change Fingerprint", a time series, and rainfall and cloud context.
 - **Your Story:** turns any place into an animated story about the water hidden there.
 - **Honest by design:** every statement is labelled *observed*, *calculated*, *interpreted* or *unconfirmed*, so the app never claims a flood it cannot prove.
 
-In our Tonle Sap case study, clouds covered more than half the sky on 9 of 10 NISAR passes. NISAR's radar still saw water-like ground grow by about 62%, plus the flooded forest around the lake.
+In our Tonle Sap case study, the radar signature of flooded forest grew about sixfold (293 → 1,721 km², peak 11 Sep) and water-like ground grew about 62%, while clouds covered more than half the sky at 9 of 10 pass times.
 
 ## Links
 - **Code:** https://github.com/haricharanparna/Radar-Unit
@@ -28,9 +28,9 @@ In our Tonle Sap case study, clouds covered more than half the sky on 9 of 10 NI
 ## How we addressed each judging criterion
 
 ### Impact
-- **The problem:** hidden floodwater, under cloud and under forest, affects disaster response, fisheries, farming and drinking water.
+- **The problem:** water hidden under forest canopy and cloud is hard to track, yet seasonal flood pulses drive fisheries, farming, drinking water and wetland health. NISAR revisits every 12 days, so DELTA PULSE is built for tracking seasonal and long-term change rather than hour-by-hour emergencies.
 - **Reach:** works for **any** location NISAR images, which is nearly all land every 12 days. The app's live feed shows hundreds of new products every few days.
-- **Who it helps:** disaster responders, wetland and fisheries managers, farmers and water agencies, students and the public. See the in-app **Impact** section.
+- **Who it helps:** first, wetland and fisheries managers tracking the flood pulse (at Tonle Sap the flooded forest is where fish breed); also water agencies, farmers and recovery planners, plus students and the public through Your Story. See the in-app **Impact** section.
 - **Case study:** Tonle Sap, Southeast Asia's largest freshwater lake and a UNESCO Biosphere Reserve, whose flood pulse drives one of the world's most productive inland fisheries.
 - **Future:** river-gauge calibration, alerts for watched places (the scheduler already re-checks every 6 h), more languages.
 
@@ -98,7 +98,7 @@ In our Tonle Sap case study, clouds covered more than half the sky on 9 of 10 NI
 ## 30-second demo video script (English captions on every shot)
 | Time | Screen | Caption / voice |
 |---|---|---|
-| 0–4 s | Story cover, "The water we cannot see in Tonle Sap" | "Floods hide under clouds and forests. Normal satellites can't see them." |
+| 0–4 s | Story cover, "The water we cannot see in Tonle Sap" | "Floodwater hides under forests and clouds. Cameras can't see it. NISAR's radar can." |
 | 4–9 s | Chapter 1 cloud bars animate | "On 9 of 10 passes, clouds covered the sky. NISAR's radar saw through." |
 | 9–15 s | Radar flipbook, then hidden-water bars | "Water-like ground grew 62%, and hidden flooded forest appeared." |
 | 15–21 s | Type a new place in Your Story, steps tick, story appears | "Type any place on Earth. Real NASA data, read live, about 30 seconds." |
@@ -109,10 +109,10 @@ Record at 1080p with the browser zoomed to 110%. Keep the captions burned in.
 
 ## Backup: 7-slide outline
 1. **Title:** DELTA PULSE, "Revealing the water we cannot see", team, challenge.
-2. **Problem:** clouds and forest hide floodwater (Tonle Sap: 9 of 10 passes cloudy).
-3. **NISAR:** L-band radar through cloud and canopy, every 12 days, worldwide.
+2. **Problem:** forest canopy and clouds hide floodwater (Tonle Sap: flooded forest invisible to cameras; 9 of 10 passes cloudy).
+3. **Why NISAR:** 24 cm L-band reaches under the canopy (double bounce off water and trunks), unlike shorter-wavelength radars; also through cloud and darkness; every 12 days, worldwide.
 4. **What we built:** live search, remote chunk reading, Fingerprint, Your Story (screenshots).
-5. **Results:** Tonle Sap flood pulse (+62% water-like area, flooded forest peak on 11 Sep); live examples.
+5. **Results:** Tonle Sap flood pulse (flooded-forest signature about 6× larger at its 11 Sep peak, +62% water-like area); live examples.
 6. **Why trust it:** quality masks, fair comparisons, sensitivity test, evidence labels, 28 tests.
 7. **Impact and next steps:** users, gauge calibration, alerts, languages, GitHub link.
 
