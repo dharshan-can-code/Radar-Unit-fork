@@ -115,21 +115,38 @@ class RemoteFile(io.RawIOBase):
                 self.blocks.popitem(last=False)
         return data
 
-    def prefetch(self, ranges: list[tuple[int, int]], workers: int = 8):
+    def prefetch(self, ranges: list[tuple[int, int]], workers: int = 8) -> list[int]:
         """Fetch every block covering the given (offset, size) byte ranges in
         parallel, so the following h5py reads are served from memory instead of
-        one HTTP round trip at a time."""
+        one HTTP round trip at a time. Returns the ids of the blocks it fetched;
+        pass them to `drop` once read, so a small server does not run out of memory."""
         need = sorted({i for off, size in ranges if size > 0
                        for i in range(off // self.block_size, (off + size - 1) // self.block_size + 1)})
         with self.lock:
             need = [i for i in need if i not in self.blocks]
+            self._base_blocks = getattr(self, "_base_blocks", self.max_blocks)
             self.max_blocks = max(self.max_blocks, len(self.blocks) + len(need) + 16)
         if not need:
-            return 0
+            return []
         from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=min(workers, len(need))) as ex:
             list(ex.map(self._get_block, need))
-        return len(need)
+        return need
+
+    def drop(self, block_ids: list[int]):
+        """Forget prefetched blocks that have been read, and shrink the cache back."""
+        with self.lock:
+            for i in block_ids:
+                self.blocks.pop(i, None)
+            self.max_blocks = getattr(self, "_base_blocks", self.max_blocks)
+            while len(self.blocks) > self.max_blocks:
+                self.blocks.popitem(last=False)
+
+    def release(self):
+        """Free every cached block (the file stays usable; blocks are fetched again if needed)."""
+        with self.lock:
+            self.blocks.clear()
+            self.max_blocks = getattr(self, "_base_blocks", self.max_blocks)
 
     # --- io.RawIOBase API used by h5py ---
     def readable(self):

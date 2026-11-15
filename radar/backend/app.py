@@ -37,14 +37,17 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path[:0] = [str(HERE), str(ROOT / "scripts")]
 import nisar  # noqa: E402
-from analyze import AnalysisError, run_analysis, validate_request  # noqa: E402
+from analyze import JOB_WORKERS, AnalysisError, run_analysis, validate_request  # noqa: E402
 from geocode import geocode  # noqa: E402
 from weather import now as weather_now, rainfall, river  # noqa: E402
 from refresh import get_token  # noqa: E402
 
-RESULTS = ROOT / "data" / "live"
+DATA_DIR = Path(os.environ.get("DELTA_PULSE_DATA_DIR") or ROOT / "data").expanduser().resolve()
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+RESULTS = DATA_DIR / "live"
 RESULTS.mkdir(parents=True, exist_ok=True)
-WATCH_FILE = ROOT / "data" / "metadata" / "watchlist.json"
+WATCH_FILE = DATA_DIR / "metadata" / "watchlist.json"
+WATCH_FILE.parent.mkdir(parents=True, exist_ok=True)
 CHECK_INTERVAL_S = 6 * 3600
 
 app = FastAPI(title="DELTA PULSE API", version="0.2")
@@ -70,7 +73,7 @@ async def vary_on_origin(request, call_next):
 app.mount("/api/results", StaticFiles(directory=RESULTS), name="results")
 
 JOBS: dict[str, dict] = {}
-POOL = ThreadPoolExecutor(max_workers=2)
+POOL = ThreadPoolExecutor(max_workers=JOB_WORKERS)
 
 
 _URL_RE = re.compile(r"https?://\S+")

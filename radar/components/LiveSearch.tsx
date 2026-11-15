@@ -142,7 +142,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
         if (j.status === "error") { setErr(j.message ?? "Analysis failed"); return; }
         poll.current = setTimeout(async () => {
           try { j = await getJob(j.job_id); setJobState(j); tick(); }
-          catch (x) { setErr(`Lost contact with the server during the analysis. ${errorText(x)}`); }
+          catch (x) { setErr(x instanceof TypeError ? `Lost contact with the server during the analysis. ${errorText(x)}` : errorText(x)); }
         }, 1500);
       };
       tick();

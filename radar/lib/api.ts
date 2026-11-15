@@ -220,9 +220,27 @@ export async function startAnalysis(body: { lat: number; lon: number; scenes: st
   return j(await fetch(`${API}/api/analyze`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
 }
 
+/** A job's state. A hosted server can drop off for a few seconds (a restart, a proxy hiccup),
+ *  so unanswered requests are retried for about a minute before giving up. If the server came
+ *  back without the job, it restarted mid-analysis and the work is gone. */
 export async function job(id: string): Promise<Job> {
   backendOnly();
-  return j(await fetch(`${API}/api/jobs/${id}`));
+  const until = Date.now() + 60_000;
+  for (let wait = 2000; ; wait = Math.min(wait * 1.5, 8000)) {
+    let r: Response;
+    try { r = await fetch(`${API}/api/jobs/${id}`); }
+    catch (x) {
+      if (!(x instanceof TypeError) || Date.now() + wait > until) throw x;
+      await new Promise((ok) => setTimeout(ok, wait));
+      continue;
+    }
+    if (r.status === 404) throw new Error("The server restarted during the analysis, so it was lost. Please run it again.");
+    if (r.status >= 502 && r.status <= 504 && Date.now() + wait <= until) {
+      await new Promise((ok) => setTimeout(ok, wait));
+      continue;
+    }
+    return j(r);
+  }
 }
 
 export async function loadResult(path: string): Promise<Manifest> {
