@@ -94,7 +94,7 @@ export default function Guide() {
             <p>The <b>Radar Change Fingerprint</b> below the map tells you, in plain words, what changed at that spot and how sure we can be.</p>
           </Step>
           <Step n={3} icon={<Search size={16} />} title="Try your own place">
-            <p>Type a place like <i>Jakarta</i> or <i>New Orleans</i> into the search box at the top, press <Btn><Search size={11} />Search</Btn>, then <Btn>▶ Analyse</Btn>. After about 10–15 seconds the whole page shows real radar for your place.</p>
+            <p>Type a place like <i>Jakarta</i> or <i>New Orleans</i> into the search box in the <b>Other places</b> section, press <Btn><Search size={11} />Search</Btn>, then <Btn>▶ Analyse</Btn>. After about 10–15 seconds the whole page shows real radar for your place. No server running? Open one of the three ready-made examples there instead.</p>
           </Step>
         </div>
       </Section>
@@ -208,10 +208,10 @@ export default function Guide() {
         <div className="grid gap-3 sm:grid-cols-2">
           {[
             ["Sound in Your Story", "Press “Turn sound on”. A voice reads each chapter, soft rain follows the real rainfall, and “Hear the water” plays one note per satellite pass: higher notes mean more water."],
-            ["Globe", "A spinning 3D globe of every NISAR image taken in the last day, 3 days or week. Click any strip to explore it."],
-            ["Water Now", "Live weather at your place, river flow for the past 6 months plus a 30-day forecast, and NASA’s normal camera photo from the same day as each radar image. Drag the slider to see what the clouds hid."],
-            ["Scatter Lab", "Every real radar pixel as a dot. Drag the coloured lines to change what counts as water and watch the map change."],
-            ["Radar Lab", "Add water, trees and wind, switch the radar wavelength, and see why NISAR can find flooding under forest. (A teaching model, not data.)"],
+            ["Globe (Other places)", "A spinning 3D globe of every NISAR image taken in the last day, 3 days or week. Click any strip to explore it."],
+            ["Water now (Go deeper)", "Live weather at your place, river flow for the past 6 months plus a 30-day forecast, and NASA’s normal camera photo from the same day as each radar image. Drag the slider to see what the clouds hid."],
+            ["Scatter Lab (Go deeper)", "Every real radar pixel as a dot. Drag the coloured lines to change what counts as water and watch the map change."],
+            ["Radar Lab (Go deeper)", "Add water, trees and wind, switch the radar wavelength, and see why NISAR can find flooding under forest. (A teaching model, not data.)"],
             ["3D terrain", "On the main map, press “3D terrain” to lay the radar over real hills and valleys. Choose “Basemap: NASA same day” to see NASA’s photo from that date underneath."],
           ].map(([t, d]) => (
             <div key={t} className="rounded-lg border border-line bg-panel p-4"><div className="text-sm font-semibold">{t}</div><p className="mt-1 text-[13px] text-text/75">{d}</p></div>

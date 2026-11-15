@@ -2,7 +2,12 @@
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ArrowLeft, Check, Download, Globe2, HelpCircle, Link2, Radar, Waves } from "lucide-react";
-import Fingerprint, { Tag } from "@/components/Fingerprint";
+import Hero from "@/components/Hero";
+import HowItWorks from "@/components/HowItWorks";
+import Findings from "@/components/Findings";
+import { MapGuide, PlainVerdict } from "@/components/Plain";
+import DeepDive, { DEEP_ICONS } from "@/components/DeepDive";
+import Fingerprint from "@/components/Fingerprint";
 import Timeline from "@/components/Timeline";
 import { Methods, ScienceExplainer } from "@/components/Science";
 import type { Mode, Selection } from "@/components/Explorer";
@@ -143,7 +148,7 @@ export default function Home() {
       ? ps.reduce((best, p, i) => (changed(p) > changed(ps[best]) ? i : best), 0)
       : Math.max(0, ps.length - 1));
     loadGrid(r.manifest).then((g) => setGrid(new GridIndex(r.manifest, g))).catch(() => setGrid(null));
-    if (!noScroll && view === "app") document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" });
+    if (!noScroll && view === "app") document.getElementById("findings")?.scrollIntoView({ behavior: "smooth" });
     if (view === "story") window.scrollTo({ top: 0 });
   }
   function storyResult(r: LiveResult) { showLive(r, true); window.history.replaceState(null, "", `?${resultQuery(r.manifest)}&view=story`); }
@@ -209,38 +214,33 @@ export default function Home() {
         </div>
       )}
 
-      {/* hero */}
-      <header className="pt-10 pb-8">
-        <div className="flex items-center gap-2 font-mono text-xs tracking-widest text-cyan"><Radar size={14} />RADAR UNIT · NASA SPACE APPS 2026 · NISAR L-BAND
-          <span className="ml-auto flex gap-2">
-            <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 rounded-md border border-cyan/40 px-3 py-1 font-sans text-[12px] tracking-normal text-cyan hover:bg-cyan/10">
-              <HelpCircle size={14} />How to use
-            </button>
-          </span>
-        </div>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">DELTA PULSE <span className="text-muted">— Hidden Water</span></h1>
-        <p className="mt-3 max-w-3xl text-lg text-text/80">Revealing the water we cannot easily see. NISAR&apos;s radar sees wetlands through cloud, every 12 days. Start with our Tonle Sap case study, or search any place on Earth for live NISAR data. We show what changed, what it might mean, and how sure we can be.</p>
-        <div className="mt-5 flex flex-wrap gap-2 text-[12px]">
-          {(["OBSERVED", "CALCULATED", "INTERPRETED", "UNCONFIRMED"] as const).map((k) => (
-            <span key={k} className="flex items-center gap-1.5"><Tag kind={k} /><span className="text-muted">{{
-              OBSERVED: "measured by NISAR", CALCULATED: "math on measurements", INTERPRETED: "possible explanation", UNCONFIRMED: "needs more evidence",
-            }[k]}</span></span>
-          ))}
-        </div>
-        {source === "case" && status && <DataStatus status={status} stacks={stacks} stackId={stackId} setStackId={setStackId} manifest={m ?? null} />}
-        <div id="live" className="mt-4 scroll-mt-4"><LiveSearch onResult={showLive} active={source === "live"} externalPlace={externalPlace} /></div>
-        <div id="globe" className="mt-4 scroll-mt-14"><LatestFeed onPick={pickPlace} /></div>
-      </header>
+      <Hero onStory={() => { setView("story"); window.history.replaceState(null, "", "?view=story"); window.scrollTo({ top: 0 }); }}
+        onExplore={() => document.getElementById("findings")?.scrollIntoView({ behavior: "smooth" })} />
       {help && <Help onClose={() => setHelp(false)} />}
 
-      {/* explorer */}
-      <Section id="explorer" kicker="01" title="Hidden Water Explorer"
-        sub="Swipe between two NISAR observations, switch to the measured change, or view candidate signatures. Click the map or draw a region to inspect it.">
-        {m === undefined && <div className="h-[62vh] animate-pulse rounded-xl border border-line bg-panel" />}
+      <Section id="how" kicker="How it works" title="From a radar echo to an answer you can trust"
+        lead="Three steps, and four labels that tell you how certain each sentence is.">
+        <HowItWorks />
+      </Section>
+
+      <Section id="findings" kicker={source === "case" ? "What we found" : m?.area === "examples" ? "Example place" : "Your place"}
+        title={m ? `What NISAR saw at ${m.name.replace(/\s*\(.*\)$/, "")}` : "What NISAR saw"}
+        lead={source === "case"
+          ? "Tonle Sap is Southeast Asia's largest lake. Every monsoon it floods the forest around it, and that flood feeds one of the world's biggest inland fisheries. Here is what 10 radar passes from June to October 2026 show."
+          : "The headline results for this place, computed from the same real NISAR passes shown on the map below."}
+        aside={source === "live" ? <button onClick={backToCase} className="flex items-center gap-1 text-[13px] text-cyan hover:text-text"><ArrowLeft size={14} />Back to Tonle Sap</button> : null}>
+        <Findings m={m ?? null} grid={grid} rain={rain} validation={validation} />
+      </Section>
+
+      <Section id="explorer" kicker="The map" title="See it for yourself"
+        lead="Real radar images from each satellite pass. Choose a view, then click or draw on the map to examine any area.">
+        {m === undefined && <div className="skeleton h-[62vh]" />}
         {m === null && <NoData />}
         {m && (
           <>
+            <MapGuide mode={mode} setMode={setMode} />
             <SourceBar m={m} source={source} live={live} onBack={backToCase} pairId={pair?.id ?? null} channel={channel} />
+            <div className="mb-1 text-[12px] text-muted">Compare two passes (dates in red are 24 days apart because of a gap in NISAR&apos;s schedule):</div>
             <PairPicker m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />
             <Explorer manifest={m} inventory={inventoryForMap} pairIdx={pairIdx} channel={channel} mode={mode}
               setChannel={setChannel} setMode={setMode} selection={sel} onSelect={setSel} selectionBounds={bounds}
@@ -249,66 +249,85 @@ export default function Home() {
         )}
       </Section>
 
-      {/* fingerprint */}
-      <Section id="fingerprint" kicker="02" title="Radar Change Fingerprint"
-        sub="What the satellite measured in your region, what changed between the two dates, what could explain it, and what remains uncertain.">
+      <Section id="fingerprint" kicker="What changed here" title="The radar's evidence for the area you picked"
+        lead={featured && sel.kind === "box" && sel.bounds === featured.bounds
+          ? "We start you on a 10 × 10 km patch of flooded forest north-west of the lake, where the change is clearest. Pick any other area on the map to compare."
+          : "A plain summary first, then every number behind it, each labelled by how certain it is."}>
         {m && analysis && pair ? (
-          <Fingerprint m={m} fp={analysis.fp} verdict={analysis.verdict} statements={analysis.statements}
-            series={analysis.series} regionLabel={label} selectedDates={[pair.before, pair.after]} rain={rain} />
-        ) : m && !rect ? <p className="text-muted">Selected location is outside the processed area.</p> : <p className="text-muted">Loading…</p>}
+          <>
+            <PlainVerdict fp={analysis.fp} verdict={analysis.verdict} />
+            <Fingerprint m={m} fp={analysis.fp} verdict={analysis.verdict} statements={analysis.statements}
+              series={analysis.series} regionLabel={label} selectedDates={[pair.before, pair.after]} rain={rain} />
+          </>
+        ) : m && !rect ? <p className="text-muted">The selected spot is outside the radar image. Pick a spot inside it.</p> : <div className="skeleton h-72" />}
       </Section>
 
-      {/* timeline */}
-      <Section id="now" kicker="03" title="Water now: live conditions"
-        sub="Live weather right now, river flow with a 30-day forecast, and NASA's camera view from the same day as each radar pass, for the place on screen.">
-        <WaterNow m={m ?? null} rain={rain} />
-      </Section>
-
-      <Section id="scatter" kicker="04" title="Scatter Lab"
-        sub="Every real radar pixel plotted by its two channels. Drag the thresholds and watch the water map change.">
-        <ScatterLab m={m ?? null} grid={grid} />
-      </Section>
-
-      <Section id="timeline" kicker="05" title="Observation Timeline"
-        sub="Every NISAR GCOV acquisition over the study areas, as listed in the ASF archive. Compare the two candidate sites.">
-        {source === "case" && (inv ? <Timeline inventory={inv} manifest={m ?? null} pairIdx={pairIdx} setPairIdx={setPairIdx} /> : <p className="text-muted">Inventory not found — run scripts/refresh.py.</p>)}
-        {m && m.pairs.length > 0 && <ChangeByInterval m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />}
-      </Section>
-
-      <Section id="lab" kicker="06" title="Radar Lab: how radar finds hidden water"
-        sub="An interactive teaching model. Add water, trees and wind, switch wavelength, and see why NISAR's L-band can find flooding under forest.">
-        <RadarLab screening={m?.screening ?? null} />
-      </Section>
-
-      <Section id="impact" kicker="07" title="Why it matters" sub="Who this helps, and what NISAR revealed. Every number comes from real data in this app.">
-        <Impact m={m ?? null} grid={grid} />
-      </Section>
-
-      <Section id="science" kicker="08" title="How radar sees wetlands" sub="The physics behind every number above.">
-        <ScienceExplainer />
-      </Section>
-
-      <Section id="methods" kicker="09" title="Methods, data and limitations" sub="Everything needed to reproduce or challenge the analysis.">
+      <Section id="checks" kicker="Is it real?" title="We tested the radar against data it never saw"
+        lead={source === "case"
+          ? "A clever map is worthless if it is wrong. So we compared our results with decades of Landsat water maps, river-flow models and weather records, and moved our thresholds to see if the story changes."
+          : "Independent checks are available for the Tonle Sap case study. For this place, the sensitivity test below shows whether the result depends on our threshold."}>
         {source === "case" && validation && m?.stack === validation.stack && <div className="mb-4"><ValidationPanel v={validation} /></div>}
-        <Methods m={m ?? null} />
-        <div className="mt-4"><Sensitivity m={m ?? null} grid={grid} /></div>
+        <Sensitivity m={m ?? null} grid={grid} />
+      </Section>
+
+      <Section id="places" kicker="Other places" title="It works anywhere NISAR looks"
+        lead="Open a ready-made example from three continents, search any place on Earth, or pick one of the newest radar images from the globe.">
+        <div id="live" className="scroll-mt-16"><LiveSearch onResult={showLive} active={source === "live"} externalPlace={externalPlace} /></div>
+        <div id="globe" className="mt-4 scroll-mt-16"><LatestFeed onPick={pickPlace} /></div>
+      </Section>
+
+      <Section id="impact" kicker="Who it helps" title="Why hidden water matters"
+        lead="Seasonal floods feed fisheries, farms and drinking water. Knowing where the water really is helps the people who depend on it.">
+        <Impact />
+      </Section>
+
+      <Section id="deeper" kicker="Go deeper" title="Tools for the curious"
+        lead="Live conditions, interactive labs, the full observation record, the physics and the methods. Open whichever interests you.">
+        <DeepDive tabs={[
+          { id: "now", label: "Water now", icon: DEEP_ICONS.now, blurb: "Live weather, river flow with a 30-day forecast, and NASA's camera view from the same day as each radar pass.",
+            render: () => <WaterNow m={m ?? null} rain={rain} /> },
+          { id: "scatter", label: "Scatter Lab", icon: DEEP_ICONS.scatter, blurb: "Every radar pixel plotted by its two channels. Drag the thresholds and watch the water map change.",
+            render: () => <ScatterLab m={m ?? null} grid={grid} /> },
+          { id: "lab", label: "Radar Lab", icon: DEEP_ICONS.lab, blurb: "A teaching model: add water, trees and wind, switch wavelength, and see why NISAR's L-band finds flooding under forest.",
+            render: () => <RadarLab screening={m?.screening ?? null} /> },
+          { id: "timeline", label: "Every pass", icon: DEEP_ICONS.timeline, blurb: "Every NISAR acquisition over the study areas, and how much changed between each pair of passes.",
+            render: () => (<>
+              {source === "case" && (inv ? <Timeline inventory={inv} manifest={m ?? null} pairIdx={pairIdx} setPairIdx={setPairIdx} /> : <p className="text-muted">Inventory not found — run scripts/refresh.py.</p>)}
+              {m && m.pairs.length > 0 && <ChangeByInterval m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />}
+            </>) },
+          { id: "science", label: "The physics", icon: DEEP_ICONS.science, blurb: "How L-band radar sees wetlands, in plain language.",
+            render: () => <ScienceExplainer /> },
+          { id: "methods", label: "Methods & data", icon: DEEP_ICONS.methods, blurb: "The processing chain, thresholds, data status and limitations: everything needed to reproduce or challenge the analysis.",
+            render: () => (<>
+              {source === "case" && status && <div className="mb-4"><DataStatus status={status} stacks={stacks} stackId={stackId} setStackId={setStackId} manifest={m ?? null} /></div>}
+              <Methods m={m ?? null} />
+            </>) },
+        ]} />
       </Section>
 
       </>)}
-      <footer className="mt-16 border-t border-line pt-6 text-[12px] text-muted">
-        Data: NASA-ISRO NISAR L2 GCOV via NASA ASF DAAC. Basemaps: Esri World Dark Gray Base and World Imagery (© Esri and data providers, © OpenStreetMap contributors).
-        DELTA PULSE is an open-source student project by RADAR UNIT and is not an official NASA product.
+      <footer className="mt-20 border-t border-line py-8 text-[12px] leading-relaxed text-muted">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="font-semibold tracking-wide text-text">DELTA PULSE · Team RADAR UNIT · NASA Space Apps 2026</span>
+          <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 text-cyan hover:text-text"><HelpCircle size={14} />How to use</button>
+        </div>
+        <p className="mt-2">Data: NASA-ISRO NISAR L2 GCOV via NASA ASF DAAC; JRC Global Surface Water; ERA5 and GloFAS via Open-Meteo; NASA GIBS. Basemaps: Esri (© Esri and data providers, © OpenStreetMap contributors).
+          An open-source student project; not an official NASA product.</p>
       </footer>
     </main>
   );
 }
 
-function Section({ id, kicker, title, sub, children }: { id: string; kicker: string; title: string; sub: string; children: React.ReactNode }) {
+function Section({ id, kicker, title, lead, aside, children }: { id: string; kicker: string; title: string; lead: string; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section id={id} className="mt-12 scroll-mt-14">
-      <div className="mb-4 flex items-baseline gap-3">
-        <span className="font-mono text-xs text-cyan">{kicker}</span>
-        <div><h2 className="text-2xl font-semibold tracking-tight">{title}</h2><p className="mt-1 max-w-3xl text-sm text-muted">{sub}</p></div>
+    <section id={id} className="mt-20 scroll-mt-16 first-of-type:mt-12">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div className="max-w-3xl">
+          <div className="text-[12px] font-medium tracking-[0.18em] text-cyan uppercase">{kicker}</div>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
+          <p className="mt-3 text-[16px] leading-relaxed text-text/75">{lead}</p>
+        </div>
+        {aside}
       </div>
       {children}
     </section>

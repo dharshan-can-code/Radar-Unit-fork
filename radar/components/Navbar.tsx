@@ -3,24 +3,21 @@ import { useEffect, useState } from "react";
 import { BookOpen, Radar, Sparkles } from "lucide-react";
 
 export const SECTIONS: [string, string][] = [
-  ["live", "Explore"],
-  ["globe", "Globe"],
+  ["how", "How it works"],
+  ["findings", "Findings"],
   ["explorer", "Map"],
-  ["fingerprint", "Fingerprint"],
-  ["now", "Water Now"],
-  ["scatter", "Scatter Lab"],
-  ["timeline", "Timeline"],
-  ["lab", "Radar Lab"],
-  ["impact", "Impact"],
-  ["science", "Science"],
-  ["methods", "Methods"],
+  ["fingerprint", "What changed"],
+  ["checks", "Is it real?"],
+  ["places", "Other places"],
+  ["impact", "Who it helps"],
+  ["deeper", "Go deeper"],
 ];
 
 interface Props { view: "app" | "story"; setView: (v: "app" | "story") => void }
 
 /** Sticky top navigation: every section, the "Your Story" tab and the User Guide. */
 export default function Navbar({ view, setView }: Props) {
-  const [active, setActive] = useState<string>("live");
+  const [active, setActive] = useState<string>("");
 
   useEffect(() => {
     if (view !== "app") return;
