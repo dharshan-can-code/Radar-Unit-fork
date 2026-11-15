@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { BookOpen, ChevronsLeft, ChevronsRight, Sparkles } from "lucide-react";
 import { BrandMark } from "@/components/ui";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSelector from "@/components/site/LanguageSelector";
+import { useLanguage } from "@/components/site/LanguageContext";
 import { PAGES, STORY, type NavItem, type NavPage } from "@/components/site/nav";
 import { useSite } from "@/components/site/SiteState";
 
@@ -52,6 +54,7 @@ export function useNavLinks() {
 export default function Sidebar() {
   const { pathname, target, onClick, isOn, href } = useNavLinks();
   const [collapsed, setCollapsed] = useState(false);
+  const { t, language, dir } = useLanguage();
 
   // remember the collapsed state (storage can be blocked, so every access is wrapped)
   useEffect(() => {
@@ -65,7 +68,7 @@ export default function Sidebar() {
   const story = pathname === STORY;
 
   return (
-    <aside aria-label="Pages" style={{ width: "var(--sidebar-w)" }}
+    <aside aria-label="Pages" lang={language} style={{ width: "var(--sidebar-w)" }}
       className="fixed inset-y-0 left-0 z-[60] hidden flex-col border-r border-line bg-bg transition-[width] duration-200 motion-reduce:transition-none xl:flex">
       {/* brand + collapse */}
       <div className={`flex h-[52px] shrink-0 items-center border-b border-line ${collapsed ? "justify-center" : "justify-between pr-2 pl-4"}`}>
@@ -74,13 +77,13 @@ export default function Sidebar() {
           <span className="text-accent"><BrandMark /></span>{!collapsed && "DELTA PULSE"}
         </Link>
         {!collapsed && (
-          <button onClick={() => setCollapsed(true)} aria-label="Collapse sidebar" title="Collapse sidebar"
+          <button onClick={() => setCollapsed(true)} aria-label={t("collapse")} title={t("collapse")}
             className="rounded-md p-1.5 text-muted hover:bg-panel hover:text-text"><ChevronsLeft size={16} /></button>
         )}
       </div>
 
       {/* pages, and the sections on each */}
-      <nav aria-label="Main" className="no-scrollbar flex-1 overflow-y-auto px-2 pt-3 pb-4">
+      <nav aria-label="Main" dir={dir} className="no-scrollbar flex-1 overflow-y-auto px-2 pt-3 pb-4">
         {PAGES.map((p, gi) => {
           const here = p.href === pathname;
           return (
@@ -90,7 +93,7 @@ export default function Sidebar() {
                 : (
                   <Link href={href(p.href)} aria-current={here ? "page" : undefined}
                     className={`flex items-center gap-2 px-3 pb-1.5 text-[12px] ${here ? "text-text" : "text-muted hover:text-text"}`}>
-                    {here && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" />}{p.title}
+                    {here && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" />}{t(p.key)}
                   </Link>
                 )}
               <ul className="space-y-0.5">
@@ -99,10 +102,10 @@ export default function Sidebar() {
                   return (
                     <li key={x.id}>
                       <Link href={target(p, x)} onClick={(e) => onClick(p, x, e)} aria-current={on ? "location" : undefined}
-                        title={collapsed ? `${p.title}: ${x.label}` : undefined} aria-label={collapsed ? `${p.title}: ${x.label}` : undefined}
+                        title={collapsed ? `${t(p.key)}: ${t(x.key)}` : undefined} aria-label={collapsed ? `${t(p.key)}: ${t(x.key)}` : undefined}
                         className={`flex w-full items-center rounded-md py-1.5 text-[13px] ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${on ? "bg-accent/10 text-accent" : "text-muted hover:bg-panel hover:text-text"}`}>
                         <x.icon size={16} className="shrink-0" />
-                        {!collapsed && <span className="truncate">{x.label}</span>}
+                        {!collapsed && <span className="truncate">{t(x.key)}</span>}
                       </Link>
                     </li>
                   );
@@ -114,18 +117,19 @@ export default function Sidebar() {
       </nav>
 
       {/* story + guide + expand */}
-      <div className="shrink-0 space-y-1 border-t border-line p-2">
-        <Link href={href(STORY)} aria-current={story ? "page" : undefined} title={collapsed ? "Your Story" : undefined} aria-label="Your Story"
+      <div dir={dir} className="shrink-0 space-y-1 border-t border-line p-2">
+        <Link href={href(STORY)} aria-current={story ? "page" : undefined} title={collapsed ? t("story") : undefined} aria-label={t("story")}
           className={`flex w-full items-center rounded-md border py-2 text-[13px] font-medium ${collapsed ? "justify-center" : "gap-3 px-3"} ${story ? "border-amber bg-amber/15 text-amber" : "border-amber/45 text-amber hover:border-amber hover:bg-amber/10"}`}>
-          <Sparkles size={15} className="shrink-0" />{!collapsed && "Your Story"}
+          <Sparkles size={15} className="shrink-0" />{!collapsed && t("story")}
         </Link>
+        {!collapsed && <LanguageSelector className="w-full border-transparent py-2 px-3 gap-3" />}
         <ThemeToggle compact={collapsed} className={`w-full border-transparent py-2 ${collapsed ? "justify-center" : "gap-3 px-3"}`} />
-        <Link href="/guide" title={collapsed ? "User guide" : undefined} aria-label="User guide"
+        <Link href="/guide" title={collapsed ? t("guide") : undefined} aria-label={t("guide")}
           className={`flex items-center rounded-md py-2 text-[13px] text-muted hover:bg-panel hover:text-text ${collapsed ? "justify-center" : "gap-3 px-3"}`}>
-          <BookOpen size={16} className="shrink-0" />{!collapsed && "User guide"}
+          <BookOpen size={16} className="shrink-0" />{!collapsed && t("guide")}
         </Link>
         {collapsed && (
-          <button onClick={() => setCollapsed(false)} aria-label="Expand sidebar" title="Expand sidebar"
+          <button onClick={() => setCollapsed(false)} aria-label={t("expand")} title={t("expand")}
             className="flex w-full justify-center rounded-md py-2 text-muted hover:bg-panel hover:text-text"><ChevronsRight size={16} /></button>
         )}
       </div>

@@ -5,35 +5,36 @@ import {
   Activity, CalendarDays, Droplets, FileText, Fingerprint, FlaskConical, Globe2, Map as MapIcon,
   Microscope, Radar, Search, ShieldCheck, Users, Waves,
 } from "lucide-react";
+import type { TKey } from "@/lib/i18n/translations";
 
 export type Icon = ComponentType<{ size?: number; className?: string }>;
 
 /** A place on a page: a section id on that page, or (tab) a tool in the Live and lab tabs. */
-export interface NavItem { id: string; label: string; icon: Icon; tab?: boolean }
-export interface NavPage { href: string; title: string; items: NavItem[] }
+export interface NavItem { id: string; label: string; key: TKey; icon: Icon; tab?: boolean }
+export interface NavPage { href: string; title: string; key: TKey; items: NavItem[] }
 
 export const PAGES: NavPage[] = [
-  { href: "/", title: "Start here", items: [
-    { id: "how", label: "How it works", icon: Radar },
-    { id: "findings", label: "Findings", icon: Droplets },
+  { href: "/", key: "start", title: "Start here", items: [
+    { id: "how", key: "how", label: "How it works", icon: Radar },
+    { id: "findings", key: "findings", label: "Findings", icon: Droplets },
   ] },
-  { href: "/explore", title: "Explore the data", items: [
-    { id: "explorer", label: "Map", icon: MapIcon },
-    { id: "fingerprint", label: "What changed", icon: Fingerprint },
-    { id: "checks", label: "Is it real?", icon: ShieldCheck },
-    { id: "live", label: "Search a place", icon: Search },
-    { id: "globe", label: "Globe", icon: Globe2 },
+  { href: "/explore", key: "explore", title: "Explore the data", items: [
+    { id: "explorer", key: "map", label: "Map", icon: MapIcon },
+    { id: "fingerprint", key: "changes", label: "What changed", icon: Fingerprint },
+    { id: "checks", key: "checks", label: "Is it real?", icon: ShieldCheck },
+    { id: "live", key: "search", label: "Search a place", icon: Search },
+    { id: "globe", key: "globe", label: "Globe", icon: Globe2 },
   ] },
-  { href: "/lab", title: "Live and lab", items: [
-    { id: "now", label: "Water now", icon: Waves, tab: true },
-    { id: "scatter", label: "Scatter Lab", icon: Activity, tab: true },
-    { id: "lab", label: "Radar Lab", icon: FlaskConical, tab: true },
-    { id: "timeline", label: "Every pass", icon: CalendarDays, tab: true },
+  { href: "/lab", key: "lab", title: "Live and lab", items: [
+    { id: "now", key: "waterNow", label: "Water now", icon: Waves, tab: true },
+    { id: "scatter", key: "scatter", label: "Scatter Lab", icon: Activity, tab: true },
+    { id: "lab", key: "radarLab", label: "Radar Lab", icon: FlaskConical, tab: true },
+    { id: "timeline", key: "timeline", label: "Every pass", icon: CalendarDays, tab: true },
   ] },
-  { href: "/learn", title: "Learn more", items: [
-    { id: "impact", label: "Who it helps", icon: Users },
-    { id: "science", label: "The physics", icon: Microscope },
-    { id: "methods", label: "Methods & data", icon: FileText },
+  { href: "/learn", key: "learn", title: "Learn more", items: [
+    { id: "impact", key: "impact", label: "Who it helps", icon: Users },
+    { id: "science", key: "science", label: "The physics", icon: Microscope },
+    { id: "methods", key: "methods", label: "Methods & data", icon: FileText },
   ] },
 ];
 
