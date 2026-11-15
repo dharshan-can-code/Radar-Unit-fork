@@ -6,6 +6,7 @@ import {
 import type { GridIndex, Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
 import { Rainfall, acquisitions, errorText, geocode, job as getJob, loadResult, startAnalysis } from "@/lib/api";
+import PublicDemoNote, { useIsPublicDemo } from "@/components/PublicDemoNote";
 import { StoryFacts, buildStory, fmtDate, fmtKm2 } from "@/lib/story";
 import { Tag } from "@/components/ui";
 import { MAT, MAT_LABEL, LiveResult } from "@/components/LiveSearch";
@@ -114,6 +115,7 @@ function Builder({ onResult, compact }: { onResult: (r: LiveResult) => void; com
   const [steps, setSteps] = useState<BuildStep[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const demo = useIsPublicDemo();
   const say = (text: string) => setSteps((s) => [...s.map((x) => ({ ...x, done: true })), { text, done: false }]);
 
   async function build(e?: React.FormEvent) {
@@ -158,17 +160,18 @@ function Builder({ onResult, compact }: { onResult: (r: LiveResult) => void; com
     <div className={`rounded-lg border border-amber/40 bg-amber/[0.06] ${compact ? "p-4 sm:p-5" : "p-5 sm:p-7"}`}>
       <div className="flex items-center gap-2 text-sm font-semibold text-amber"><Sparkles size={16} />Build the story of any place</div>
       <p className="mt-1 text-[13px] text-muted">Type a place. DELTA PULSE reads the newest real NISAR radar images of it and writes its story, about 20–40 seconds.</p>
+      {demo && <div className="mt-3"><PublicDemoNote compact what="Writing a story for a new place needs the full app." /></div>}
       <form onSubmit={build} className="mt-3 flex flex-wrap gap-2">
         <div className="relative min-w-[220px] flex-1">
           <MapPin size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} aria-label="Place for your story" placeholder="e.g. Jakarta, Sundarbans, Manaus, your hometown"
+          <input value={q} onChange={(e) => setQ(e.target.value)} aria-label="Place for your story" disabled={demo} placeholder="e.g. Jakarta, Sundarbans, Manaus, your hometown"
             className="w-full rounded-md border border-line bg-bg py-2 pr-3 pl-9 text-sm focus:border-amber focus:outline-none" />
         </div>
         <select value={nDates} onChange={(e) => setNDates(+e.target.value)} aria-label="Number of satellite passes"
           className="rounded-md border border-line bg-bg px-2 text-[13px] text-text">
           {[3, 4, 6].map((n) => <option key={n} value={n}>{n} passes</option>)}
         </select>
-        <button disabled={busy || q.trim().length < 2} className="flex items-center gap-1.5 rounded-md bg-amber px-4 py-2 text-sm font-medium text-bg disabled:opacity-40">
+        <button disabled={demo || busy || q.trim().length < 2} className="flex items-center gap-1.5 rounded-md bg-amber px-4 py-2 text-sm font-medium text-bg disabled:opacity-40">
           {busy ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}Tell its story
         </button>
       </form>
@@ -182,7 +185,7 @@ function Builder({ onResult, compact }: { onResult: (r: LiveResult) => void; com
         </ol>
       )}
       {err && <p className="mt-3 text-[13px] text-rose">{err}</p>}
-      <ExamplePicker onResult={onResult} accent="amber" label="Or read a story we already built" />
+      <ExamplePicker onResult={onResult} accent="amber" label={demo ? "Read a story we already built" : "Or read a story we already built"} />
     </div>
   );
 }

@@ -21,8 +21,28 @@ export interface Job {
   result?: string; cached?: boolean; elapsed_s?: number;
 }
 
+export const REPO_URL = "https://github.com/haricharanparna/Radar-Unit";
+export const PUBLIC_DEMO_NOTE =
+  "Searching new places runs in the full DELTA PULSE app, which reads NASA's archive through our own server. " +
+  "This public demo shows real NISAR case studies: every map, chart and story here is real NASA data.";
+
+/** True on the public static deployment (e.g. delta-pulse-nisar.vercel.app), where no backend runs.
+ *  Set NEXT_PUBLIC_API to a hosted backend to turn live search on there. */
+export function isPublicDemo(): boolean {
+  if (process.env.NEXT_PUBLIC_API) return false;
+  if (typeof window === "undefined") return false;
+  return !/^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost)$/.test(window.location.hostname);
+}
+
+export class OfflineError extends Error {
+  constructor() { super(PUBLIC_DEMO_NOTE); this.name = "OfflineError"; }
+}
+/** Backend-only calls fail fast on the public demo (no doomed requests to localhost). */
+function backendOnly() { if (isPublicDemo()) throw new OfflineError(); }
+
 /** User-facing text for an error; network failures mean the live server is not running. */
 export function errorText(x: unknown): string {
+  if (x instanceof OfflineError) return x.message;
   if (x instanceof TypeError) return "Live search is offline in this copy of the app (the server that reads NASA's archive is not running). The Tonle Sap case study still works.";
   return x instanceof Error ? x.message : String(x);
 }
@@ -37,6 +57,7 @@ async function j<T>(r: Response): Promise<T> {
 }
 
 export async function health(): Promise<{ ok: boolean; earthdata_token: boolean; note: string | null }> {
+  backendOnly();
   return j(await fetch(`${API}/api/health`));
 }
 
@@ -52,29 +73,35 @@ export function parseCoords(q: string): Place | null {
 export async function geocode(q: string): Promise<Place[]> {
   const c = parseCoords(q);
   if (c) return [c];
+  backendOnly();
   return (await j<{ results: Place[] }>(await fetch(`${API}/api/geocode?q=${encodeURIComponent(q)}`))).results;
 }
 
 export async function acquisitions(lat: number, lon: number, fresh = false): Promise<Acquisitions> {
+  backendOnly();
   return j(await fetch(`${API}/api/acquisitions?lat=${lat}&lon=${lon}${fresh ? "&fresh=true" : ""}`));
 }
 
 export type Detail = "quick" | "standard";
 export async function startAnalysis(body: { lat: number; lon: number; scenes: string[]; size_km: number; place?: string; detail?: Detail }): Promise<Job> {
+  backendOnly();
   return j(await fetch(`${API}/api/analyze`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
 }
 
 export async function job(id: string): Promise<Job> {
+  backendOnly();
   return j(await fetch(`${API}/api/jobs/${id}`));
 }
 
 export async function loadResult(path: string): Promise<Manifest> {
+  backendOnly();
   return j(await fetch(`${API}${path}`, { cache: "no-store" }));
 }
 
 export interface LatestGranule extends Granule { centroid: [number, number]; footprint: GeoJSON.Geometry }
 export interface Latest { checked_utc: string; days: number; n: number; source: string; granules: LatestGranule[] }
 export async function latest(days = 3): Promise<Latest> {
+  backendOnly();
   return j(await fetch(`${API}/api/latest?days=${days}`));
 }
 
@@ -88,6 +115,7 @@ export interface Rainfall {
 // Open-Meteo directly, with the same transforms as backend/weather.py.
 const r3 = (x: number) => Math.round(x * 1000) / 1000;
 async function viaBackend<T>(path: string, direct: () => Promise<T>): Promise<T> {
+  if (isPublicDemo()) return direct();
   try {
     return await j<T>(await fetch(`${API}${path}`));
   } catch {
@@ -123,6 +151,7 @@ export interface GalleryItem {
   size_km: number; n_obs: number; first: string; last: string; maturity: string; result: string;
 }
 export async function gallery(): Promise<GalleryItem[]> {
+  backendOnly();
   return (await j<{ items: GalleryItem[] }>(await fetch(`${API}/api/gallery`))).items;
 }
 

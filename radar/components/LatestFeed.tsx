@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl, { GeoJSONSource, Map as MLMap } from "maplibre-gl";
 import { CloudOff, Loader2, RefreshCw, Satellite } from "lucide-react";
 import { Latest, LatestGranule, Place, errorText, latest } from "@/lib/api";
+import PublicDemoNote, { useIsPublicDemo } from "@/components/PublicDemoNote";
 import { MAT, MAT_LABEL } from "@/components/LiveSearch";
 import { COLOR } from "@/lib/theme";
 
@@ -20,6 +21,7 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
   const [data, setData] = useState<Latest | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const demo = useIsPublicDemo();
   const onPickRef = useRef(onPick); onPickRef.current = onPick;
   const [globe, setGlobe] = useState(true);
   const spinning = useRef(true);
@@ -112,7 +114,8 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
       <div className="mt-3 grid gap-3 lg:grid-cols-5">
         <div ref={el} className="h-80 overflow-hidden rounded-lg border border-line bg-void lg:col-span-3" />
         <div className="max-h-80 overflow-auto border-t border-line lg:col-span-2 lg:border-t-0 lg:border-l">
-          {err && (
+          {err && demo && <div className="p-3"><PublicDemoNote compact what="The live worldwide feed needs the full app." /></div>}
+          {err && !demo && (
             <div className="flex items-start gap-2.5 p-4 text-[13px] leading-relaxed text-muted">
               <CloudOff size={16} className="mt-0.5 shrink-0 text-amber" />
               <span><span className="font-medium text-text">The live feed is not available right now.</span> {err} The saved examples above open without it.</span>

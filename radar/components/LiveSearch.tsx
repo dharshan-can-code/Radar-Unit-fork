@@ -6,6 +6,7 @@ import {
   Acquisitions, Detail, GalleryItem, Job, LiveStack, Place, acquisitions, gallery, geocode, health, job as getJob,
   loadResult, startAnalysis,
 } from "@/lib/api";
+import PublicDemoNote, { useIsPublicDemo } from "@/components/PublicDemoNote";
 import ExamplePicker from "@/components/ExamplePicker";
 
 export const MAT: Record<string, string> = {
@@ -30,6 +31,7 @@ interface Props {
 
 export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   const [backend, setBackend] = useState<{ ok: boolean; token: boolean } | null>(null);
+  const demo = useIsPublicDemo();
   const [q, setQ] = useState("");
   const [places, setPlaces] = useState<Place[] | null>(null);
   const [place, setPlace] = useState<Place | null>(null);
@@ -145,7 +147,8 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
         ASF archive right now, then reads only the window you choose from the real NISAR files.
       </p>
 
-      {backend && !backend.ok && (
+      {backend && !backend.ok && demo && <div className="mt-3"><PublicDemoNote what="Searching a new place needs the full app." /></div>}
+      {backend && !backend.ok && !demo && (
         <div className="mt-3 flex gap-2 text-[13px] leading-relaxed text-amber" role="status">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />
           <span>
