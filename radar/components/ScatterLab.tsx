@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw, ScatterChart } from "lucide-react";
 import type { GridIndex, Manifest } from "@/lib/data";
 import { Tag } from "@/components/Fingerprint";
-import { RGB } from "@/lib/theme";
+import { RGB, landRGB } from "@/lib/theme";
+import { useTheme } from "@/lib/themeMode";
 
 const X0 = -30, X1 = 10, Y0 = -40, Y1 = 0; // HH (x) and HV (y) axes, dB
 const W = 360, H = 300, PAD = 34;
@@ -20,6 +21,7 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
     dHH: m.screening.double_bounce.hh_min_db.value, dDiff: m.screening.double_bounce.hh_minus_hv_min_db.value } : null;
   const [th, setTh] = useState<Th | null>(base);
   const [oi, setOi] = useState(0);
+  const pageTheme = useTheme();
   const plot = useRef<HTMLCanvasElement>(null);
   const mapC = useRef<HTMLCanvasElement>(null);
   const svg = useRef<SVGSVGElement>(null);
@@ -53,11 +55,13 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
       const v = density[i];
       if (!v) continue;
       const k = Math.log1p(v) / Math.log1p(mx);
-      img.data[i * 4] = 40 + 200 * k; img.data[i * 4 + 1] = 120 + 130 * k; img.data[i * 4 + 2] = 255; img.data[i * 4 + 3] = 60 + 195 * k;
+      // density ramp in the accent hue; darker on the light page, lighter on the dark page
+      const [r0, g0, b0] = pageTheme === "dark" ? [179, 157, 219] : [112, 83, 166];
+      img.data[i * 4] = r0; img.data[i * 4 + 1] = g0; img.data[i * 4 + 2] = b0; img.data[i * 4 + 3] = 50 + 205 * k;
     }
     ctx.clearRect(0, 0, W, H);
     ctx.putImageData(img, 0, 0);
-  }, [density]);
+  }, [density, pageTheme]);
 
   // classification map with the CURRENT thresholds
   const stats = useMemo(() => {
@@ -86,11 +90,11 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
     const img = ctx.createImageData(grid.nx, grid.ny);
     for (let i = 0; i < stats.cls.length; i++) {
       const k = stats.cls[i];
-      const [r, g, b, a] = k === 1 ? [...RGB.mapWater, 255] : k === 2 ? [...RGB.mapVeg, 255] : k === 3 ? [...RGB.land, 255] : [0, 0, 0, 0];
+      const [r, g, b, a] = k === 1 ? [...RGB.mapWater, 255] : k === 2 ? [...RGB.mapVeg, 255] : k === 3 ? [...landRGB(pageTheme), 255] : [0, 0, 0, 0];
       img.data[i * 4] = r; img.data[i * 4 + 1] = g; img.data[i * 4 + 2] = b; img.data[i * 4 + 3] = a;
     }
     ctx.putImageData(img, 0, 0);
-  }, [stats, grid]);
+  }, [stats, grid, pageTheme]);
 
   if (!m || !grid || !th || !base) return <p className="text-muted">Load a result to use the Scatter Lab.</p>;
 
@@ -109,7 +113,7 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
     <div className="grid gap-4 lg:grid-cols-2">
       <div className="rounded-xl border border-line bg-panel p-5">
         <div className="flex flex-wrap items-center gap-2">
-          <ScatterChart size={16} className="text-cyan" /><span className="text-sm font-semibold">Every pixel, HH vs HV</span>
+          <ScatterChart size={16} className="text-accent" /><span className="text-sm font-semibold">Every pixel, HH vs HV</span>
           <select value={oi} onChange={(e) => setOi(+e.target.value)} aria-label="Acquisition" className="ml-auto rounded-md border border-line bg-bg px-2 py-1 font-mono text-[12px]">
             {m.observations.map((o, k) => <option key={o.date} value={k}>{o.date}</option>)}
           </select>
@@ -134,7 +138,7 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
       <div className="rounded-xl border border-line bg-panel p-5">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold">Classification with your thresholds</span>
-          <button onClick={() => setTh(base)} disabled={!changed} className="flex items-center gap-1 text-[12px] text-cyan disabled:opacity-30"><RotateCcw size={12} />app values</button>
+          <button onClick={() => setTh(base)} disabled={!changed} className="flex items-center gap-1 text-[12px] text-accent disabled:opacity-30"><RotateCcw size={12} />app values</button>
         </div>
         <canvas ref={mapC} className="mt-3 w-full rounded border border-line" style={{ imageRendering: "pixelated", aspectRatio: `${grid.nx} / ${grid.ny}` }} />
         {stats && (

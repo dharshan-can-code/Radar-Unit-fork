@@ -46,7 +46,7 @@ export interface SegOption { v: string; label: string; icon?: React.ReactNode; d
 export function Segmented({ value, onChange, options, label, tone = "cyan" }: {
   value: string; onChange: (v: string) => void; options: SegOption[]; label: string; tone?: "cyan" | "amber";
 }) {
-  const on = tone === "amber" ? "bg-amber/15 text-amber" : "bg-cyan/15 text-cyan";
+  const on = tone === "amber" ? "bg-amber/15 text-amber" : "bg-accent/15 text-accent";
   return (
     <div role="group" aria-label={label} className="no-scrollbar flex max-w-full shrink-0 overflow-x-auto rounded-md border border-line bg-bg-2">
       {options.map((o) => (

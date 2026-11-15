@@ -21,7 +21,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   const story = pathname === STORY;
   return (
     <div className="transition-[padding-left] duration-200 motion-reduce:transition-none xl:pl-[var(--sidebar-w)]">
-      <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-cyan focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-bg">Skip to content</a>
+      <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-on-accent">Skip to content</a>
       <Sidebar />
       <Navbar />
       <main id="content" tabIndex={-1} className="mx-auto max-w-[1400px] px-4 pb-16 outline-none sm:px-6">
@@ -37,11 +37,11 @@ function Shell({ children }: { children: React.ReactNode }) {
         <footer className="mt-24 border-t border-line pt-8 text-[13px] leading-relaxed text-muted">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span className="flex items-center gap-2 font-display text-[15px] font-semibold tracking-[0.04em] text-text">
-              <span className="text-cyan"><BrandMark /></span>DELTA PULSE
+              <span className="text-accent"><BrandMark /></span>DELTA PULSE
             </span>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 text-cyan hover:text-text"><HelpCircle size={14} />How to use</button>
-              <Link href="/guide" className="text-cyan hover:text-text">User guide</Link>
+              <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 text-accent hover:text-accent-strong"><HelpCircle size={14} />How to use</button>
+              <Link href="/guide" className="text-accent hover:text-accent-strong">User guide</Link>
             </div>
           </div>
           <p className="mt-4 max-w-4xl">Team RADAR UNIT, NASA Space Apps 2026. An open-source student project; not an official NASA product.</p>

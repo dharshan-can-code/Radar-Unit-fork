@@ -34,7 +34,7 @@ export default function Timeline({ inventory, manifest, pairIdx, setPairIdx }: P
         <div className="flex overflow-hidden rounded-md border border-line text-sm">
           {Object.entries(inventory.areas).map(([k, a]) => (
             <button key={k} onClick={() => { setArea(k); setPicked(null); }} aria-pressed={area === k}
-              className={`px-3 py-1.5 ${area === k ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>{a.name}</button>
+              className={`px-3 py-1.5 ${area === k ? "bg-accent/15 text-accent" : "text-muted hover:text-text"}`}>{a.name}</button>
           ))}
         </div>
         <div className="flex flex-wrap gap-3 text-[12px] text-muted">
@@ -59,10 +59,10 @@ export default function Timeline({ inventory, manifest, pairIdx, setPairIdx }: P
             const gs = inv.granules.filter((x) => `${x.track}${x.direction[0]} · f${x.frame} · ${x.range_bandwidth} MHz` === lane);
             const primary = gs.some((x) => x.primary_stack);
             return (
-              <div key={lane} className={`flex items-center border-b border-line/50 ${primary ? "bg-cyan/5" : ""}`}>
+              <div key={lane} className={`flex items-center border-b border-line/50 ${primary ? "bg-accent/5" : ""}`}>
                 <div className="w-44 shrink-0 py-2 pr-2 font-mono text-[11px]">
-                  <span className={primary ? "text-cyan" : "text-muted"}>{lane}</span>
-                  {primary && <div className="text-[11px] text-cyan/70">primary stack</div>}
+                  <span className={primary ? "text-accent" : "text-muted"}>{lane}</span>
+                  {primary && <div className="text-[11px] text-accent/70">primary stack</div>}
                 </div>
                 <div className="relative h-9 flex-1">
                   <div className="absolute inset-y-0 bg-rose/15" style={{ left: `${X(GAP.from)}%`, width: `${X(GAP.to) - X(GAP.from)}%` }} />

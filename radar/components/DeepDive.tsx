@@ -26,8 +26,8 @@ export default function DeepDive({ tabs, active, onActiveChange: setActive }: { 
         {tabs.map((x) => (
           <button key={x.id} role="tab" id={`deep-tab-${x.id}`} aria-selected={x.id === t.id} aria-controls="deep-panel" tabIndex={x.id === t.id ? 0 : -1} onClick={() => setActive(x.id)}
             className={`relative flex shrink-0 items-center gap-2 px-3.5 py-3 text-[14px] font-medium whitespace-nowrap sm:px-4 ${x.id === t.id ? "text-text" : "text-muted hover:text-text"}`}>
-            <span className={x.id === t.id ? "text-cyan" : ""}>{x.icon}</span>{x.label}
-            <span aria-hidden className={`absolute inset-x-2 -bottom-px h-0.5 bg-cyan transition-opacity duration-200 ${x.id === t.id ? "opacity-100" : "opacity-0"}`} />
+            <span className={x.id === t.id ? "text-accent" : ""}>{x.icon}</span>{x.label}
+            <span aria-hidden className={`absolute inset-x-2 -bottom-px h-0.5 bg-accent transition-opacity duration-200 ${x.id === t.id ? "opacity-100" : "opacity-0"}`} />
           </button>
         ))}
       </div>

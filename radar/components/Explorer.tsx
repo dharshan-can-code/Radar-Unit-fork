@@ -5,14 +5,16 @@ import { BoxSelect, ChevronDown, ChevronsLeftRight, Crosshair, Loader2, MousePoi
 import { gibsTiles } from "@/lib/api";
 import type { Bounds, Channel, InventoryArea, Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
-import { COLOR } from "@/lib/theme";
+import { COLOR, mapTilesFor } from "@/lib/theme";
+import { currentTheme, useTheme } from "@/lib/themeMode";
 import { Segmented } from "@/components/ui";
 
 export type Mode = "compare" | "change" | "screening";
 export type Selection = { kind: "point"; lng: number; lat: number } | { kind: "box"; bounds: Bounds } | { kind: "area" };
 
 const BASEMAPS = {
-  dark: { tiles: ["https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"],
+  // "standard" follows the theme, inverted: dark map on the light page, light map on the dark page
+  dark: { tiles: mapTilesFor("light"),
     attribution: "Basemap: Esri, HERE, Garmin, © OpenStreetMap contributors" },
   optical: { tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
     attribution: "Optical context: Esri World Imagery (acquisition dates vary; not time-matched)" },
@@ -21,7 +23,7 @@ const BASEMAPS = {
 function style(base: keyof typeof BASEMAPS): StyleSpecification {
   return {
     version: 8,
-    sources: { base: { type: "raster", tiles: BASEMAPS[base].tiles, tileSize: 256, attribution: BASEMAPS[base].attribution } },
+    sources: { base: { type: "raster", tiles: base === "dark" ? mapTilesFor(currentTheme()) : BASEMAPS[base].tiles, tileSize: 256, attribution: BASEMAPS[base].attribution } },
     layers: [{ id: "base", type: "raster", source: "base" }],
   };
 }
@@ -79,6 +81,7 @@ export default function Explorer(p: Props) {
   const [swipe, setSwipe] = useState(50);
   const [draw, setDraw] = useState(false);
   const [base, setBase] = useState<keyof typeof BASEMAPS | "nasa">("dark");
+  const pageTheme = useTheme();
   const [threeD, setThreeD] = useState(false);
   const [picking, setPicking] = useState(false);
   const [opacity, setOpacity] = useState(0.92);
@@ -145,7 +148,7 @@ export default function Explorer(p: Props) {
     if (!ready || maps.current.ready < 2) return; // wait for the CURRENT map instances to load
     const date = m.pairs[pairIdx]?.after ?? m.observations[m.observations.length - 1].date;
     // only swap tiles when they actually change (setTiles aborts in-flight requests)
-    const baseTiles = BASEMAPS[base === "nasa" ? "dark" : base].tiles;
+    const baseTiles = base === "optical" ? BASEMAPS.optical.tiles : mapTilesFor(pageTheme);
     const nasaTiles = gibsTiles(date);
     for (const mp of [maps.current.a!, maps.current.b!]) {
       const src = mp.getSource("base") as maplibregl.RasterTileSource;
@@ -156,7 +159,7 @@ export default function Explorer(p: Props) {
         mp.setLayoutProperty("nasa", "visibility", base === "nasa" ? "visible" : "none");
       }
     }
-  }, [base, ready, pairIdx, m]);
+  }, [base, ready, pairIdx, m, pageTheme]);
 
   // 3D terrain: drape the radar over real elevation and tilt the view
   useEffect(() => {
@@ -240,7 +243,7 @@ export default function Explorer(p: Props) {
         <div className="no-scrollbar -mx-3 flex min-w-0 basis-[calc(100%+1.5rem)] items-center gap-2 overflow-x-auto px-3 sm:mx-0 sm:basis-full sm:flex-wrap sm:overflow-visible sm:px-0">
           {p.onPickLocation && (
             <button onClick={() => { setPicking((v) => !v); setDraw(false); }} aria-pressed={picking}
-              className={`${tool} ${picking ? "border-cyan bg-cyan/15 text-cyan" : idle}`}>
+              className={`${tool} ${picking ? "border-accent bg-accent/15 text-accent" : idle}`}>
               <Crosshair size={14} />{picking ? "Click anywhere on the map…" : "Analyse a new place here"}
             </button>
           )}
@@ -253,12 +256,12 @@ export default function Explorer(p: Props) {
           <span aria-hidden className="mx-1 hidden h-5 w-px bg-line sm:block" />
           <select value={base} onChange={(e) => setBase(e.target.value as typeof base)} aria-label="Basemap"
             className="shrink-0 rounded-md border border-line bg-bg-2 px-2 py-1.5 text-text hover:border-line-strong sm:max-w-full sm:shrink">
-            <option value="dark">Basemap: dark</option>
+            <option value="dark">Basemap: standard</option>
             <option value="optical">Basemap: optical (Esri, undated)</option>
             <option value="nasa">Basemap: NASA same day ({(m.pairs[pairIdx]?.after ?? "").slice(5)})</option>
           </select>
           <button onClick={() => setThreeD((v) => !v)} aria-pressed={threeD}
-            className={`${tool} ${threeD ? "border-cyan bg-cyan/15 text-cyan" : idle}`}>
+            className={`${tool} ${threeD ? "border-accent bg-accent/15 text-accent" : idle}`}>
             <Mountain size={14} />{threeD ? "3D on" : "3D terrain"}
           </button>
           <label className="flex shrink-0 items-center gap-2 px-1 py-1.5 text-muted" title="Radar layer opacity">
@@ -279,18 +282,18 @@ export default function Explorer(p: Props) {
         </div>
         {!ready && (
           <div className="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-void text-[13px] text-muted" role="status">
-            <Loader2 size={15} className="animate-spin text-cyan" />Loading the map and radar layers…
+            <Loader2 size={15} className="animate-spin text-accent" />Loading the map and radar layers…
           </div>
         )}
         {mode !== "change" && pair && (
           <>
             <div className="pointer-events-none absolute top-3 left-3 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">Before </span>{pair.before}</div>
             <div className="pointer-events-none absolute top-3 right-14 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">After </span>{pair.after}</div>
-            <div className="absolute top-0 bottom-0 z-10 w-px bg-cyan" style={{ left: `${swipe}%` }}>
+            <div className="absolute top-0 bottom-0 z-10 w-px bg-accent" style={{ left: `${swipe}%` }}>
               <button aria-label="Drag to compare before and after" role="slider" aria-orientation="horizontal"
                 aria-valuemin={2} aria-valuemax={98} aria-valuenow={Math.round(swipe)}
                 onPointerDown={onHandle} onKeyDown={onHandleKey}
-                className="absolute top-1/2 -left-[18px] flex h-9 w-9 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full border border-cyan bg-bg text-cyan shadow-[0_2px_12px_rgba(0,0,0,0.6)]">
+                className="absolute top-1/2 -left-[18px] flex h-9 w-9 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full border border-accent bg-bg text-accent shadow-[0_2px_12px_rgba(0,0,0,0.6)]">
                 <ChevronsLeftRight size={16} />
               </button>
             </div>
@@ -347,7 +350,7 @@ function Legend({ m, mode, channel }: { m: Manifest; mode: Mode; channel: Channe
             </>
           )}
           <div className="mt-2 flex items-center gap-2 text-muted">
-            <span className="inline-block h-0 w-5 border-t border-dashed border-cyan" />Study area
+            <span className="inline-block h-0 w-5 border-t border-dashed border-accent" />Study area
             <span className="ml-2 inline-block h-0 w-5 border-t border-muted" />NISAR frame
           </div>
         </div>

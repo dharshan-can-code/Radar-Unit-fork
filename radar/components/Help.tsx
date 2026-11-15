@@ -34,7 +34,7 @@ export default function Help({ onClose }: { onClose: () => void }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-2xl font-medium">How to use DELTA PULSE</h2>
-            <p className="mt-1 text-sm text-muted">No radar background needed. For pictures, examples and answers to common questions, open the <a href="/guide" className="text-cyan underline">full User Guide</a>.</p>
+            <p className="mt-1 text-sm text-muted">No radar background needed. For pictures, examples and answers to common questions, open the <a href="/guide" className="text-accent underline">full User Guide</a>.</p>
           </div>
           <button ref={closeBtn} onClick={onClose} aria-label="Close" className="rounded-md border border-line p-1.5 text-muted hover:text-text"><X size={16} /></button>
         </div>
@@ -42,7 +42,7 @@ export default function Help({ onClose }: { onClose: () => void }) {
         <ol className="mt-5 space-y-3">
           {STEPS.map(([t, d], i) => (
             <li key={t} className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-cyan/15 font-mono text-xs text-cyan">{i + 1}</span>
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-xs text-accent">{i + 1}</span>
               <div><div className="text-sm font-semibold text-text">{t}</div><p className="text-[13px] leading-relaxed text-muted">{d}</p></div>
             </li>
           ))}
@@ -59,7 +59,7 @@ export default function Help({ onClose }: { onClose: () => void }) {
         <h3 className="mt-6 text-sm font-semibold">Product badges</h3>
         <ul className="mt-2 space-y-1 text-[13px] text-muted">
           <li><b className="text-green">VALIDATED</b>: NASA&apos;s fully validated science release (from 21 Oct 2026).</li>
-          <li><b className="text-cyan">PROVISIONAL</b>: calibrated, partially validated (June–Oct 2026).</li>
+          <li><b className="text-accent">PROVISIONAL</b>: calibrated, partially validated (June–Oct 2026).</li>
           <li><b className="text-amber">URGENT RESPONSE</b>: published fastest, for events. Newest data, but not a validated science release.</li>
           <li>Different releases are never mixed in one comparison, because the numbers would not be comparable.</li>
         </ul>
@@ -72,8 +72,8 @@ export default function Help({ onClose }: { onClose: () => void }) {
           <li>If live search is offline, the Tonle Sap case study still works. To run live search yourself, start the server with <code className="text-text">npm.cmd run api</code> in the radar folder.</li>
         </ul>
         <div className="mt-6 flex gap-3">
-          <button onClick={onClose} className="rounded-md bg-cyan px-4 py-2 text-sm font-medium text-bg">Got it</button>
-          <a href="/guide" className="rounded-md border border-cyan/40 px-4 py-2 text-sm text-cyan hover:bg-cyan/10">Open the full User Guide</a>
+          <button onClick={onClose} className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent">Got it</button>
+          <a href="/guide" className="rounded-md border border-accent/40 px-4 py-2 text-sm text-accent hover:bg-accent/10">Open the full User Guide</a>
         </div>
       </div>
     </div>

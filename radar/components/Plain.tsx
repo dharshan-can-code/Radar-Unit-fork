@@ -24,7 +24,7 @@ export function MapGuide({ mode }: { mode: Mode }) {
   return (
     <div className="grid gap-x-10 gap-y-2 border-t border-line px-3 py-3 text-[13px] leading-relaxed text-text/75 sm:px-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
       <p key={x.v} className="fade-in flex items-start gap-2">
-        <span className="mt-[3px] shrink-0 text-cyan">{x.icon}</span>
+        <span className="mt-[3px] shrink-0 text-accent">{x.icon}</span>
         <span><span className="font-semibold text-text">{x.title}.</span> {x.body}</span>
       </p>
       <p className="flex items-start gap-2">

@@ -4,7 +4,7 @@ import { Radar, ScanSearch, Waves } from "lucide-react";
 import { Tag } from "@/components/ui";
 
 const STEPS = [
-  { icon: <Radar size={22} />, color: "text-cyan", title: "NISAR sends radar pulses",
+  { icon: <Radar size={22} />, color: "text-accent", title: "NISAR sends radar pulses",
     text: "Every 12 days the satellite beams 24 cm radio waves at the ground and records the echo. Unlike a camera, it works through cloud, rain and darkness." },
   { icon: <Waves size={22} />, color: "text-amber", title: "Water changes the echo",
     text: "Calm open water reflects the pulse away like a mirror, so it looks dark. Water under trees bounces it off the water and back up the trunks, so it looks very bright." },

@@ -44,13 +44,13 @@ export function NextPage() {
   return (
     <nav aria-label="Next page" className="mt-24">
       <Link href={href(next.href)}
-        className="group flex items-center justify-between gap-4 rounded-lg border border-line bg-panel px-5 py-5 hover:border-cyan/50 sm:px-6">
+        className="group flex items-center justify-between gap-4 rounded-lg border border-line bg-panel px-5 py-5 hover:border-accent/50 sm:px-6">
         <span>
           <span className="block text-[12px] text-muted">Next</span>
-          <span className="mt-1 block text-[1.35rem] font-medium text-text group-hover:text-cyan sm:text-[1.6rem]">{next.title}</span>
+          <span className="mt-1 block text-[1.35rem] font-medium text-text group-hover:text-accent sm:text-[1.6rem]">{next.title}</span>
           <span className="mt-1 block text-[13px] text-muted">{next.items.map((x) => x.label).join(" · ")}</span>
         </span>
-        <ArrowRight size={22} className="shrink-0 text-cyan transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
+        <ArrowRight size={22} className="shrink-0 text-accent transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
       </Link>
     </nav>
   );

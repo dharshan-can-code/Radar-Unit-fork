@@ -21,8 +21,29 @@ export interface Job {
   result?: string; cached?: boolean; elapsed_s?: number;
 }
 
+export const REPO_URL = "https://github.com/haricharanparna/Radar-Unit";
+export const PUBLIC_DEMO_NOTE =
+  "Analysing a new place runs in the full DELTA PULSE app, which reads NASA's radar files through our own server. " +
+  "This public demo still searches NASA's archive live, and every map, chart and story here is real NASA data.";
+
+/** True on the public static deployment (e.g. delta-pulse-nisar.vercel.app), where no backend runs.
+ *  Set NEXT_PUBLIC_API to a hosted backend to turn live analysis on there. */
+export function isPublicDemo(): boolean {
+  if (process.env.NEXT_PUBLIC_API) return false;
+  if (typeof window === "undefined") return false;
+  return !/^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost)$/.test(window.location.hostname);
+}
+
+export class OfflineError extends Error {
+  constructor() { super(PUBLIC_DEMO_NOTE); this.name = "OfflineError"; }
+}
+/** Calls that only the backend can answer (analysis, saved results) fail fast on the public demo
+ *  (no doomed requests to localhost). Searching does not need it: see viaBackend below. */
+function backendOnly() { if (isPublicDemo()) throw new OfflineError(); }
+
 /** User-facing text for an error. A TypeError from fetch means the request never got an answer. */
 export function errorText(x: unknown): string {
+  if (x instanceof OfflineError) return x.message;
   if (x instanceof TypeError) return "A data service could not be reached. Check the internet connection and try again.";
   return x instanceof Error ? x.message : String(x);
 }
@@ -194,15 +215,18 @@ export async function acquisitions(lat: number, lon: number, fresh = false): Pro
 
 export type Detail = "quick" | "standard";
 export async function startAnalysis(body: { lat: number; lon: number; scenes: string[]; size_km: number; place?: string; detail?: Detail }): Promise<Job> {
+  backendOnly();
   if (!(await backendHealth(true))) throw new Error(ANALYSIS_OFFLINE);
   return j(await fetch(`${API}/api/analyze`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
 }
 
 export async function job(id: string): Promise<Job> {
+  backendOnly();
   return j(await fetch(`${API}/api/jobs/${id}`));
 }
 
 export async function loadResult(path: string): Promise<Manifest> {
+  backendOnly();
   return j(await fetch(`${API}${path}`, { cache: "no-store" }));
 }
 

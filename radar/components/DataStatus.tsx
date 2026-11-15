@@ -17,7 +17,7 @@ export default function DataStatus({ status, stacks, stackId, setStackId, manife
   return (
     <div className="mt-6 grid gap-3 rounded-xl border border-line bg-panel p-4 text-[13px] md:grid-cols-3">
       <div className="flex gap-3">
-        <Satellite size={18} className="mt-0.5 shrink-0 text-cyan" />
+        <Satellite size={18} className="mt-0.5 shrink-0 text-accent" />
         <div>
           <div className="text-text">Real NISAR L2 GCOV, {status.name}</div>
           <div className="text-muted">
@@ -30,7 +30,7 @@ export default function DataStatus({ status, stacks, stackId, setStackId, manife
             <div className="mt-2 flex flex-wrap gap-1">
               {processed.map((s) => (
                 <button key={s.id} onClick={() => setStackId(s.id)}
-                  className={`rounded border px-2 py-0.5 font-mono text-[11px] ${s.id === stackId ? "border-cyan bg-cyan/15 text-cyan" : "border-line text-muted"}`}>
+                  className={`rounded border px-2 py-0.5 font-mono text-[11px] ${s.id === stackId ? "border-accent bg-accent/15 text-accent" : "border-line text-muted"}`}>
                   {s.maturity} {s.crid} · {s.n_obs} dates
                 </button>
               ))}
@@ -39,7 +39,7 @@ export default function DataStatus({ status, stacks, stackId, setStackId, manife
         </div>
       </div>
       <div className="flex gap-3">
-        <RefreshCw size={18} className="mt-0.5 shrink-0 text-cyan" />
+        <RefreshCw size={18} className="mt-0.5 shrink-0 text-accent" />
         <div>
           <div className="text-text">ASF archive last checked {fmt(status.checked_utc)}</div>
           <div className="text-muted">
@@ -50,7 +50,7 @@ export default function DataStatus({ status, stacks, stackId, setStackId, manife
         </div>
       </div>
       <div className="flex gap-3">
-        <Database size={18} className="mt-0.5 shrink-0 text-cyan" />
+        <Database size={18} className="mt-0.5 shrink-0 text-accent" />
         <div>
           <div className="text-text">
             {status.tracked_downloaded} of {status.tracked_available} tracked acquisitions retrieved ·{" "}

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookOpen, Menu, Sparkles, X } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 import { BrandMark } from "@/components/ui";
 import { PAGES, STORY } from "@/components/site/nav";
 import { useNavLinks } from "@/components/Sidebar";
@@ -26,7 +27,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-[52px] max-w-[1400px] items-center gap-2 px-4 sm:gap-3 sm:px-6">
         <Link href={href("/")} onClick={() => setOpen(false)}
           className="flex shrink-0 items-center gap-2 font-display text-[14px] font-semibold tracking-[0.04em] text-text sm:text-[15px]">
-          <span className="text-cyan"><BrandMark /></span>DELTA PULSE
+          <span className="text-accent"><BrandMark /></span>DELTA PULSE
         </Link>
 
         <Link href={href(STORY)} aria-current={story ? "page" : undefined}
@@ -36,6 +37,7 @@ export default function Navbar() {
 
         <div className="ml-auto flex shrink-0 items-center gap-1">
           {current && <span className="mr-1 hidden text-[13px] text-muted sm:inline">{current.title}</span>}
+          <ThemeToggle compact />
           <Link href="/guide" className="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] text-muted hover:text-text sm:flex">
             <BookOpen size={14} />User guide
           </Link>
@@ -54,14 +56,14 @@ export default function Navbar() {
               return (
                 <div key={p.href}>
                   <Link href={href(p.href)} onClick={() => setOpen(false)} aria-current={here ? "page" : undefined}
-                    className={`text-[12px] ${here ? "text-cyan" : "text-muted hover:text-text"}`}>{p.title}</Link>
+                    className={`text-[12px] ${here ? "text-accent" : "text-muted hover:text-text"}`}>{p.title}</Link>
                   <ul className="mt-1">
                     {p.items.map((x) => {
                       const on = isOn(p, x);
                       return (
                         <li key={x.id}>
                           <Link href={target(p, x)} onClick={(e) => onClick(p, x, e, () => setOpen(false))} aria-current={on ? "location" : undefined}
-                            className={`block w-full py-1.5 text-left text-[15px] ${on ? "text-cyan" : "text-text hover:text-cyan"}`}>
+                            className={`block w-full py-1.5 text-left text-[15px] ${on ? "text-accent" : "text-text hover:text-accent"}`}>
                             {x.label}
                           </Link>
                         </li>
@@ -78,7 +80,7 @@ export default function Navbar() {
                 <Sparkles size={14} />Your Story
               </Link>
             </div>
-            <Link href="/guide" className="flex items-center gap-1.5 border-t border-line pt-4 text-[15px] text-text hover:text-cyan sm:col-span-3 lg:col-span-5">
+            <Link href="/guide" className="flex items-center gap-1.5 border-t border-line pt-4 text-[15px] text-text hover:text-accent sm:col-span-3 lg:col-span-5">
               <BookOpen size={15} />User guide
             </Link>
           </div>

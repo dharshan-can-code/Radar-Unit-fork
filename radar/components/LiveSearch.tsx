@@ -3,14 +3,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AlertTriangle, History, Loader2, MapPin, Play, RefreshCw, Search, Satellite, Zap } from "lucide-react";
 import type { Manifest } from "@/lib/data";
 import {
-  ANALYSIS_OFFLINE, Acquisitions, Detail, GalleryItem, Job, LiveStack, Place, acquisitions, backendHealth, errorText, gallery,
+  ANALYSIS_OFFLINE, PUBLIC_DEMO_NOTE, Acquisitions, Detail, GalleryItem, Job, LiveStack, Place, acquisitions, backendHealth, errorText, gallery,
   geocode, job as getJob, loadResult, startAnalysis,
 } from "@/lib/api";
+import PublicDemoNote, { useIsPublicDemo } from "@/components/PublicDemoNote";
 import ExamplePicker from "@/components/ExamplePicker";
 
 export const MAT: Record<string, string> = {
   VALIDATED: "border-green/50 text-green bg-green/10",
-  PROVISIONAL: "border-cyan/50 text-cyan bg-cyan/10",
+  PROVISIONAL: "border-accent/50 text-accent bg-accent/10",
   URGENT_RESPONSE: "border-amber/50 text-amber bg-amber/10",
   BETA: "border-line text-muted",
   OTHER: "border-rose/40 text-rose bg-rose/5",
@@ -30,6 +31,7 @@ interface Props {
 
 export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   const [backend, setBackend] = useState<{ ok: boolean; token: boolean } | null>(null);
+  const demo = useIsPublicDemo();
   const [q, setQ] = useState("");
   const [places, setPlaces] = useState<Place[] | null>(null);
   const [place, setPlace] = useState<Place | null>(null);
@@ -122,7 +124,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
     if (!place || !stack || picked.length < 2) return;
     setErr(null);
     const h = await checkBackend();
-    if (!h) { setErr(ANALYSIS_OFFLINE); return; }
+    if (!h) { setErr(demo ? PUBLIC_DEMO_NOTE : ANALYSIS_OFFLINE); return; }
     if (!h.earthdata_token) { setErr("The server has no Earthdata token (.earthdata_token), so it cannot read NASA's radar files yet."); return; }
     setStarted(Date.now()); setNow(Date.now());
     try {
@@ -150,16 +152,17 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   const est = detail === "quick" ? 10 : 12 + Math.max(0, picked.length - 2) * 3;
 
   return (
-    <div className={`rounded-lg border bg-panel p-4 sm:p-5 ${active ? "border-cyan/50" : "border-line"}`}>
+    <div className={`rounded-lg border bg-panel p-4 sm:p-5 ${active ? "border-accent/50" : "border-line"}`}>
       <div className="flex items-center gap-2 text-sm font-semibold">
-        <Satellite size={16} className="text-cyan" /> Explore anywhere with live NISAR data
+        <Satellite size={16} className="text-accent" /> Explore anywhere with live NISAR data
       </div>
       <p className="mt-1 text-[12px] text-muted">
         Type a place or coordinates, click the map, or pick from the newest acquisitions. DELTA PULSE searches NASA&apos;s
         ASF archive right now, then reads only the window you choose from the real NISAR files.
       </p>
 
-      {backend && !backend.ok && (
+      {backend && !backend.ok && demo && <div className="mt-3"><PublicDemoNote what="Analysing a new place needs the full app." /></div>}
+      {backend && !backend.ok && !demo && (
         <div className="mt-3 flex gap-2 text-[13px] leading-relaxed text-amber" role="status">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />
           <span>
@@ -184,10 +187,10 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
           <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="e.g. Manaus, Sundarbans, Jakarta, or 12.56, 104.21"
             aria-label="Place name or coordinates"
-            className="w-full rounded-md border border-line bg-bg py-2 pr-3 pl-9 text-sm text-text focus:border-cyan focus:outline-none" />
+            className="w-full rounded-md border border-line bg-bg py-2 pr-3 pl-9 text-sm text-text focus:border-accent focus:outline-none" />
         </div>
         <button type="submit" disabled={busy !== null || q.trim().length < 2}
-          className="flex items-center gap-1.5 rounded-md bg-cyan px-4 text-sm font-medium text-bg disabled:opacity-40">
+          className="flex items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-medium text-on-accent disabled:opacity-40">
           {busy === "geocode" ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}Search
         </button>
       </form>
@@ -197,7 +200,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
           {places.map((p, i) => (
             <li key={`${i}-${p.lat},${p.lon}`}>
               <button onClick={() => pickPlace(p)} className="flex w-full items-start gap-2 px-3 py-2 text-left text-[13px] hover:bg-panel-2">
-                <MapPin size={13} className="mt-0.5 shrink-0 text-cyan" />
+                <MapPin size={13} className="mt-0.5 shrink-0 text-accent" />
                 <span><span className="text-text">{p.name}</span><span className="ml-2 font-mono text-[11px] text-muted">{p.lat.toFixed(3)}, {p.lon.toFixed(3)}</span></span>
               </button>
             </li>
@@ -215,10 +218,10 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
       {acq && place && (
         <div className="mt-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2 text-[12px]">
-            <div className="text-text"><MapPin size={12} className="mr-1 inline text-cyan" />{place.name.split(",").slice(0, 3).join(",")}</div>
+            <div className="text-text"><MapPin size={12} className="mr-1 inline text-accent" />{place.name.split(",").slice(0, 3).join(",")}</div>
             <div className="flex items-center gap-2 text-muted">
               {acq.n_granules} GCOV granules · archive checked {fmtUtc(acq.checked_utc)}
-              <button onClick={() => pickPlace(place, true)} title="Search the archive again now" className="text-cyan hover:text-text"><RefreshCw size={12} /></button>
+              <button onClick={() => pickPlace(place, true)} title="Search the archive again now" className="text-accent hover:text-accent-strong"><RefreshCw size={12} /></button>
             </div>
           </div>
           {acq.note && <p className="mt-2 text-[13px] text-muted">{acq.note}</p>}
@@ -227,12 +230,12 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
             {acq.stacks.map((s) => (
               <button key={s.id} onClick={() => chooseStack(s)} disabled={!s.usable}
                 title={s.usable ? s.caveat ?? undefined : "Pre-calibration or non-standard products are listed but not analysed"}
-                className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border px-3 py-2 text-left text-[12px] ${s.id === stackId ? "border-cyan bg-cyan/10" : "border-line hover:border-cyan/40"} disabled:cursor-not-allowed disabled:opacity-45`}>
+                className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border px-3 py-2 text-left text-[12px] ${s.id === stackId ? "border-accent bg-accent/10" : "border-line hover:border-accent/40"} disabled:cursor-not-allowed disabled:opacity-45`}>
                 <span className="font-mono text-text">Track {s.track}{s.direction?.[0]} · frame {s.frame} · {s.bandwidth} MHz</span>
                 <span className={`rounded border px-1.5 font-mono text-[11px] ${MAT[s.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[s.maturity] ?? s.maturity} {s.crid}</span>
                 <span className="text-muted">{s.n_dates === 1 ? `1 date · ${s.latest}` : `${s.n_dates} dates · ${s.dates[0]} → ${s.latest}`}</span>
                 <span className="text-muted">{s.dual_pol_dates.length === s.n_dates ? "HH+HV" : s.dual_pol_dates.length === 0 ? `${s.granules[0]?.pols.join("+") || "HH"} only` :`HV on ${s.dual_pol_dates.length} of ${s.n_dates} dates`}</span>
-                {s.id === acq.recommended_stack && <span className="ml-auto text-[11px] text-cyan">latest compatible pair</span>}
+                {s.id === acq.recommended_stack && <span className="ml-auto text-[11px] text-accent">latest compatible pair</span>}
                 {s.usable && s.n_dates < 2 && <span className="ml-auto text-[11px] text-muted">needs a 2nd date to compare</span>}
               </button>
             ))}
@@ -251,7 +254,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
                   const on = picked.includes(g.scene);
                   return (
                     <button key={g.scene} onClick={() => toggleDate(g.scene)} title={`${g.scene}\n${g.pols.join("+")}`}
-                      className={`rounded border px-2 py-1 font-mono text-[11px] ${on ? "border-cyan bg-cyan/15 text-cyan" : "border-line text-muted hover:text-text"}`}>
+                      className={`rounded border px-2 py-1 font-mono text-[11px] ${on ? "border-accent bg-accent/15 text-accent" : "border-line text-muted hover:text-text"}`}>
                       {g.date}{!g.pols.includes("HV") && <span className="ml-1 text-amber">HH</span>}
                     </button>
                   );
@@ -264,19 +267,19 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <div className="flex overflow-hidden rounded-md border border-line text-[12px]" role="group" aria-label="Detail">
                   <button onClick={() => setDetail("quick")} title="5 MHz side band, 80 m cells, fastest"
-                    className={`flex items-center gap-1 px-3 py-1.5 ${detail === "quick" ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}><Zap size={12} />Quick 80 m</button>
+                    className={`flex items-center gap-1 px-3 py-1.5 ${detail === "quick" ? "bg-accent/15 text-accent" : "text-muted hover:text-text"}`}><Zap size={12} />Quick 80 m</button>
                   <button onClick={() => setDetail("standard")} title="Main band, 40 m cells (20 km window)"
-                    className={`px-3 py-1.5 ${detail === "standard" ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>Detailed 40 m</button>
+                    className={`px-3 py-1.5 ${detail === "standard" ? "bg-accent/15 text-accent" : "text-muted hover:text-text"}`}>Detailed 40 m</button>
                 </div>
                 <div className="flex overflow-hidden rounded-md border border-line text-[12px]" role="group" aria-label="Window size">
                   {SIZES.map((k) => (
                     <button key={k} onClick={() => setSize(k)}
-                      className={`px-3 py-1.5 ${size === k ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>{k} km</button>
+                      className={`px-3 py-1.5 ${size === k ? "bg-accent/15 text-accent" : "text-muted hover:text-text"}`}>{k} km</button>
                   ))}
                 </div>
                 <button onClick={analyze} disabled={picked.length < 2 || running}
                   title={picked.length < 2 ? "Pick at least two dates to compare" : undefined}
-                  className="flex items-center gap-1.5 rounded-md bg-cyan px-4 py-1.5 text-sm font-medium text-bg disabled:opacity-40">
+                  className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-1.5 text-sm font-medium text-on-accent disabled:opacity-40">
                   {running ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
                   Analyse {picked.length} acquisition{picked.length === 1 ? "" : "s"}
                 </button>
@@ -290,7 +293,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
       {jobState && (
         <div className="mt-3">
           <div className="h-1 overflow-hidden rounded bg-panel-2" role="progressbar" aria-label="Analysis progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((jobState.status === "done" ? 1 : jobState.progress ?? 0) * 100)}>
-            <div className="h-full origin-left bg-cyan transition-transform duration-500 ease-out" style={{ transform: `scaleX(${jobState.status === "done" ? 1 : jobState.progress ?? 0})` }} />
+            <div className="h-full origin-left bg-accent transition-transform duration-500 ease-out" style={{ transform: `scaleX(${jobState.status === "done" ? 1 : jobState.progress ?? 0})` }} />
           </div>
           <div className="mt-1 flex justify-between text-[12px] text-muted">
             <span>{jobState.status === "error" ? "" : jobState.message}</span>
@@ -310,7 +313,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
           <ul className="mt-2 grid gap-1 sm:grid-cols-2">
             {recent.map((r) => (
               <li key={r.id}>
-                <button onClick={() => openSaved(r)} className="w-full rounded-md border border-line px-2.5 py-1.5 text-left hover:border-cyan/40">
+                <button onClick={() => openSaved(r)} className="w-full rounded-md border border-line px-2.5 py-1.5 text-left hover:border-accent/40">
                   <div className="truncate text-text">{r.name}</div>
                   <div className="font-mono text-[11px] text-muted">{r.n_obs} dates · {r.first} → {r.last} · {r.detail === "quick" ? "80 m" : `${r.size_km} km`} · {MAT_LABEL[r.maturity] ?? r.maturity}</div>
                 </button>
