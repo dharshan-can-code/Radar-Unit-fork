@@ -137,10 +137,12 @@ def _chunk_ranges(ds, rs: slice, cs: slice) -> list[tuple[int, int]]:
     return out
 
 
-def read_window_multi(f, xlim: tuple, ylim: tuple, rf=None, grid: str = GRID, pols=("HH", "HV")):
+def read_window_multi(f, xlim: tuple, ylim: tuple, rf=None, grid: str = GRID, pols=("HH", "HV"), on_pol=None):
     """Read every available polarisation in the window ONCE, with the quality
-    masks read a single time. If `rf` (RemoteFile) is given, all needed chunks
-    are first downloaded in parallel. Returns (x, y, {pol: (power, usable)}) or None."""
+    masks read a single time. If `rf` (RemoteFile) is given, each dataset's chunks
+    are downloaded in parallel. Returns (x, y, {pol: (power, usable)}) or None.
+    With `on_pol(pol, x, y, power, usable)`, each polarisation is handed over as soon as it
+    is read and not kept, so only one full-resolution window is in memory at a time."""
     g = f[grid]
     x = g["xCoordinates"][()]
     y = g["yCoordinates"][()]
@@ -149,24 +151,34 @@ def read_window_multi(f, xlim: tuple, ylim: tuple, rf=None, grid: str = GRID, po
     if xi.size == 0 or yi.size == 0:
         return None
     rs, cs = slice(int(yi.min()), int(yi.max()) + 1), slice(int(xi.min()), int(xi.max()) + 1)
-    names = [DIAGONAL_TERMS[p] for p in pols if DIAGONAL_TERMS[p] in g] + \
-        [n for n in ("mask", "inputDataExceptionMask") if n in g]
-    if rf is not None:
-        ranges = [r for n in names for r in _chunk_ranges(g[n], rs, cs)]
-        rf.prefetch(ranges)
-    mk = g["mask"][rs, cs] if "mask" in g else None
-    ex = g["inputDataExceptionMask"][rs, cs] if "inputDataExceptionMask" in g else None
+    def read(name):
+        # One dataset at a time: fetch its chunks in parallel, read them, then free the raw
+        # blocks. Holding every dataset's blocks at once (30-90 MB per acquisition) is what ran
+        # a 512 MB server out of memory.
+        ids = rf.prefetch(_chunk_ranges(g[name], rs, cs)) if rf is not None else []
+        try:
+            return g[name][rs, cs]
+        finally:
+            if rf is not None:
+                rf.drop(ids)
+
+    mk = read("mask") if "mask" in g else None
+    ex = read("inputDataExceptionMask") if "inputDataExceptionMask" in g else None
     out = {}
     for pol in pols:
         term = DIAGONAL_TERMS[pol]
         if term not in g:
             continue
-        p = g[term][rs, cs]
+        p = read(term)
         ok = np.isfinite(p) & (p > 0) & quality_ok(mk, ex, pol)
         fv = g[term].attrs.get("_FillValue")
         if fv is not None and np.isfinite(fv):
             ok &= p != fv
-        out[pol] = (p, ok)
+        if on_pol is not None:
+            on_pol(pol, x[cs], y[rs], p, ok)
+            del p, ok
+        else:
+            out[pol] = (p, ok)
     return x[cs], y[rs], out
 
 

@@ -14,6 +14,8 @@ Open http://localhost:8000/docs for interactive API docs. Analysis needs the Ear
 
 **Persistent backend data.** Live analysis results and the watch list are written beneath `data/` by default. In production, set `DELTA_PULSE_DATA_DIR` to a persistent volume (for example, `/var/data` on Render). The directory is created automatically; do not put the Earthdata token there.
 
+**Memory.** On a host with under 2 GB (Render free has 512 MB), the server reads 2 acquisitions at a time and runs 1 analysis at a time; a 40 km, 6-date analysis then peaks near 310 MB. Larger hosts use 4 and 2. Override with `DELTA_PULSE_SCENE_WORKERS` and `DELTA_PULSE_JOB_WORKERS`.
+
 ## How "live" works (and what it is not)
 - **Search is live.** Every new location queries the ASF archive at request time (results cached for 15 min; `?fresh=true` bypasses the cache).
 - **Analysis reads the real file remotely.** ASF redirects the authenticated request to a short-lived signed URL. The backend then fetches only the needed 1 MB blocks with HTTP Range requests. GCOV is chunked 512×512 with paged metadata, so a 20 km window costs about 30–90 MB per acquisition instead of 1.9 GB.

@@ -29,6 +29,33 @@ MAX_SIZE_KM = 40
 MAX_SCENES = 12
 
 
+def memory_limit_bytes() -> int | None:
+    """The container's memory limit (Linux cgroup v2 or v1), or None when unlimited/unknown."""
+    for p in ("/sys/fs/cgroup/memory.max", "/sys/fs/cgroup/memory/memory.limit_in_bytes"):
+        try:
+            v = Path(p).read_text().strip()
+        except OSError:
+            continue
+        if v.isdigit() and int(v) < 1 << 60:
+            return int(v)
+    return None
+
+
+def _workers(env: str, small: int, large: int) -> int:
+    v = os.environ.get(env, "")
+    if v.isdigit() and int(v) > 0:
+        return int(v)
+    lim = memory_limit_bytes()
+    return small if lim is not None and lim < 2 * 1024 ** 3 else large
+
+
+# Acquisitions read at once within one analysis, and analyses run at once. A small host
+# (Render free: 512 MB) gets 2 and 1: a 40 km, 6-date analysis then peaks near 310 MB
+# (it was 655 MB before strip binning). A laptop gets 4 and 2. Override with the env vars.
+SCENE_WORKERS = _workers("DELTA_PULSE_SCENE_WORKERS", 2, 4)
+JOB_WORKERS = _workers("DELTA_PULSE_JOB_WORKERS", 1, 2)
+
+
 class AnalysisError(ValueError):
     pass
 
@@ -87,6 +114,7 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
     first = RemoteFile(granules[0]["url"], token)
     with h5py.File(first, "r") as f:
         epsg = scene_epsg(f)
+    first.release()
     x0, y1, res, nx, ny = window_grid(lat, lon, size_km, epsg, detail)
     progress(f"Reading {len(granules)} acquisitions from NASA's archive in parallel", 0.05)
     xlim = (x0 - res, x0 + nx * res + res)
@@ -101,19 +129,21 @@ def run_analysis(out: Path, lat: float, lon: float, size_km: float, granules: li
                 raise AnalysisError(f"{g['date']} is in a different projection; cannot align")
             if grid_path not in f:
                 raise AnalysisError(f"{g['date']} has no {grid_path.rsplit('/', 1)[-1]} band; use standard detail")
-            w = read_window_multi(f, xlim, ylim, rf=rf, grid=grid_path)  # all chunks fetched in parallel
-            for pol, (p_raw, ok) in (w[2].items() if w else []):
+            def binned(pol, x, y, p_raw, ok):  # each polarisation is binned and freed as soon as it is read
                 acc = radar.GridAccumulator(x0, y1, res, nx, ny)
-                acc.add(w[0], w[1], p_raw, ok)
+                acc.add(x, y, p_raw, ok)
                 p, vf = acc.mean(), acc.valid_fraction()
                 p[vf < min_vf] = np.nan
                 dbs[pol], vfs[pol] = radar.to_db(p), vf
+
+            read_window_multi(f, xlim, ylim, rf=rf, grid=grid_path, on_pol=binned)
+        rf.release()
         return idx, g, dbs, vfs, rf.bytes_fetched, rf.n_requests
 
     results = [None] * len(granules)
     done = 0
     from concurrent.futures import as_completed
-    with ThreadPoolExecutor(max_workers=4) as ex:  # total HTTP concurrency is capped in remote_h5
+    with ThreadPoolExecutor(max_workers=SCENE_WORKERS) as ex:  # total HTTP concurrency is capped in remote_h5
         futs = [ex.submit(process, ig) for ig in enumerate(granules)]
         for fut in as_completed(futs):
             idx, g, dbs, vfs, nb, nr = fut.result()

@@ -53,13 +53,22 @@ class GridAccumulator:
         oky = (iy >= 0) & (iy < self.ny)
         if not okx.any() or not oky.any():
             return
-        v = values[np.ix_(oky, okx)]
-        m = valid[np.ix_(oky, okx)]
-        idx = (iy[oky][:, None] * self.nx + ix[okx][None, :])
         size = self.nx * self.ny
-        self.n_total += np.bincount(idx.ravel(), minlength=size)
-        self.n_valid += np.bincount(idx[m], minlength=size)
-        self.sum += np.bincount(idx[m], weights=v[m].astype(np.float64), minlength=size)
+        cols = np.flatnonzero(okx)
+        rows = np.flatnonzero(oky)
+        ixc = ix[cols]
+        # Bin a strip of rows at a time: the int64 index and float64 weight arrays would
+        # otherwise be several times the size of the input window (hundreds of MB for 40 km).
+        step = max(1, (1 << 20) // max(1, cols.size))
+        for r0 in range(0, rows.size, step):
+            rr = rows[r0:r0 + step]
+            v = values[np.ix_(rr, cols)]
+            m = valid[np.ix_(rr, cols)]
+            idx = iy[rr][:, None] * self.nx + ixc[None, :]
+            im = idx[m]
+            self.n_total += np.bincount(idx.ravel(), minlength=size)
+            self.n_valid += np.bincount(im, minlength=size)
+            self.sum += np.bincount(im, weights=v[m].astype(np.float64), minlength=size)
 
     def mean(self) -> np.ndarray:
         out = np.full(self.nx * self.ny, np.nan)
