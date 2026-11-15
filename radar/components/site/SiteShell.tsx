@@ -10,6 +10,7 @@ import { NextPage } from "@/components/site/Section";
 import { SiteProvider, useSite } from "@/components/site/SiteState";
 import { STORY } from "@/components/site/nav";
 import { LanguageProvider, useLanguage } from "@/components/site/LanguageContext";
+import PageTranslation from "@/components/site/PageTranslation";
 
 /** The frame around every page: sidebar (xl+) or top bar, the demonstration-data warning, and the footer. */
 export default function SiteShell({ children }: { children: React.ReactNode }) {
@@ -26,6 +27,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <Navbar />
       <main id="content" tabIndex={-1} className="mx-auto max-w-[1400px] px-4 pb-16 outline-none sm:px-6">
+        <PageTranslation />
         {!story && m?.is_demonstration && (
           <div role="alert" className="sticky top-[52px] z-50 -mx-4 flex items-center gap-2 border-b border-amber/40 bg-bg px-4 py-2 text-[13px] text-amber sm:-mx-6 sm:px-6 xl:top-0">
             <AlertTriangle size={16} className="shrink-0" />

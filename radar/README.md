@@ -34,6 +34,19 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
+## Languages
+Menus and controls are hand-translated into 26 languages (`lib/i18n/translations.ts`). Page content is
+machine-translated in place, in every browser, by Microsoft Azure Translator through the site's own route
+`app/api/translate/route.ts`, which needs no Python backend. A banner says it is machine translation and offers
+the English original. To switch it on, put a Translator resource's key in `.env.local` (locally) and in
+Vercel → Project → Settings → Environment Variables (public site):
+```
+AZURE_TRANSLATOR_KEY=...
+AZURE_TRANSLATOR_REGION=...   # e.g. eastus; leave out for a "global" resource
+```
+Without a key, recent Chrome and Edge on a computer use their built-in on-device translator instead, and
+other browsers keep the page in English with translated menus. Translations are remembered in each browser.
+
 ## Backend: search anywhere on Earth
 `npm.cmd run api` starts the FastAPI server on http://localhost:8000. Type a place, list the NISAR acquisitions over it live from ASF, and analyse a 2–40 km window read remotely, with no full downloads. See [BACKEND.md](BACKEND.md).
 
