@@ -285,7 +285,16 @@ input[type="range"]::-moz-range-thumb {
 }
 @keyframes skeletonShimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
+/* Your Story: the opening's radar images drift slowly (documentary "Ken Burns"), faint scan lines,
+   and subtitles that fade up line by line. */
+@keyframes kenburns { from { transform: scale(1.06) translate(0, 0); } to { transform: scale(1.18) translate(-2%, -1.5%); } }
+.kenburns { animation: kenburns 28s ease-in-out infinite alternate; transform-origin: 60% 40%; image-rendering: pixelated; }
+.scanlines { background: repeating-linear-gradient(to bottom, #fff 0 1px, transparent 1px 3px); }
+@keyframes captionIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.caption-in { animation: captionIn 0.45s var(--ease-out) both; }
+
 @media (prefers-reduced-motion: reduce) {
+  .kenburns, .caption-in { animation: none; }
   .story-chapter .reveal, .grow-bar, .story-line, .panel-in, .fade-in, .hero-wipe, .hero-scan {
     transition: none !important; animation: none !important;
   }

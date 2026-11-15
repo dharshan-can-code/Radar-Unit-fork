@@ -18,6 +18,8 @@ export interface StoryFacts {
   rainTotal: number | null; rainiest: { date: string; mm: number } | null;
   waterFirst: number; waterLast: number; waterPeak: StoryPass; vegPeak: StoryPass;
   biggest: Pair | null; biggestScore: number;
+  /** Share of cells changed in the second-biggest interval (to say whether the biggest stood out). */
+  secondScore: number | null;
   /** Areas are compared only over ground seen on EVERY pass (fair comparison). */
   commonKm2: number | null; partialPasses: { date: string; coverage: number }[];
   verdict: Verdict | null; statements: Statement[];
@@ -82,11 +84,12 @@ export function buildStory(m: Manifest, rain: Rainfall | null | undefined, grid:
   const rainiest = rainDays.length ? rainDays.reduce((a, b) => ((b.precip_mm ?? 0) > (a.precip_mm ?? 0) ? b : a)) : null;
 
   // Biggest change = pair with the largest share of cells that changed by >= the significance level.
-  let biggest: Pair | null = null, biggestScore = -1;
+  let biggest: Pair | null = null, biggestScore = -1, secondScore: number | null = null;
   for (const p of m.pairs) {
     const c = (p as unknown as { HH_change?: { frac_increase: number | null; frac_decrease: number | null } }).HH_change;
     const s = (c?.frac_increase ?? 0) + (c?.frac_decrease ?? 0);
-    if (s > biggestScore) { biggestScore = s; biggest = p; }
+    if (s > biggestScore) { secondScore = biggest ? biggestScore : null; biggestScore = s; biggest = p; }
+    else if (secondScore == null || s > secondScore) secondScore = s;
   }
 
   let verdict: Verdict | null = null;
@@ -116,7 +119,7 @@ export function buildStory(m: Manifest, rain: Rainfall | null | undefined, grid:
     waterFirst: passes[0].water_km2, waterLast: passes[passes.length - 1].water_km2,
     waterPeak: passes.reduce((a, b) => (b.water_km2 > a.water_km2 ? b : a)),
     vegPeak: passes.reduce((a, b) => (b.flooded_veg_km2 > a.flooded_veg_km2 ? b : a)),
-    biggest, biggestScore,
+    biggest, biggestScore, secondScore,
     commonKm2: ca ? ca.commonKm2 : null,
     partialPasses: obs.filter((o) => o.valid_fraction < 0.95).map((o) => ({ date: o.date, coverage: o.valid_fraction })),
     verdict, statements,
