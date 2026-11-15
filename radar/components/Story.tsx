@@ -281,7 +281,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </button>
 
       {/* COVER */}
-      <section id="s-cover" className="story-chapter is-in atmosphere relative -mx-4 flex min-h-[calc(100svh-52px)] flex-col justify-center px-4 py-12 sm:-mx-6 sm:px-6">
+      <section id="s-cover" className="story-chapter is-in atmosphere relative -mx-4 flex min-h-[calc(100svh-52px)] flex-col justify-center px-4 py-12 sm:-mx-6 sm:px-6 xl:min-h-svh">
         <div className="grid items-center gap-8 lg:grid-cols-2">
           <div>
             <div className="reveal text-[13px] text-amber">A story written by radar: {f.satellite}</div>

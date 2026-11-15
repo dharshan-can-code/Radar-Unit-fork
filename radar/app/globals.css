@@ -41,6 +41,9 @@
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: dark;
+
+  /* width of the desktop sidebar; Sidebar.tsx narrows it when collapsed */
+  --sidebar-w: 16rem;
 }
 
 /* Type stacks. The per-subset variables come from app/fonts.ts and are set on <body>.

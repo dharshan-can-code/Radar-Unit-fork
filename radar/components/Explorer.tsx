@@ -232,7 +232,7 @@ export default function Explorer(p: Props) {
             { v: "HH", label: "HH", title: "Sent and received horizontally" }, { v: "HV", label: "HV", disabled: !hvOk, title: "Sent horizontally, received vertically" },
           ]} />
         )}
-        <div className="no-scrollbar -mx-3 flex min-w-0 basis-[calc(100%+1.5rem)] items-center gap-2 overflow-x-auto px-3 sm:mx-0 sm:basis-full sm:flex-wrap sm:overflow-visible sm:px-0 2xl:ml-auto 2xl:basis-auto">
+        <div className="no-scrollbar -mx-3 flex min-w-0 basis-[calc(100%+1.5rem)] items-center gap-2 overflow-x-auto px-3 sm:mx-0 sm:basis-full sm:flex-wrap sm:overflow-visible sm:px-0">
           {p.onPickLocation && (
             <button onClick={() => { setPicking((v) => !v); setDraw(false); }} aria-pressed={picking}
               className={`${tool} ${picking ? "border-cyan bg-cyan/15 text-cyan" : idle}`}>

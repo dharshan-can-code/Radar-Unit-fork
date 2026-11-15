@@ -26,7 +26,8 @@ const GROUPS: { name: string; ids: string[] }[] = [
 
 interface Props { view: "app" | "story"; setView: (v: "app" | "story") => void }
 
-/** Sticky top navigation: the two views, every section, and the User Guide. */
+/** Top navigation for screens narrower than xl: the two views, a menu of every section, and the User Guide.
+ *  From xl up the Sidebar takes over (components/Sidebar.tsx). */
 export default function Navbar({ view, setView }: Props) {
   const [active, setActive] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function Navbar({ view, setView }: Props) {
   const here = view === "app" ? active : "";
 
   return (
-    <nav aria-label="Main" className="sticky top-0 z-[60] border-b border-line bg-bg/90 backdrop-blur-md">
+    <nav aria-label="Main" className="sticky top-0 z-[60] border-b border-line bg-bg/90 backdrop-blur-md xl:hidden">
       <div className="mx-auto flex h-[52px] max-w-[1400px] items-center gap-2 px-4 sm:gap-3 sm:px-6">
         <button onClick={() => { setOpen(false); setView("app"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
           className="flex shrink-0 items-center gap-2 font-display text-[14px] font-semibold tracking-[0.04em] text-text sm:text-[15px]">
@@ -76,31 +77,20 @@ export default function Navbar({ view, setView }: Props) {
           </button>
         </div>
 
-        {/* wide screens: every section, in page order */}
-        <div className="ml-2 hidden h-full min-w-0 items-stretch xl:flex">
-          {SECTIONS.map(([id, label]) => (
-            <button key={id} onClick={() => go(id)} aria-current={here === id ? "true" : undefined}
-              className={`relative px-2.5 text-[13px] whitespace-nowrap ${here === id ? "text-text" : "text-muted hover:text-text"}`}>
-              {label}
-              <span aria-hidden className={`absolute inset-x-2.5 -bottom-px h-0.5 bg-cyan transition-opacity duration-200 ${here === id ? "opacity-100" : "opacity-0"}`} />
-            </button>
-          ))}
-        </div>
-
         <div className="ml-auto flex shrink-0 items-center gap-1">
-          {here && <span className="mr-1 hidden text-[13px] text-muted sm:inline xl:hidden">{LABEL.get(here)}</span>}
+          {here && <span className="mr-1 hidden text-[13px] text-muted sm:inline">{LABEL.get(here)}</span>}
           <a href="/guide" className="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] text-muted hover:text-text sm:flex">
             <BookOpen size={14} />User guide
           </a>
           <button onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="site-menu" aria-label={open ? "Close menu" : "Open menu"}
-            className="flex items-center gap-1.5 rounded-md border border-line px-2 py-1.5 text-[13px] text-text hover:border-line-strong sm:px-2.5 xl:hidden">
+            className="flex items-center gap-1.5 rounded-md border border-line px-2 py-1.5 text-[13px] text-text hover:border-line-strong sm:px-2.5">
             {open ? <X size={16} /> : <Menu size={16} />}<span className="hidden sm:inline">Menu</span>
           </button>
         </div>
       </div>
 
       {open && (
-        <div id="site-menu" className="panel-in border-t border-line bg-bg xl:hidden">
+        <div id="site-menu" className="panel-in border-t border-line bg-bg">
           <div className="mx-auto grid max-h-[calc(100svh-52px)] max-w-[1400px] gap-x-8 gap-y-5 overflow-y-auto px-4 py-5 sm:grid-cols-3 sm:px-6 lg:grid-cols-5">
             <div>
               <div className="text-[12px] text-muted">Story</div>

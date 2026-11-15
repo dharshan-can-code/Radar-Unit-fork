@@ -42,7 +42,7 @@ export default function Hero({ m, onStory, onExplore }: { m: Manifest | null | u
     <header id="top" className="atmosphere relative -mx-4 scroll-mt-14 px-4 pt-10 pb-10 sm:-mx-6 sm:px-6 sm:pt-14 lg:pb-14">
       <div className="grid gap-x-12 gap-y-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-y-10">
         <div className="min-w-0 lg:self-end">
-          <h1 className="text-[2.6rem] leading-[1.02] font-medium sm:text-6xl xl:text-[4.5rem]">
+          <h1 className="text-[2.6rem] leading-[1.02] font-medium sm:text-6xl 2xl:text-[4.5rem]">
             Revealing the water we cannot see.
           </h1>
           <p className="mt-6 max-w-[34rem] text-[17px] leading-relaxed text-text/80">

@@ -24,6 +24,7 @@ import { Place, Rainfall, loadResult, rainfall } from "@/lib/api";
 import { dataBase } from "@/lib/data";
 import type { InventoryArea } from "@/lib/data";
 import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import { BrandMark } from "@/components/ui";
 import Story from "@/components/Story";
 import Impact, { Sensitivity } from "@/components/Impact";
@@ -65,6 +66,7 @@ export default function Home() {
   const [view, setView] = useState<"app" | "story">("app");
   const [validation, setValidation] = useState<Validation | null>(null);
   const [featuredFor, setFeaturedFor] = useState<string | null>(null);
+  const [deepTab, setDeepTab] = useState("now");
 
   // Shareable links: ?result=<id> reopens a saved live analysis.
   useEffect(() => {
@@ -214,20 +216,23 @@ export default function Home() {
     return { fp, ...interpret(fp, m.screening), series: timeSeries(grid, rect) };
   }, [grid, m, pair, rect]);
 
+  const changeView = (v: "app" | "story") => {
+    setView(v);
+    if (m && m.area !== AREA) window.history.replaceState(null, "", `?${resultQuery(m)}${v === "story" ? "&view=story" : ""}`);
+    else window.history.replaceState(null, "", v === "story" ? "?view=story" : window.location.pathname);
+  };
+
   return (
-    <>
+    <div className="transition-[padding-left] duration-200 motion-reduce:transition-none xl:pl-[var(--sidebar-w)]">
       <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-cyan focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-bg">Skip to content</a>
-      <Navbar view={view} setView={(v) => {
-        setView(v);
-        if (m && m.area !== AREA) window.history.replaceState(null, "", `?${resultQuery(m)}${v === "story" ? "&view=story" : ""}`);
-        else window.history.replaceState(null, "", v === "story" ? "?view=story" : window.location.pathname);
-      }} />
+      <Sidebar view={view} setView={changeView} tab={deepTab} onOpenTab={setDeepTab} />
+      <Navbar view={view} setView={changeView} />
     <main id="content" tabIndex={-1} className="mx-auto max-w-[1400px] px-4 pb-16 outline-none sm:px-6">
       {view === "story" ? (
         <Story m={m ?? null} grid={grid} rain={rain} onResult={storyResult} onOpenMap={openMapFromStory} shareUrl={shareStoryUrl} />
       ) : (<>
       {m?.is_demonstration && (
-        <div role="alert" className="sticky top-[52px] z-50 -mx-4 flex items-center gap-2 border-b border-amber/40 bg-bg px-4 py-2 text-[13px] text-amber sm:-mx-6 sm:px-6">
+        <div role="alert" className="sticky top-[52px] z-50 -mx-4 flex items-center gap-2 border-b border-amber/40 bg-bg px-4 py-2 text-[13px] text-amber sm:-mx-6 sm:px-6 xl:top-0">
           <AlertTriangle size={16} className="shrink-0" />
           <span><b>DEMONSTRATION DATA.</b> Map layers and fingerprint numbers are synthetic test values, not NISAR measurements. The observation timeline uses real ASF acquisition metadata. Run the pipeline on downloaded GCOV files to replace them.</span>
         </div>
@@ -300,7 +305,7 @@ export default function Home() {
 
       <Section id="deeper" title="Tools for the curious"
         lead="Live conditions, interactive labs, the full observation record, the physics and the methods. Open whichever interests you.">
-        <DeepDive tabs={[
+        <DeepDive active={deepTab} onActiveChange={setDeepTab} tabs={[
           { id: "now", label: "Water now", icon: DEEP_ICONS.now, blurb: "Live weather, river flow with a 30-day forecast, and NASA's camera view from the same day as each radar pass.",
             render: () => <WaterNow m={m ?? null} rain={rain} /> },
           { id: "scatter", label: "Scatter Lab", icon: DEEP_ICONS.scatter, blurb: "Every radar pixel plotted by its two channels. Drag the thresholds and watch the water map change.",
@@ -337,7 +342,7 @@ export default function Home() {
         <p className="mt-2 max-w-4xl">Data: NASA-ISRO NISAR L2 GCOV via NASA ASF DAAC; JRC Global Surface Water; ERA5 and GloFAS via Open-Meteo; NASA GIBS. Basemaps: Esri (© Esri and data providers, © OpenStreetMap contributors).</p>
       </footer>
     </main>
-    </>
+    </div>
   );
 }
 

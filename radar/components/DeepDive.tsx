@@ -1,6 +1,5 @@
 "use client";
 // Advanced tools behind tabs, so the main page stays readable.
-import { useState } from "react";
 import { Activity, CalendarDays, FlaskConical, FileText, Microscope, Waves } from "lucide-react";
 
 export interface DeepTab { id: string; label: string; icon: React.ReactNode; blurb: string; render: () => React.ReactNode }
@@ -10,8 +9,8 @@ export const DEEP_ICONS = {
   timeline: <CalendarDays size={15} />, science: <Microscope size={15} />, methods: <FileText size={15} />,
 };
 
-export default function DeepDive({ tabs }: { tabs: DeepTab[] }) {
-  const [active, setActive] = useState(tabs[0]?.id);
+/** Controlled: the page owns which tool is open, so the sidebar can open one directly. */
+export default function DeepDive({ tabs, active, onActiveChange: setActive }: { tabs: DeepTab[]; active: string; onActiveChange: (id: string) => void }) {
   const t = tabs.find((x) => x.id === active) ?? tabs[0];
   const onKey = (e: React.KeyboardEvent) => {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;

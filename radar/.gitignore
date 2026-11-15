@@ -55,3 +55,4 @@ data/processed/
 # live analysis results (regenerable)
 data/live/
 data/metadata/backend.log
+*.zip
