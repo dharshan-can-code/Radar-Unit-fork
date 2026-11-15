@@ -2,13 +2,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import Contours from "@/components/Contours";
 import { PAGES } from "@/components/site/nav";
 import { useSite } from "@/components/site/SiteState";
 
 /** The title block at the top of each page (the first page has the Hero instead). */
 export function PageHeader({ title, lead }: { title: string; lead: string }) {
   return (
-    <header className="atmosphere relative -mx-4 px-4 pt-10 pb-4 sm:-mx-6 sm:px-6 sm:pt-14">
+    <header className="atmosphere relative -mx-4 px-4 pt-10 pb-8 sm:-mx-6 sm:px-6 sm:pt-14 sm:pb-10">
+      <Contours />
       <h1 className="text-[2.6rem] leading-[1.02] font-medium sm:text-6xl">{title}</h1>
       <p className="mt-5 max-w-[60ch] text-[17px] leading-relaxed text-text/80">{lead}</p>
     </header>
@@ -48,7 +50,7 @@ export function NextPage() {
         <span>
           <span className="block text-[12px] text-muted">Next</span>
           <span className="mt-1 block text-[1.35rem] font-medium text-text group-hover:text-accent sm:text-[1.6rem]">{next.title}</span>
-          <span className="mt-1 block text-[13px] text-muted">{next.items.map((x) => x.label).join(" · ")}</span>
+          <span className="mt-1 block text-[14px] text-muted">{next.hint}</span>
         </span>
         <ArrowRight size={22} className="shrink-0 text-accent transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
       </Link>

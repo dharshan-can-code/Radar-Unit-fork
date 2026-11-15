@@ -6,38 +6,40 @@
    MapLibre need as literals; keep the two in step.
    ------------------------------------------------------------------ */
 :root {
-  /* ---------- LIGHT (default): pearl + lavender, deep-indigo text, violet accent ---------- */
-  --bg: #f8f9fc;          /* pearl white */
-  --bg-2: #eee9fa;        /* light lavender */
-  --panel: #ffffff;
-  --panel-2: #f4f1fb;
-  --line: #dfd9ef;
-  --line-strong: #c4b9e2;
-  --void: #141a33;        /* frame behind radar images and maps: dark in light mode */
+  /* ---------- LIGHT (default): a survey sheet. Map paper, black ink, hydrography blue ---------- */
+  --bg: #f5f6f1;          /* map paper */
+  --bg-2: #e9eee3;        /* woodland tint: quiet fields, control wells */
+  --panel: #fcfdfa;       /* a legend box on the sheet */
+  --panel-2: #eff2ea;
+  --line: #d6d8cd;        /* neat lines and rules */
+  --line-strong: #aeb3a4;
+  --void: #141c19;        /* frame behind radar images and maps: dark in light mode */
 
-  --text: #29345b;        /* deep indigo */
-  --body: #303544;        /* charcoal, long-form copy */
-  --muted: #56688c;       /* slate blue, darkened to 5:1 for AA */
+  --text: #1b211e;        /* map black */
+  --body: #2a322e;        /* long-form copy */
+  --muted: #55615a;       /* marginal notes; 5.9:1 on paper */
 
-  --accent: #7053a6;        /* royal violet: buttons, active states, links, focus */
-  --accent-strong: #5b4190; /* hover / pressed */
-  --accent-soft: #9b83c9;   /* soft purple: decoration, highlights */
+  --accent: #14639a;        /* hydrography blue: buttons, active states, links, focus */
+  --accent-strong: #0d4b78; /* hover / pressed */
+  --accent-soft: #7fb2d3;   /* shallow-water tint: selection, decoration */
   --on-accent: #ffffff;
+  --contour: #a8663a;       /* contour brown: the drawn ground behind headings, never text */
 
-  /* signal colours, used semantically (tuned for 4.5:1 on white) */
-  --cyan: #0b7c88;  /* open water, observed */
-  --teal: #11656e;
-  --amber: #9a5b00; /* water under vegetation, interpreted */
-  --green: #1d7a50; /* validated, robust */
-  --rose: #b0463b;  /* unconfirmed, warnings, data gaps */
-  --blue: #2f62a6;  /* calculated, weaker echo, rainfall */
+  /* signal colours, used semantically (each at least 4.5:1 on paper) */
+  --cyan: #0a7480;  /* open water, observed */
+  --teal: #0f5f68;
+  --amber: #8f5600; /* water under vegetation, interpreted */
+  --green: #25703f; /* validated, robust */
+  --rose: #ad3b2c;  /* map red: unconfirmed, warnings, data gaps */
+  --blue: #5a4ea3;  /* revision purple: calculated values, weaker echo, rainfall */
 
   /* map chrome: maps are DARK in light mode */
-  --map-ui-bg: #1b2140;
-  --map-ui-line: #343c66;
-  --map-ui-text: #dfe3f2;
+  --map-ui-bg: #18211d;
+  --map-ui-line: #33413a;
+  --map-ui-text: #e2e7df;
   --map-icon-filter: invert(0.92);
-  --shadow-panel: 0 1px 2px rgb(41 52 91 / 0.05), 0 10px 30px -18px rgb(41 52 91 / 0.22);
+  --shadow-panel: none;   /* legend boxes are flat: one hairline, no lift */
+  --shadow-float: 0 1px 0 rgb(27 33 30 / 0.06), 0 14px 32px -18px rgb(27 33 30 / 0.45);
 
   /* colours baked into the pipeline's PNG layers; legends must match the pixels */
   --map-water: #22d3ee;
@@ -50,7 +52,7 @@
   --ill-trunk: #6b5238;
   --ill-leaf: #3f8a5f;
   --ill-ripple: #8fd0ea;
-  --ill-sky: #eee9fa;
+  --ill-sky: #e6eef0;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
@@ -59,44 +61,46 @@
   --sidebar-w: 16rem;
 }
 
-/* ---------- DARK: deep indigo night, lavender text, soft-purple accent ---------- */
+/* ---------- DARK: the same sheet read at night. Slate-green ground, pale ink, light water blue ---------- */
 :root[data-theme="dark"] {
-  --bg: #10142a;
-  --bg-2: #161b36;
-  --panel: #1a2040;
-  --panel-2: #222949;
-  --line: #2e3560;
-  --line-strong: #464f84;
-  --void: #e9e6f3;        /* maps are LIGHT in dark mode */
+  --bg: #111815;
+  --bg-2: #18211d;
+  --panel: #1a2420;
+  --panel-2: #222e29;
+  --line: #2d3a34;
+  --line-strong: #4a5a52;
+  --void: #e7ebe3;        /* maps are LIGHT in dark mode */
 
-  --text: #eee9fa;
-  --body: #d9dcea;
-  --muted: #a9b4d0;
+  --text: #e9ede6;
+  --body: #d5dbd2;
+  --muted: #a3b0a7;
 
-  --accent: #b39ddb;
-  --accent-strong: #cbbbe8;
-  --accent-soft: #9b83c9;
-  --on-accent: #161b36;
+  --accent: #74b9e6;
+  --accent-strong: #a3d2f1;
+  --accent-soft: #3f7ea8;
+  --on-accent: #0b1a24;
+  --contour: #c79368;
 
-  --cyan: #45cfcb;
+  --cyan: #4dcfcb;
   --teal: #2a8f91;
-  --amber: #e9b860;
-  --green: #6fcda2;
-  --rose: #ec8f84;
-  --blue: #86b6ea;
+  --amber: #e6b25a;
+  --green: #74cc9a;
+  --rose: #ee8f80;
+  --blue: #a79bea;
 
-  --map-ui-bg: #ffffff;
-  --map-ui-line: #d6d0ea;
-  --map-ui-text: #29345b;
+  --map-ui-bg: #fcfdfa;
+  --map-ui-line: #cfd4c8;
+  --map-ui-text: #1b211e;
   --map-icon-filter: none;
-  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -20px rgb(0 0 0 / 0.7);
+  --shadow-panel: none;
+  --shadow-float: 0 1px 0 rgb(0 0 0 / 0.3), 0 16px 36px -18px rgb(0 0 0 / 0.8);
 
   --ill-water: #123f52;
   --ill-soil: #3a2f1f;
   --ill-trunk: #5b4630;
   --ill-leaf: #1f5f3f;
   --ill-ripple: #5fb4d6;
-  --ill-sky: #161b36;
+  --ill-sky: #18211d;
 
   color-scheme: dark;
 }
@@ -140,13 +144,13 @@ body {
   --font-display: var(--stack-display);
 }
 
-/* One radius scale for the whole product: soft, consistent corners. */
+/* One radius scale for the whole product: the tight corners of a printed legend box. */
 @theme {
-  --radius-sm: 0.25rem;
-  --radius-md: 0.4375rem;
-  --radius-lg: 0.625rem;
-  --radius-xl: 0.875rem;
-  --radius-2xl: 1.125rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.1875rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.3125rem;
+  --radius-2xl: 0.375rem;
 }
 
 html { scroll-behavior: smooth; overflow-x: clip; }
@@ -205,26 +209,45 @@ input[type="range"]::-moz-range-thumb {
   height: 10px; width: 10px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent);
 }
 
+/* Text fields and menus: the same well everywhere, with a clear ring when in use. */
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), select, textarea {
+  background-color: var(--panel); border-color: var(--line-strong);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):hover, select:hover, textarea:hover { border-color: var(--muted); }
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+input:disabled, select:disabled, textarea:disabled { background-color: var(--panel-2); color: var(--muted); cursor: not-allowed; }
+
+/* Filled buttons get an ink edge so they sit on the paper like a printed block. */
+button.bg-accent, a.bg-accent { box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.22); }
+button.bg-accent:hover:not(:disabled), a.bg-accent:hover { background-color: var(--accent-strong); }
+
 /* ---- Surfaces ---- */
-/* Every "border-line bg-panel" block is a card: one hairline and a soft lift. */
+/* Every "border-line bg-panel" block is a legend box on the sheet: one hairline, flat. */
 .rounded-xl.border-line.bg-panel, .rounded-2xl.border-line.bg-panel, .rounded-lg.border-line.bg-panel {
   background-color: var(--panel); box-shadow: var(--shadow-panel);
 }
 
 /* Hairline rule with tick marks, used under section headings. */
 .rule-ticks {
-  height: 5px;
+  height: 6px;
   background:
-    linear-gradient(var(--line), var(--line)) top / 100% 1px no-repeat,
-    repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 48px) top / 100% 5px no-repeat;
+    linear-gradient(var(--line-strong), var(--line-strong)) top / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 48px) top / 100% 6px no-repeat;
 }
 
-/* Atmosphere behind the first screen: a faint nebula of lavender and violet, nothing loud. */
-.atmosphere {
-  background:
-    radial-gradient(60% 70% at 85% 10%, color-mix(in srgb, var(--accent-soft) 22%, transparent), transparent 70%),
-    radial-gradient(45% 55% at 5% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
-    linear-gradient(180deg, var(--bg-2), var(--bg) 88%);
+/* The ground behind page headings: plain map paper carrying drawn contour lines (Contours.tsx),
+   which fade out toward the bottom so the content below sits on clean paper. No gradient wash. */
+.atmosphere { background: var(--bg); overflow: hidden; isolation: isolate; border-bottom: 1px solid var(--line); }
+.atmosphere > :not(.contours) { position: relative; }
+.contours {
+  z-index: -1;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 46%), linear-gradient(180deg, #000 55%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 46%), linear-gradient(180deg, #000 55%, transparent 100%);
+  -webkit-mask-composite: source-in; mask-composite: intersect;
 }
 
 /* ---- MapLibre ---- */
@@ -242,11 +265,6 @@ input[type="range"]::-moz-range-thumb {
 /* Panels that sit ON a map use the map's colours, not the page's. */
 .on-map { background: color-mix(in srgb, var(--map-ui-bg) 90%, transparent); color: var(--map-ui-text); border-color: var(--map-ui-line); }
 .prose-body { color: var(--body); }
-
-/* Decorative orbits (purely visual; hidden from assistive tech). */
-@keyframes orbitSpin { to { transform: rotate(360deg); } }
-.orbit-spin { animation: orbitSpin 140s linear infinite; transform-origin: center; }
-@media (prefers-reduced-motion: reduce) { .orbit-spin { animation: none; } }
 
 /* ---- Motion ----
    Content is visible by default; reveals only run once script marks the root as ready,

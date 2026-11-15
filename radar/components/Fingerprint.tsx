@@ -60,9 +60,9 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
     <div className="grid gap-4 lg:grid-cols-12">
       {/* verdict + evidence */}
       <div className="rounded-xl border border-line bg-panel p-5 lg:col-span-5">
-        <div className="text-[12px] text-muted">Selected region</div>
+        <div className="text-[12px] text-muted">The area you picked</div>
         <div className="mt-0.5 text-[13px] leading-snug text-text/90">{regionLabel}</div>
-        <div className="mt-4 text-[12px] text-muted">Verdict from the interpretation rules</div>
+        <div className="mt-4 text-[12px] text-muted">What our rules conclude for it</div>
         <div className={`mt-1 mb-5 inline-block rounded-md border px-3 py-1.5 font-display text-lg font-medium ${VERDICT_STYLE[verdict]}`}>{verdict}</div>
         <ul className="space-y-3.5 border-t border-line pt-4">
           {statements.map((s, i) => (
@@ -79,19 +79,22 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
         {fp.channels.map((c) => (
           <div key={c.channel} className="rounded-xl border border-line bg-panel p-5">
             <div className="flex items-baseline justify-between">
-              <div className="text-sm font-semibold">{c.channel} backscatter</div>
+              <div className="text-sm font-semibold">Echo strength, {c.channel} channel <span className="ml-1 font-mono text-[11px] font-normal text-muted">γ⁰ backscatter</span></div>
               <Tag kind={c.available ? "CALCULATED" : "UNCONFIRMED"} />
             </div>
+            <p className="mt-1 text-[12px] leading-snug text-muted">
+              {c.channel === "HH" ? "Rises sharply when water stands under tree trunks; drops over calm open water." : "Responds to leaves and branches, so it shows vegetation changing."}
+            </p>
             {c.available ? (
               <>
                 <div className="mt-3 grid grid-cols-3 gap-2 font-mono">
                   <Stat label="before" value={fmtDb(c.before_db)} unit="dB" />
                   <Stat label="after" value={fmtDb(c.after_db)} unit="dB" />
-                  <Stat label="Δ mean" value={fmtSigned(c.delta_mean_db)} unit="dB"
+                  <Stat label="mean change" value={fmtSigned(c.delta_mean_db)} unit="dB"
                     tone={c.delta_mean_db >= sig ? "amber" : c.delta_mean_db <= -sig ? "blue" : undefined} />
                 </div>
-                <div className="mt-1 font-mono text-[11px] text-muted">
-                  per-cell Δ: median {fmtSigned(c.delta_median_db)} · p10 {fmtSigned(c.delta_p10_db)} · p90 {fmtSigned(c.delta_p90_db)} dB
+                <div className="mt-1 font-mono text-[11px] text-muted" title="How individual map cells changed: the middle cell, and the range that 80% of cells fall in">
+                  per cell: median {fmtSigned(c.delta_median_db)} · p10 {fmtSigned(c.delta_p10_db)} · p90 {fmtSigned(c.delta_p90_db)} dB
                 </div>
                 <div className="mt-3 h-28">
                   <ResponsiveContainer>
@@ -107,9 +110,10 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
                   </ResponsiveContainer>
                 </div>
                 <div className="flex justify-between text-[12px] text-muted">
-                  <span className="text-blue">{pct(c.frac_decrease)} darker ≥{sig} dB</span>
-                  <span className="text-amber">{pct(c.frac_increase)} brighter ≥{sig} dB</span>
+                  <span className="text-blue">{pct(c.frac_decrease)} weaker by ≥{sig} dB</span>
+                  <span className="text-amber">{pct(c.frac_increase)} stronger by ≥{sig} dB</span>
                 </div>
+                <p className="mt-1.5 text-[12px] leading-snug text-muted">Each bar counts map cells by how much their echo changed (Δ in dB). {sig} dB is twice as strong, or half.</p>
               </>
             ) : (
               <p className="mt-3 text-sm text-muted">Not measured in both observations of this pair. NISAR does not acquire every channel on every pass, so nothing is shown here instead of guessing.</p>
@@ -119,7 +123,7 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
 
         {/* screening + quality */}
         <div className="rounded-xl border border-line bg-panel p-5">
-          <div className="flex items-baseline justify-between"><div className="text-sm font-semibold">Screening share</div><Tag kind="INTERPRETED" /></div>
+          <div className="flex items-baseline justify-between"><div className="text-sm font-semibold">How much looks like water</div><Tag kind="INTERPRETED" /></div>
           {(["before", "after"] as const).map((k) => {
             const s = fp.screening[k], t = total(s);
             return (
@@ -130,21 +134,21 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
                   <div style={{ width: `${(s.double / t) * 100}%` }} className="bg-amber" title="double bounce" />
                 </div>
                 <div className="mt-1 flex gap-3 text-[12px] text-muted">
-                  <span><b className="text-cyan">{pct(s.water / t)}</b> low backscatter</span>
-                  <span><b className="text-amber">{pct(s.double / t)}</b> double-bounce signature</span>
+                  <span><b className="text-cyan">{pct(s.water / t)}</b> like open water <span className="font-mono text-[11px]">(low backscatter)</span></span>
+                  <span><b className="text-amber">{pct(s.double / t)}</b> like water under trees <span className="font-mono text-[11px]">(double bounce)</span></span>
                 </div>
               </div>
             );
           })}
-          <p className="mt-3 text-[12px] text-muted">Uses the uncalibrated rules in Methods at {m.grid.res_m} m. Candidate signatures only.</p>
+          <p className="mt-3 text-[12px] text-muted">Share of this area with each radar signature, from simple uncalibrated thresholds at {m.grid.res_m} m. Buildings also give the amber signature.</p>
         </div>
 
         <div className="rounded-xl border border-line bg-panel p-5">
-          <div className="flex items-baseline justify-between"><div className="text-sm font-semibold">Data quality</div><Tag kind="OBSERVED" /></div>
+          <div className="flex items-baseline justify-between"><div className="text-sm font-semibold">Where the data comes from</div><Tag kind="OBSERVED" /></div>
           <dl className="mt-3 space-y-1.5 font-mono text-[12px]">
-            <Q k="valid in both" v={`${pct(fp.coverage)} of ${fp.region_cells.toLocaleString()} cells`} />
-            <Q k="interval" v={`${fp.pair_days} days${fp.pair_days !== 12 ? " (irregular)" : ""}`} />
-            <Q k="maturity" v={`${fp.before.maturity ?? "?"} / ${fp.after.maturity ?? "?"}`} />
+            <Q k="measured on both dates" v={`${pct(fp.coverage)} of ${fp.region_cells.toLocaleString()} cells`} />
+            <Q k="days apart" v={`${fp.pair_days} days${fp.pair_days !== 12 ? " (irregular)" : ""}`} />
+            <Q k="validation stage (maturity)" v={`${fp.before.maturity ?? "?"} / ${fp.after.maturity ?? "?"}`} />
             <Q k="release" v={`${fp.before.crid} / ${fp.after.crid}${fp.same_release ? "" : " (differ)"}`} />
             <Q k="track·frame" v={`${fp.before.track ?? "?"}${fp.before.direction?.[0] ?? ""} · ${fp.before.frame ?? "?"}`} />
             <Q k="cell size" v={`${m.grid.res_m} m (from ${m.display.res_m} m layers)`} />
@@ -156,8 +160,8 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
       <div className="rounded-xl border border-line bg-panel p-5 lg:col-span-12">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
           <div>
-            <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">Region backscatter through time <Tag kind="CALCULATED" /></div>
-            <p className="mt-1 text-[12px] text-muted">Points are actual acquisitions only; lines are drawn only between them, spacing is to scale.</p>
+            <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">Echo strength on every pass <Tag kind="CALCULATED" /></div>
+            <p className="mt-1 text-[12px] text-muted">The average echo over this area each time the satellite passed (region mean γ⁰, dB). Each point is a real pass; the dashed lines mark the two you are comparing.</p>
           </div>
           <div className="flex items-center gap-4 text-[12px] text-muted">
             <span className="flex items-center gap-1.5"><i className="inline-block h-0.5 w-4 bg-cyan" />HH</span>

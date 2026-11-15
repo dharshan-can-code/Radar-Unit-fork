@@ -154,11 +154,11 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   return (
     <div className={`rounded-lg border bg-panel p-4 sm:p-5 ${active ? "border-accent/50" : "border-line"}`}>
       <div className="flex items-center gap-2 text-sm font-semibold">
-        <Satellite size={16} className="text-accent" /> Explore anywhere with live NISAR data
+        <Satellite size={16} className="text-accent" /> Choose a place
       </div>
       <p className="mt-1 text-[12px] text-muted">
-        Type a place or coordinates, click the map, or pick from the newest acquisitions. DELTA PULSE searches NASA&apos;s
-        ASF archive right now, then reads only the window you choose from the real NISAR files.
+        Open a saved example, or search any place on Earth. DELTA PULSE asks NASA&apos;s archive what its NISAR radar has
+        recorded there, then reads only the area you choose from the real radar files.
       </p>
 
       {backend && !backend.ok && demo && <div className="mt-3"><PublicDemoNote what="Analysing a new place needs the full app." /></div>}

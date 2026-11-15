@@ -28,7 +28,7 @@ export const BASEMAP_TILES = {
 export const mapTilesFor = (pageTheme: "light" | "dark") => [...(pageTheme === "dark" ? BASEMAP_TILES.light : BASEMAP_TILES.dark)];
 
 /** Land colour for classification canvases, matching the inverted map look. */
-export const landRGB = (pageTheme: "light" | "dark") => (pageTheme === "dark" ? [214, 210, 228] : [38, 46, 74]) as readonly number[];
+export const landRGB = (pageTheme: "light" | "dark") => (pageTheme === "dark" ? [214, 219, 209] : [34, 44, 40]) as readonly number[];
 
 /** RGB triplets for canvas ImageData. */
 export const RGB = {

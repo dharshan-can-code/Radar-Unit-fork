@@ -5,12 +5,12 @@ import { Methods, ScienceExplainer } from "@/components/Science";
 import { PageHeader, Section } from "@/components/site/Section";
 import { useSite } from "@/components/site/SiteState";
 
-/** Learn more: who the results help, the physics, and the methods and data. */
+/** About the science: who the results help, the physics, and the methods and data. */
 export default function LearnPage() {
   const { m, source, status, stacks, stackId, setStackId } = useSite();
   return (
     <>
-      <PageHeader title="Learn more"
+      <PageHeader title="About the science"
         lead="Why hidden water matters, how L-band radar sees it, and everything needed to reproduce or challenge the analysis." />
 
       <Section id="impact" first title="Why hidden water matters"

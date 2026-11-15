@@ -4,11 +4,11 @@ import { X } from "lucide-react";
 import { Tag } from "@/components/Fingerprint";
 
 const STEPS: [string, string][] = [
-  ["Look at the case study", "The page opens on Tonle Sap Lake, Cambodia: 10 real NISAR radar images from June to October 2026. Drag the round handle on the map to compare two dates."],
-  ["Pick two dates", "The buttons above the map (e.g. 09-11 → 09-23) choose which pair of acquisitions you compare. Red numbers mean the gap was longer than the usual 12 days."],
-  ["Change the view", "Before / After shows the radar images. Measured change colours what got brighter (amber) or darker (blue). Screening marks signatures that may be water (cyan) or flooded vegetation (amber)."],
-  ["Inspect a spot", "Click the map to inspect a small area, or press Draw region and drag a box. The Radar Change Fingerprint below updates for that area."],
-  ["Explore anywhere", "Type a place or coordinates in the search box (e.g. \"Manaus\" or \"22.02, 89.31\"), click a footprint on the Newest acquisitions map, or press Analyse a new place here and click the map."],
+  ["Start with the case study", "The app opens on Tonle Sap Lake, Cambodia: 10 real NISAR radar images from June to October 2026. Start here explains the idea; Explore a place shows the short answer, then the map."],
+  ["Pick two dates", "The buttons above the map (e.g. 11 Sept → 23 Sept) choose which two satellite passes you compare. Drag the round handle on the map to slide between them. Red numbers mean the gap was longer than the usual 12 days."],
+  ["Change the view", "Before and after shows the radar images. What changed colours where the echo got stronger (amber) or weaker (blue). Likely water marks ground that looks like open water (cyan) or water under trees (amber)."],
+  ["Ask about an area", "Click the map to ask about a small area, or press Draw region and drag a box. The answer appears right under the map, and the evidence section below it shows every number."],
+  ["Explore anywhere", "Press Choose another place at the top of Explore a place. Then open a saved example, type a place or coordinates (e.g. \"Manaus\" or \"22.02, 89.31\"), or click a footprint on the Newest acquisitions globe."],
   ["Choose acquisitions", "Pick a stack (one satellite track; the best one is pre-selected), choose 2 or more dates, a window size and Quick (80 m, ~10 s) or Detailed (40 m, ~15 s). Press Analyse."],
   ["Share and download", "Share link copies a link that reopens the result. CSV downloads the numbers; Change map downloads the image; Data (JSON) has everything, including where the data came from."],
 ];
