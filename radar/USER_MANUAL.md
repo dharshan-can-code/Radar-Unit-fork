@@ -30,7 +30,7 @@ You do **not** need to know anything about radar to use it. In the app, click **
 The app opens on **Tonle Sap Lake, Cambodia**: 10 real NISAR acquisitions from 19 June to 17 October 2026, covering the monsoon flood season.
 
 1. **Pick a pair of dates** with the buttons above the map (e.g. `09-11 → 09-23`). A red number like `24d` means the gap was longer than NISAR's usual 12 days.
-2. **Compare:** drag the round **⇔** handle left and right. The left side is *before*, the right side is *after*.
+2. **Compare:** drag the round handle left and right (or focus it and use the arrow keys). The left side is *before*, the right side is *after*.
 3. **Switch views:**
    - **Before / After**: the radar images. Dark means smooth surfaces such as calm water. Bright means rough surfaces, buildings or flooded trees.
    - **Measured change**: **amber** got brighter, **blue** got darker.
@@ -108,7 +108,7 @@ DELTA PULSE then searches NASA's archive **right now** and lists the **stacks** 
 ---
 
 ## 4b. Your Story: an animated story of any place
-Click **✦ Your Story** in the top bar, type a place (your hometown works) and press **Tell its story**. In 20–40 seconds DELTA PULSE reads the newest real NISAR images of that place and writes a scrolling story. Press **Play the story** to watch it play automatically. The chapters are:
+Click **Your Story** in the top bar, type a place (your hometown works) and press **Tell its story**. In 20–40 seconds DELTA PULSE reads the newest real NISAR images of that place and writes a scrolling story. Press **Play the story** to watch it play automatically. The chapters are:
 1. **Above the clouds:** how cloudy the sky was at the exact hour of each satellite pass (ERA5).
 2. **What the radar saw:** an animation of every radar image.
 3. **The hidden water:** water-like and hidden-under-vegetation area on each pass. It counts only ground the satellite saw every time, so the comparison is fair.
@@ -117,7 +117,7 @@ Click **✦ Your Story** in the top bar, type a place (your hometown works) and 
 
 **Share this story** copies a link that opens the same story.
 
-The **top bar** links to every section (Explore, Map, Fingerprint, Timeline, Impact, Science, Methods), Your Story, and the User guide.
+The **top bar** switches between **Analysis** and **Your Story**, links to every section (How it works, Findings, Map, What changed, Is it real?, Other places, Who it helps, Go deeper) and opens the User guide. On narrower screens the sections are under **Menu**.
 
 ## 4c. More tabs
 | Tab | What it does |

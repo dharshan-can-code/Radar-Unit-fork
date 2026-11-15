@@ -1,10 +1,7 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
-
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+import { fontVariables } from "./fonts";
 
 export const metadata: Metadata = {
   title: "DELTA PULSE — Hidden Water",
@@ -12,10 +9,12 @@ export const metadata: Metadata = {
     "RADAR UNIT · NASA Space Apps 2026 · Exploring NISAR L-band radar change over wetlands, with transparent uncertainty.",
 };
 
+export const viewport: Viewport = { themeColor: "#0b1118", colorScheme: "dark" };
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${fontVariables} antialiased`}>{children}</body>
     </html>
   );
 }

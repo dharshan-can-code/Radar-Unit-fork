@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, ArrowLeft, Check, Download, Globe2, HelpCircle, Link2, Radar, Waves } from "lucide-react";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
@@ -19,12 +19,12 @@ import ValidationPanel from "@/components/Validation";
 import DataStatus from "@/components/DataStatus";
 import ChangeByInterval from "@/components/ChangeByInterval";
 import LiveSearch, { LiveResult } from "@/components/LiveSearch";
-import LatestFeed from "@/components/LatestFeed";
 import Help from "@/components/Help";
 import { Place, Rainfall, loadResult, rainfall } from "@/lib/api";
 import { dataBase } from "@/lib/data";
 import type { InventoryArea } from "@/lib/data";
 import Navbar from "@/components/Navbar";
+import { BrandMark } from "@/components/ui";
 import Story from "@/components/Story";
 import Impact, { Sensitivity } from "@/components/Impact";
 import WaterNow from "@/components/WaterNow";
@@ -32,14 +32,23 @@ import RadarLab from "@/components/RadarLab";
 import ScatterLab from "@/components/ScatterLab";
 
 const Explorer = dynamic(() => import("@/components/Explorer"), { ssr: false,
-  loading: () => <div className="h-[62vh] animate-pulse rounded-xl border border-line bg-panel" /> });
+  loading: () => <div className="skeleton h-[70svh] min-h-[420px] rounded-none" /> });
+
+// The globe pulls in MapLibre too; load it with the map, not with the first screen.
+const LatestFeed = dynamic(() => import("@/components/LatestFeed"), { ssr: false,
+  loading: () => <div className="skeleton h-[26rem]" /> });
 
 const AREA = "tonle_sap";
 
 export default function Home() {
   const [inv, setInv] = useState<Inventory | null>(null);
   const [m, setM] = useState<Manifest | null | undefined>(undefined);
-  const [grid, setGrid] = useState<GridIndex | null>(null);
+  const [rawGrid, setGrid] = useState<GridIndex | null>(null);
+  // A grid is only valid with the manifest it was read for. While the place on screen is
+  // switching (a shared link opening over the case study, say) the two can be out of step
+  // for a moment, so nothing downstream ever sees a mismatched pair.
+  const grid = rawGrid && rawGrid.m === m ? rawGrid : null;
+  const loadSeq = useRef(0);
   const [pairIdx, setPairIdx] = useState(0);
   const [channel, setChannel] = useState<Channel>("HH");
   const [mode, setMode] = useState<Mode>("compare");
@@ -111,15 +120,20 @@ export default function Home() {
   // Load the selected stack; latest compatible pair is selected by default.
   useEffect(() => {
     if (!stackId || source !== "case") return;
+    // If a live result or example takes over while this is still loading, drop the late answer.
+    let cancelled = false;
     setGrid(null);
     setSel({ kind: "area" });
     loadManifest(AREA, stackId).then(async (mm) => {
+      if (cancelled) return;
       setM(mm);
       if (mm) {
         setPairIdx(Math.max(0, mm.pairs.length - 1));
-        setGrid(new GridIndex(mm, await loadGrid(mm)));
+        const g = await loadGrid(mm);
+        if (!cancelled) setGrid(new GridIndex(mm, g));
       }
-    }).catch(() => setM(null));
+    }).catch(() => { if (!cancelled) setM(null); });
+    return () => { cancelled = true; };
   }, [stackId, source, caseReload]);
 
   // Case study opens on the featured flooded-forest example (picked by scripts/validation/validate_area.py).
@@ -147,7 +161,9 @@ export default function Home() {
     setPairIdx(r.manifest.area === "examples" && ps.length
       ? ps.reduce((best, p, i) => (changed(p) > changed(ps[best]) ? i : best), 0)
       : Math.max(0, ps.length - 1));
-    loadGrid(r.manifest).then((g) => setGrid(new GridIndex(r.manifest, g))).catch(() => setGrid(null));
+    const seq = ++loadSeq.current;
+    loadGrid(r.manifest).then((g) => { if (loadSeq.current === seq) setGrid(new GridIndex(r.manifest, g)); })
+      .catch(() => { if (loadSeq.current === seq) setGrid(null); });
     if (!noScroll && view === "app") document.getElementById("findings")?.scrollIntoView({ behavior: "smooth" });
     if (view === "story") window.scrollTo({ top: 0 });
   }
@@ -160,6 +176,7 @@ export default function Home() {
   const shareStoryUrl = m && m.area !== AREA && typeof window !== "undefined"
     ? `${window.location.origin}/?${resultQuery(m)}&view=story` : null;
   function backToCase() {
+    loadSeq.current++;
     setSource("case"); setLive(null); setM(undefined); setGrid(null); setCaseReload((n) => n + 1);
     window.history.replaceState(null, "", window.location.pathname);
   }
@@ -198,58 +215,58 @@ export default function Home() {
   }, [grid, m, pair, rect]);
 
   return (
-    <main className="mx-auto max-w-[1400px] px-4 pb-24 sm:px-6">
+    <>
+      <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-cyan focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-bg">Skip to content</a>
       <Navbar view={view} setView={(v) => {
         setView(v);
         if (m && m.area !== AREA) window.history.replaceState(null, "", `?${resultQuery(m)}${v === "story" ? "&view=story" : ""}`);
         else window.history.replaceState(null, "", v === "story" ? "?view=story" : window.location.pathname);
       }} />
+    <main id="content" tabIndex={-1} className="mx-auto max-w-[1400px] px-4 pb-16 outline-none sm:px-6">
       {view === "story" ? (
         <Story m={m ?? null} grid={grid} rain={rain} onResult={storyResult} onOpenMap={openMapFromStory} shareUrl={shareStoryUrl} />
       ) : (<>
       {m?.is_demonstration && (
-        <div className="sticky top-0 z-50 -mx-4 flex items-center gap-2 border-b border-amber/40 bg-[#2a1d05] px-4 py-2 text-[13px] text-amber sm:-mx-6 sm:px-6">
+        <div role="alert" className="sticky top-[52px] z-50 -mx-4 flex items-center gap-2 border-b border-amber/40 bg-bg px-4 py-2 text-[13px] text-amber sm:-mx-6 sm:px-6">
           <AlertTriangle size={16} className="shrink-0" />
           <span><b>DEMONSTRATION DATA.</b> Map layers and fingerprint numbers are synthetic test values, not NISAR measurements. The observation timeline uses real ASF acquisition metadata. Run the pipeline on downloaded GCOV files to replace them.</span>
         </div>
       )}
 
-      <Hero onStory={() => { setView("story"); window.history.replaceState(null, "", "?view=story"); window.scrollTo({ top: 0 }); }}
+      <Hero m={m} onStory={() => { setView("story"); window.history.replaceState(null, "", "?view=story"); window.scrollTo({ top: 0 }); }}
         onExplore={() => document.getElementById("findings")?.scrollIntoView({ behavior: "smooth" })} />
       {help && <Help onClose={() => setHelp(false)} />}
 
-      <Section id="how" kicker="How it works" title="From a radar echo to an answer you can trust"
+      <Section id="how" title="From a radar echo to an answer you can trust"
         lead="Three steps, and four labels that tell you how certain each sentence is.">
         <HowItWorks />
       </Section>
 
-      <Section id="findings" kicker={source === "case" ? "What we found" : m?.area === "examples" ? "Example place" : "Your place"}
-        title={m ? `What NISAR saw at ${m.name.replace(/\s*\(.*\)$/, "")}` : "What NISAR saw"}
+      <Section id="findings" title={m ? `What NISAR saw at ${m.name.replace(/\s*\(.*\)$/, "")}` : "What NISAR saw"}
         lead={source === "case"
           ? "Tonle Sap is Southeast Asia's largest lake. Every monsoon it floods the forest around it, and that flood feeds one of the world's biggest inland fisheries. Here is what 10 radar passes from June to October 2026 show."
           : "The headline results for this place, computed from the same real NISAR passes shown on the map below."}
-        aside={source === "live" ? <button onClick={backToCase} className="flex items-center gap-1 text-[13px] text-cyan hover:text-text"><ArrowLeft size={14} />Back to Tonle Sap</button> : null}>
+        aside={source === "live" ? <button onClick={backToCase} className="mt-3 flex items-center gap-1.5 text-[13px] text-cyan hover:text-text"><ArrowLeft size={14} />Back to the Tonle Sap case study</button> : null}>
         <Findings m={m ?? null} grid={grid} rain={rain} validation={validation} />
       </Section>
 
-      <Section id="explorer" kicker="The map" title="See it for yourself"
+      <Section id="explorer" title="See it for yourself"
         lead="Real radar images from each satellite pass. Choose a view, then click or draw on the map to examine any area.">
-        {m === undefined && <div className="skeleton h-[62vh]" />}
+        {m === undefined && <div className="skeleton h-[70svh] min-h-[420px]" />}
         {m === null && <NoData />}
         {m && (
-          <>
-            <MapGuide mode={mode} setMode={setMode} />
+          <div className="overflow-hidden rounded-lg border border-line bg-panel">
             <SourceBar m={m} source={source} live={live} onBack={backToCase} pairId={pair?.id ?? null} channel={channel} />
-            <div className="mb-1 text-[12px] text-muted">Compare two passes (dates in red are 24 days apart because of a gap in NISAR&apos;s schedule):</div>
             <PairPicker m={m} pairIdx={pairIdx} setPairIdx={setPairIdx} />
             <Explorer manifest={m} inventory={inventoryForMap} pairIdx={pairIdx} channel={channel} mode={mode}
               setChannel={setChannel} setMode={setMode} selection={sel} onSelect={setSel} selectionBounds={bounds}
               onPickLocation={(lat, lon) => pickPlace({ name: `${lat.toFixed(4)}°, ${lon.toFixed(4)}° (picked on map)`, lat, lon, type: "map" })} />
-          </>
+            <MapGuide mode={mode} />
+          </div>
         )}
       </Section>
 
-      <Section id="fingerprint" kicker="What changed here" title="The radar's evidence for the area you picked"
+      <Section id="fingerprint" title="The radar's evidence for the area you picked"
         lead={featured && sel.kind === "box" && sel.bounds === featured.bounds
           ? "We start you on a 10 × 10 km patch of flooded forest north-west of the lake, where the change is clearest. Pick any other area on the map to compare."
           : "A plain summary first, then every number behind it, each labelled by how certain it is."}>
@@ -262,7 +279,7 @@ export default function Home() {
         ) : m && !rect ? <p className="text-muted">The selected spot is outside the radar image. Pick a spot inside it.</p> : <div className="skeleton h-72" />}
       </Section>
 
-      <Section id="checks" kicker="Is it real?" title="We tested the radar against data it never saw"
+      <Section id="checks" title="We tested the radar against data it never saw"
         lead={source === "case"
           ? "A clever map is worthless if it is wrong. So we compared our results with decades of Landsat water maps, river-flow models and weather records, and moved our thresholds to see if the story changes."
           : "Independent checks are available for the Tonle Sap case study. For this place, the sensitivity test below shows whether the result depends on our threshold."}>
@@ -270,18 +287,18 @@ export default function Home() {
         <Sensitivity m={m ?? null} grid={grid} />
       </Section>
 
-      <Section id="places" kicker="Other places" title="It works anywhere NISAR looks"
+      <Section id="places" title="It works anywhere NISAR looks"
         lead="Open a ready-made example from three continents, search any place on Earth, or pick one of the newest radar images from the globe.">
         <div id="live" className="scroll-mt-16"><LiveSearch onResult={showLive} active={source === "live"} externalPlace={externalPlace} /></div>
         <div id="globe" className="mt-4 scroll-mt-16"><LatestFeed onPick={pickPlace} /></div>
       </Section>
 
-      <Section id="impact" kicker="Who it helps" title="Why hidden water matters"
+      <Section id="impact" title="Why hidden water matters"
         lead="Seasonal floods feed fisheries, farms and drinking water. Knowing where the water really is helps the people who depend on it.">
         <Impact />
       </Section>
 
-      <Section id="deeper" kicker="Go deeper" title="Tools for the curious"
+      <Section id="deeper" title="Tools for the curious"
         lead="Live conditions, interactive labs, the full observation record, the physics and the methods. Open whichever interests you.">
         <DeepDive tabs={[
           { id: "now", label: "Water now", icon: DEEP_ICONS.now, blurb: "Live weather, river flow with a 30-day forecast, and NASA's camera view from the same day as each radar pass.",
@@ -306,28 +323,34 @@ export default function Home() {
       </Section>
 
       </>)}
-      <footer className="mt-20 border-t border-line py-8 text-[12px] leading-relaxed text-muted">
+      <footer className="mt-24 border-t border-line pt-8 text-[13px] leading-relaxed text-muted">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="font-semibold tracking-wide text-text">DELTA PULSE · Team RADAR UNIT · NASA Space Apps 2026</span>
-          <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 text-cyan hover:text-text"><HelpCircle size={14} />How to use</button>
+          <span className="flex items-center gap-2 font-display text-[15px] font-semibold tracking-[0.04em] text-text">
+            <span className="text-cyan"><BrandMark /></span>DELTA PULSE
+          </span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <button onClick={() => setHelp(true)} className="flex items-center gap-1.5 text-cyan hover:text-text"><HelpCircle size={14} />How to use</button>
+            <a href="/guide" className="text-cyan hover:text-text">User guide</a>
+          </div>
         </div>
-        <p className="mt-2">Data: NASA-ISRO NISAR L2 GCOV via NASA ASF DAAC; JRC Global Surface Water; ERA5 and GloFAS via Open-Meteo; NASA GIBS. Basemaps: Esri (© Esri and data providers, © OpenStreetMap contributors).
-          An open-source student project; not an official NASA product.</p>
+        <p className="mt-4 max-w-4xl">Team RADAR UNIT, NASA Space Apps 2026. An open-source student project; not an official NASA product.</p>
+        <p className="mt-2 max-w-4xl">Data: NASA-ISRO NISAR L2 GCOV via NASA ASF DAAC; JRC Global Surface Water; ERA5 and GloFAS via Open-Meteo; NASA GIBS. Basemaps: Esri (© Esri and data providers, © OpenStreetMap contributors).</p>
       </footer>
     </main>
+    </>
   );
 }
 
-function Section({ id, kicker, title, lead, aside, children }: { id: string; kicker: string; title: string; lead: string; aside?: React.ReactNode; children: React.ReactNode }) {
+function Section({ id, title, lead, aside, children }: { id: string; title: string; lead: string; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section id={id} className="mt-20 scroll-mt-16 first-of-type:mt-12">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div className="max-w-3xl">
-          <div className="text-[12px] font-medium tracking-[0.18em] text-cyan uppercase">{kicker}</div>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
-          <p className="mt-3 text-[16px] leading-relaxed text-text/75">{lead}</p>
+    <section id={id} className="mt-20 scroll-mt-16 sm:mt-28">
+      <div className="rule-ticks" aria-hidden />
+      <div className="mt-6 mb-8 grid gap-x-12 gap-y-3 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] lg:items-end">
+        <h2 className="text-[1.75rem] leading-[1.1] font-medium sm:text-[2.5rem]">{title}</h2>
+        <div>
+          <p className="max-w-[62ch] text-[15px] leading-relaxed text-text/75 sm:text-[16px]">{lead}</p>
+          {aside}
         </div>
-        {aside}
       </div>
       {children}
     </section>
@@ -342,37 +365,38 @@ function SourceBar({ m, source, live, onBack, pairId, channel }: { m: Manifest; 
   const copyLink = () => {
     navigator.clipboard?.writeText(window.location.href).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); });
   };
+  const act = "flex items-center gap-1.5 text-cyan hover:text-text";
   return (
-    <div className={`mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border px-3 py-2 text-[12px] ${source === "live" ? "border-cyan/40 bg-cyan/5" : "border-line bg-panel"}`}>
-      <span className="flex items-center gap-1.5 font-semibold text-text">
+    <div className={`flex flex-wrap items-center gap-x-5 gap-y-1.5 border-b border-line px-3 py-2.5 text-[12px] sm:px-4 ${source === "live" ? "bg-cyan/5" : ""}`}>
+      <span className="flex items-center gap-1.5 text-[13px] font-semibold text-text">
         {source === "live" ? <Globe2 size={14} className="text-cyan" /> : <Radar size={14} className="text-cyan" />}
         {source === "live" ? `${m.area === "examples" ? "Example" : "Live"}: ${m.name}` : `Case study: ${m.name}`}
       </span>
-      <span className="text-muted">
+      <span className="font-mono text-[12px] text-muted">
         {o.length} NISAR acquisitions {o[0]?.date} → {o[o.length - 1]?.date} · track {o[0]?.track}{o[0]?.direction?.[0]} · {o[0]?.maturity} {o[0]?.crid} · {m.display.res_m} m cells
       </span>
       {source === "live" && live && (
-        <span className="text-muted">
+        <span className="font-mono text-[12px] text-muted">
           {live.checkedUtc ? `archive checked ${live.checkedUtc.slice(0, 16).replace("T", " ")} UTC · ` : `computed ${m.generated_utc.slice(0, 16).replace("T", " ")} UTC · `}
           read {pr.bytes_fetched ? `${Math.round(pr.bytes_fetched / 1e6)} MB` : ""} in {pr.elapsed_s ?? "?"} s
         </span>
       )}
-      <span className="ml-auto flex flex-wrap items-center gap-3">
+      <span className="flex flex-wrap items-center gap-x-4 gap-y-1 sm:ml-auto">
         {pairId && (
-          <a href={`${dataBase(m)}/img/d_${pairId}_${channel}.png`} download className="flex items-center gap-1 text-cyan hover:text-text" title="Download the change map image">
+          <a href={`${dataBase(m)}/img/d_${pairId}_${channel}.png`} download className={act} title="Download the change map image">
             <Download size={13} />Change map
           </a>
         )}
-        <a href={`${dataBase(m)}/manifest.json`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-cyan hover:text-text" title="All numbers and provenance as JSON">
+        <a href={`${dataBase(m)}/manifest.json`} target="_blank" rel="noreferrer" className={act} title="All numbers and provenance as JSON">
           <Download size={13} />Data (JSON)
         </a>
         {source === "live" && (
-          <button onClick={copyLink} className="flex items-center gap-1 text-cyan hover:text-text" title="Copy a link that reopens this result">
+          <button onClick={copyLink} className={act} title="Copy a link that reopens this result">
             {copied ? <Check size={13} /> : <Link2 size={13} />}{copied ? "Copied" : "Share link"}
           </button>
         )}
         {source === "live" && (
-          <button onClick={onBack} className="flex items-center gap-1 text-cyan hover:text-text"><ArrowLeft size={13} />Tonle Sap case study</button>
+          <button onClick={onBack} className={act}><ArrowLeft size={13} />Tonle Sap case study</button>
         )}
       </span>
     </div>
@@ -380,23 +404,28 @@ function SourceBar({ m, source, live, onBack, pairId, channel }: { m: Manifest; 
 }
 
 function PairPicker({ m, pairIdx, setPairIdx }: { m: Manifest; pairIdx: number; setPairIdx: (i: number) => void }) {
+  const irregular = m.pairs.some((p) => p.delta_days !== 12);
   return (
-    <div className="mb-3 flex items-center gap-1 overflow-x-auto pb-1">
-      <Waves size={14} className="mr-1 shrink-0 text-muted" />
-      {m.pairs.map((p, i) => (
-        <button key={p.id} onClick={() => setPairIdx(i)}
-          className={`shrink-0 rounded-md border px-2.5 py-1 font-mono text-[11px] ${i === pairIdx ? "border-cyan bg-cyan/15 text-cyan" : "border-line bg-panel text-muted hover:text-text"}`}>
-          {p.before.slice(5)} → {p.after.slice(5)}{p.delta_days !== 12 && <span className="ml-1 text-rose">{p.delta_days}d</span>}
-        </button>
-      ))}
+    <div className="flex items-center gap-3 border-b border-line px-3 py-2 sm:px-4">
+      <span className="flex shrink-0 items-center gap-1.5 text-[12px] text-muted"><Waves size={14} />Compare</span>
+      <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+        {m.pairs.map((p, i) => (
+          <button key={p.id} onClick={() => setPairIdx(i)} aria-pressed={i === pairIdx}
+            title={`${p.before} → ${p.after} · ${p.delta_days} days apart`}
+            className={`shrink-0 rounded-md border px-2 py-1 font-mono text-[11px] ${i === pairIdx ? "border-cyan bg-cyan/15 text-cyan" : "border-line bg-bg-2 text-muted hover:border-line-strong hover:text-text"}`}>
+            {p.before.slice(5)} → {p.after.slice(5)}{p.delta_days !== 12 && <span className="ml-1 text-rose">{p.delta_days}d</span>}
+          </button>
+        ))}
+      </div>
+      {irregular && <span className="hidden shrink-0 text-[12px] text-muted 2xl:inline" title="A documented gap in NISAR's acquisition schedule; nothing is interpolated across it.">red = longer than the 12-day repeat</span>}
     </div>
   );
 }
 
 function NoData() {
   return (
-    <div className="rounded-xl border border-line bg-panel p-8 text-sm text-muted">
-      <div className="text-text">No processed radar data yet.</div>
+    <div className="rounded-lg border border-line bg-panel p-8 text-sm text-muted">
+      <div className="font-medium text-text">No processed radar data yet.</div>
       <p className="mt-2">Run <code className="text-cyan">scripts/refresh.py</code> with an Earthdata token to retrieve and process NISAR GCOV acquisitions. See README.md.</p>
     </div>
   );

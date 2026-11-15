@@ -3,24 +3,17 @@ import { Bar, BarChart, CartesianGrid, Line, LineChart, ReferenceLine, Responsiv
 import { Download } from "lucide-react";
 import { Fingerprint as FP, Manifest, SeriesPoint, Statement, Verdict, fmtDb, fmtSigned, pct } from "@/lib/data";
 import type { Rainfall } from "@/lib/api";
+import { CHART } from "@/lib/theme";
+import { Tag } from "@/components/ui";
 
-export const TAG_STYLE: Record<Statement["kind"], string> = {
-  OBSERVED: "border-cyan/40 text-cyan bg-cyan/10",
-  CALCULATED: "border-blue/40 text-blue bg-blue/10",
-  INTERPRETED: "border-amber/40 text-amber bg-amber/10",
-  UNCONFIRMED: "border-rose/40 text-rose bg-rose/10",
-};
+export { Tag, TAG_STYLE } from "@/components/ui";
 
 const VERDICT_STYLE: Record<Verdict, string> = {
   "Possible inundation-related signal": "border-amber/50 text-amber",
   "Radar change detected": "border-blue/50 text-blue",
-  "No significant radar change": "border-line text-muted",
+  "No significant radar change": "border-line-strong text-muted",
   "Insufficient evidence": "border-rose/50 text-rose",
 };
-
-export function Tag({ kind }: { kind: Statement["kind"] }) {
-  return <span className={`inline-block rounded border px-1.5 py-0.5 font-mono text-[10px] tracking-wider ${TAG_STYLE[kind]}`}>{kind}</span>;
-}
 
 interface Props {
   m: Manifest; fp: FP; verdict: Verdict; statements: Statement[]; series: SeriesPoint[];
@@ -67,12 +60,14 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
     <div className="grid gap-4 lg:grid-cols-12">
       {/* verdict + evidence */}
       <div className="rounded-xl border border-line bg-panel p-5 lg:col-span-5">
-        <div className="mb-1 font-mono text-xs text-muted">REGION · {regionLabel}</div>
-        <div className={`mb-4 inline-block rounded-md border px-3 py-1.5 text-lg font-semibold ${VERDICT_STYLE[verdict]}`}>{verdict}</div>
-        <ul className="space-y-3">
+        <div className="text-[12px] text-muted">Selected region</div>
+        <div className="mt-0.5 text-[13px] leading-snug text-text/90">{regionLabel}</div>
+        <div className="mt-4 text-[12px] text-muted">Verdict from the interpretation rules</div>
+        <div className={`mt-1 mb-5 inline-block rounded-md border px-3 py-1.5 font-display text-lg font-medium ${VERDICT_STYLE[verdict]}`}>{verdict}</div>
+        <ul className="space-y-3.5 border-t border-line pt-4">
           {statements.map((s, i) => (
-            <li key={i} className="flex gap-3 text-sm leading-relaxed">
-              <div className="w-24 shrink-0 pt-0.5"><Tag kind={s.kind} /></div>
+            <li key={i} className="grid gap-x-3 gap-y-1 text-sm leading-relaxed sm:grid-cols-[6.5rem_minmax(0,1fr)]">
+              <div className="pt-px"><Tag kind={s.kind} /></div>
               <span className="text-text/90">{s.text}</span>
             </li>
           ))}
@@ -101,17 +96,17 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
                 <div className="mt-3 h-28">
                   <ResponsiveContainer>
                     <BarChart data={c.histogram} margin={{ top: 4, right: 0, bottom: 0, left: -28 }}>
-                      <XAxis dataKey="bin" tick={{ fill: "#8b9ab5", fontSize: 10 }} interval={4} tickLine={false} axisLine={{ stroke: "#1e2a44" }} />
-                      <YAxis tick={{ fill: "#8b9ab5", fontSize: 10 }} tickLine={false} axisLine={false} />
-                      <Tooltip cursor={{ fill: "#ffffff08" }} contentStyle={{ background: "#0d1424", border: "1px solid #1e2a44", fontSize: 12 }}
+                      <XAxis dataKey="bin" tick={CHART.tick} interval={4} tickLine={false} axisLine={CHART.axisLine} />
+                      <YAxis tick={CHART.tick} tickLine={false} axisLine={false} />
+                      <Tooltip cursor={CHART.cursor} contentStyle={CHART.tooltip} labelStyle={CHART.tooltipLabel} itemStyle={CHART.tooltipItem}
                         formatter={(v) => [v, "cells"]} labelFormatter={(l) => `Δ ≈ ${l} dB`} />
                       <Bar dataKey="count" isAnimationActive={false}>
-                        {c.histogram.map((h) => <Cell key={h.bin} fill={h.bin >= sig ? "#f59e0b" : h.bin <= -sig ? "#3b82f6" : "#475569"} />)}
+                        {c.histogram.map((h) => <Cell key={h.bin} fill={h.bin >= sig ? "var(--amber)" : h.bin <= -sig ? "var(--blue)" : "var(--line-strong)"} />)}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex justify-between text-[11px] text-muted">
+                <div className="flex justify-between text-[12px] text-muted">
                   <span className="text-blue">{pct(c.frac_decrease)} darker ≥{sig} dB</span>
                   <span className="text-amber">{pct(c.frac_increase)} brighter ≥{sig} dB</span>
                 </div>
@@ -134,14 +129,14 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
                   <div style={{ width: `${(s.water / t) * 100}%` }} className="bg-cyan" title="low backscatter" />
                   <div style={{ width: `${(s.double / t) * 100}%` }} className="bg-amber" title="double bounce" />
                 </div>
-                <div className="mt-1 flex gap-3 text-[11px] text-muted">
+                <div className="mt-1 flex gap-3 text-[12px] text-muted">
                   <span><b className="text-cyan">{pct(s.water / t)}</b> low backscatter</span>
                   <span><b className="text-amber">{pct(s.double / t)}</b> double-bounce signature</span>
                 </div>
               </div>
             );
           })}
-          <p className="mt-3 text-[11px] text-muted">Uses the uncalibrated rules in Methods at 200 m. Candidate signatures only.</p>
+          <p className="mt-3 text-[12px] text-muted">Uses the uncalibrated rules in Methods at 200 m. Candidate signatures only.</p>
         </div>
 
         <div className="rounded-xl border border-line bg-panel p-5">
@@ -150,7 +145,7 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
             <Q k="valid in both" v={`${pct(fp.coverage)} of ${fp.region_cells.toLocaleString()} cells`} />
             <Q k="interval" v={`${fp.pair_days} days${fp.pair_days !== 12 ? " (irregular)" : ""}`} />
             <Q k="maturity" v={`${fp.before.maturity ?? "?"} / ${fp.after.maturity ?? "?"}`} />
-            <Q k="release" v={`${fp.before.crid} / ${fp.after.crid}${fp.same_release ? "" : " ⚠"}`} />
+            <Q k="release" v={`${fp.before.crid} / ${fp.after.crid}${fp.same_release ? "" : " (differ)"}`} />
             <Q k="track·frame" v={`${fp.before.track ?? "?"}${fp.before.direction?.[0] ?? ""} · ${fp.before.frame ?? "?"}`} />
             <Q k="cell size" v={`${m.grid.res_m} m (from ${m.display.res_m} m layers)`} />
           </dl>
@@ -159,38 +154,39 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
 
       {/* time series */}
       <div className="rounded-xl border border-line bg-panel p-5 lg:col-span-12">
-        <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-          <div className="text-sm font-semibold">Region backscatter through time</div>
-          <div className="flex items-center gap-3 text-[11px] text-muted">
-            <span className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full bg-cyan" />HH</span>
-            <span className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full bg-amber" />HV</span>
-            <span>Points are actual acquisitions only; lines are drawn only between them, spacing is to scale.</span>
-            <Tag kind="CALCULATED" />
-            <button onClick={exportCsv} className="flex items-center gap-1 rounded border border-line px-2 py-0.5 text-text hover:border-cyan/50">
-              <Download size={12} />CSV
+        <div className="mb-3 flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">Region backscatter through time <Tag kind="CALCULATED" /></div>
+            <p className="mt-1 text-[12px] text-muted">Points are actual acquisitions only; lines are drawn only between them, spacing is to scale.</p>
+          </div>
+          <div className="flex items-center gap-4 text-[12px] text-muted">
+            <span className="flex items-center gap-1.5"><i className="inline-block h-0.5 w-4 bg-cyan" />HH</span>
+            <span className="flex items-center gap-1.5"><i className="inline-block h-0.5 w-4 bg-amber" />HV</span>
+            <button onClick={exportCsv} className="flex items-center gap-1.5 rounded-md border border-line bg-bg-2 px-2.5 py-1 text-text hover:border-line-strong" title="Download these numbers as CSV">
+              <Download size={13} />CSV
             </button>
           </div>
         </div>
         <div className="h-56">
           <ResponsiveContainer>
             <LineChart data={series} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
-              <CartesianGrid stroke="#1e2a44" strokeDasharray="2 4" />
+              <CartesianGrid stroke={CHART.grid} strokeDasharray="2 4" />
               <XAxis dataKey="t" type="number" scale="time" domain={rainPts.length ? [t0, t1] : ["dataMin - 259200000", "dataMax + 259200000"]}
                 tickFormatter={(t) => new Date(t).toISOString().slice(5, 10)} ticks={series.map((s) => s.t)}
-                tick={{ fill: "#8b9ab5", fontSize: 10 }} axisLine={{ stroke: "#1e2a44" }} tickLine={false} />
-              <YAxis unit=" dB" tick={{ fill: "#8b9ab5", fontSize: 10 }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-              <Tooltip contentStyle={{ background: "#0d1424", border: "1px solid #1e2a44", fontSize: 12 }}
+                tick={CHART.tick} axisLine={CHART.axisLine} tickLine={false} />
+              <YAxis unit=" dB" tick={CHART.tick} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
+              <Tooltip contentStyle={CHART.tooltip} labelStyle={CHART.tooltipLabel} itemStyle={CHART.tooltipItem}
                 labelFormatter={(t) => new Date(Number(t)).toISOString().slice(0, 10)}
                 formatter={(v, n) => [v == null ? "not acquired" : `${Number(v).toFixed(2)} dB`, String(n).toUpperCase()]} />
-              {selectedDates.map((d) => <ReferenceLine key={d} x={Date.parse(d)} stroke="#f59e0b" strokeDasharray="3 3" />)}
-              <Line dataKey="hh" stroke="#22d3ee" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} isAnimationActive={false} />
-              <Line dataKey="hv" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} isAnimationActive={false} />
+              {selectedDates.map((d) => <ReferenceLine key={d} x={Date.parse(d)} stroke="var(--amber)" strokeDasharray="3 3" />)}
+              <Line dataKey="hh" stroke="var(--cyan)" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} isAnimationActive={false} />
+              <Line dataKey="hv" stroke="var(--amber)" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
         {rain && rainPts.length > 0 && (
           <>
-            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 text-[11px] text-muted">
+            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 text-[12px] text-muted">
               <span className="text-sm font-semibold text-text">Daily rainfall at this location</span>
               <span>Context only, not a radar measurement · {rain.dataset} via {rain.source} ({rain.license}) <Tag kind="OBSERVED" /></span>
             </div>
@@ -198,15 +194,15 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
               <ResponsiveContainer>
                 <BarChart data={rainPts} margin={{ top: 4, right: 16, bottom: 0, left: -12 }}>
                   <XAxis dataKey="t" type="number" scale="time" domain={[t0, t1]} hide />
-                  <YAxis unit=" mm" tick={{ fill: "#8b9ab5", fontSize: 10 }} axisLine={false} tickLine={false} width={60} />
-                  <Tooltip cursor={{ fill: "#ffffff08" }} contentStyle={{ background: "#0d1424", border: "1px solid #1e2a44", fontSize: 12 }}
+                  <YAxis unit=" mm" tick={CHART.tick} axisLine={false} tickLine={false} width={60} />
+                  <Tooltip cursor={CHART.cursor} contentStyle={CHART.tooltip} labelStyle={CHART.tooltipLabel} itemStyle={CHART.tooltipItem}
                     labelFormatter={(t) => new Date(Number(t)).toISOString().slice(0, 10)} formatter={(v) => [`${v ?? "–"} mm`, "rain"]} />
-                  {series.map((s) => <ReferenceLine key={s.t} x={s.t} stroke="#22d3ee" strokeOpacity={0.35} />)}
-                  <Bar dataKey="mm" fill="#3b82f6" isAnimationActive={false} />
+                  {series.map((s) => <ReferenceLine key={s.t} x={s.t} stroke="var(--cyan)" strokeOpacity={0.35} />)}
+                  <Bar dataKey="mm" fill="var(--blue)" isAnimationActive={false} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-[11px] text-muted">Faint cyan lines mark NISAR acquisition dates. Heavy rain before an acquisition can wet soil and leaves, which also changes backscatter.</p>
+            <p className="text-[12px] text-muted">Faint cyan lines mark NISAR acquisition dates. Heavy rain before an acquisition can wet soil and leaves, which also changes backscatter.</p>
           </>
         )}
       </div>
@@ -216,8 +212,8 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
 
 const Stat = ({ label, value, unit, tone }: { label: string; value: string; unit: string; tone?: "amber" | "blue" }) => (
   <div className="rounded-lg bg-panel-2 px-2 py-2">
-    <div className="text-[10px] uppercase tracking-wider text-muted">{label}</div>
-    <div className={`text-lg ${tone === "amber" ? "text-amber" : tone === "blue" ? "text-blue" : "text-text"}`}>{value}<span className="ml-0.5 text-[10px] text-muted">{unit}</span></div>
+    <div className="text-[12px] text-muted">{label}</div>
+    <div className={`text-lg ${tone === "amber" ? "text-amber" : tone === "blue" ? "text-blue" : "text-text"}`}>{value}<span className="ml-0.5 text-[11px] text-muted">{unit}</span></div>
   </div>
 );
 const Q = ({ k, v }: { k: string; v: string }) => (

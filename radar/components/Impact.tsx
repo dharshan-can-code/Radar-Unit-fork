@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { GraduationCap, HeartHandshake, Fish, Siren, Sprout } from "lucide-react";
+import { AlertTriangle, CircleCheck, GraduationCap, HeartHandshake, Fish, Siren, Sprout } from "lucide-react";
 import type { GridIndex, Manifest } from "@/lib/data";
 import { latest } from "@/lib/api";
 import { Tag } from "@/components/Fingerprint";
@@ -20,20 +20,20 @@ export default function Impact() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
         {WHO.map(([icon, t, d]) => (
-          <div key={t} className="rounded-xl border border-line bg-panel p-5">
+          <li key={t} className="border-t border-line-strong pt-5">
             <div className="text-cyan">{icon}</div>
-            <div className="mt-2 text-sm font-semibold">{t}</div>
-            <p className="mt-1 text-[13px] leading-relaxed text-text/75">{d}</p>
-          </div>
+            <h3 className="mt-3 text-[17px] font-medium">{t}</h3>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-text/75">{d}</p>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-line bg-panel p-5">
           <div className="text-sm font-semibold">Case study: Tonle Sap, Cambodia</div>
-          <p className="mt-2 text-[14px] leading-relaxed text-text/80">
+          <p className="mt-2 max-w-[58ch] text-[14px] leading-relaxed text-text/80">
             Tonle Sap is Southeast Asia&apos;s largest freshwater lake and a UNESCO Biosphere Reserve. Each monsoon the Mekong pushes so much
             water into it that the Tonle Sap River reverses direction and the lake floods the surrounding forest. The Mekong River
             Commission describes this flood pulse as the engine of one of the world&apos;s most productive inland fisheries. DELTA PULSE
@@ -88,8 +88,8 @@ export function Sensitivity({ m, grid }: { m: Manifest | null; grid: GridIndex |
       </div>
       <p className="mt-1 text-[13px] text-muted">Water-like area (km²) recomputed with the HH threshold moved by ±2 dB, using the {m.grid.res_m} m grid.</p>
       <div className="mt-3 overflow-auto">
-        <table className="w-full text-left font-mono text-[11px]">
-          <thead className="text-muted"><tr><th className="p-1">HH below</th>{m.observations.map((o) => <th key={o.date} className="p-1">{o.date.slice(5)}</th>)}</tr></thead>
+        <table className="w-full text-left font-mono text-[11px] whitespace-nowrap">
+          <thead className="text-muted"><tr><th className="p-1 font-normal">HH below</th>{m.observations.map((o) => <th key={o.date} className="p-1 font-normal">{o.date.slice(5)}</th>)}</tr></thead>
           <tbody>
             {res.ths.map((t, i) => (
               <tr key={t} className={`border-t border-line/60 ${i === 1 ? "text-text" : "text-muted"}`}>
@@ -100,12 +100,14 @@ export function Sensitivity({ m, grid }: { m: Manifest | null; grid: GridIndex |
           </tbody>
         </table>
       </div>
-      <ul className="mt-3 space-y-1 text-[13px]">
-        <li className={res.robustTrend ? "text-green" : "text-amber"}>
-          {res.robustTrend ? "✓ Robust: the direction of change (first → last date) is the same at all three thresholds." : "⚠ Sensitive: the direction of change depends on the threshold. Treat it with care."}
+      <ul className="mt-4 space-y-1.5 text-[13px]">
+        <li className={`flex items-start gap-2 ${res.robustTrend ? "text-green" : "text-amber"}`}>
+          {res.robustTrend ? <CircleCheck size={15} className="mt-0.5 shrink-0" /> : <AlertTriangle size={15} className="mt-0.5 shrink-0" />}
+          {res.robustTrend ? "Robust: the direction of change (first → last date) is the same at all three thresholds." : "Sensitive: the direction of change depends on the threshold. Treat it with care."}
         </li>
-        <li className={res.robustPeak ? "text-green" : "text-amber"}>
-          {res.robustPeak ? "✓ Robust: the date with the most water-like area is the same at all three thresholds." : "⚠ The peak date shifts with the threshold. The timing is uncertain."}
+        <li className={`flex items-start gap-2 ${res.robustPeak ? "text-green" : "text-amber"}`}>
+          {res.robustPeak ? <CircleCheck size={15} className="mt-0.5 shrink-0" /> : <AlertTriangle size={15} className="mt-0.5 shrink-0" />}
+          {res.robustPeak ? "Robust: the date with the most water-like area is the same at all three thresholds." : "The peak date shifts with the threshold. The timing is uncertain."}
         </li>
       </ul>
     </div>

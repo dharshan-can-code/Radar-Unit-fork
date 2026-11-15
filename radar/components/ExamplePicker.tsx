@@ -38,7 +38,7 @@ export default function ExamplePicker({ onResult, accent = "cyan", label = "Try 
               {busy === x.id && <Loader2 size={12} className="animate-spin" />}{x.name}
             </div>
             <div className="mt-0.5 text-muted">{x.blurb}</div>
-            <div className="mt-1 font-mono text-[10px] text-muted">{x.n_obs} passes · {x.first} → {x.last} · {x.maturity.toLowerCase()}</div>
+            <div className="mt-1 font-mono text-[11px] text-muted">{x.n_obs} passes · {x.first} → {x.last} · {x.maturity.toLowerCase()}</div>
           </button>
         ))}
       </div>

@@ -1,93 +1,126 @@
 "use client";
-// First screen: what DELTA PULSE is for, in one sentence, next to real NISAR
-// images of Tonle Sap in the dry season and at the flood peak.
-import { useEffect, useState } from "react";
-import { ArrowDown, CloudRain, Map as MapIcon, Sparkles, Trees } from "lucide-react";
+// First screen: what DELTA PULSE is for, next to real NISAR imagery of the
+// place that is loaded. The two passes shown are chosen from the data: the one
+// with the least and the one with the most of the "water under vegetation"
+// screening signature (manifest.observations[].screening_counts).
+import { useEffect, useMemo, useState } from "react";
+import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
+import type { Manifest } from "@/lib/data";
+import { imgUrl } from "@/lib/data";
+import { fmtDate } from "@/lib/story";
+import { Readout } from "@/components/ui";
 
-const IMG = "/data/tonle_sap/t83A_f8_P05023/img";
-const SCENES = [
-  { date: "2026-06-19", label: "19 June", note: "Dry season" },
-  { date: "2026-09-11", label: "11 September", note: "Flood peak" },
-];
+export default function Hero({ m, onStory, onExplore }: { m: Manifest | null | undefined; onStory: () => void; onExplore: () => void }) {
+  const scenes = useMemo(() => {
+    if (!m || m.observations.length < 2) return null;
+    const obs = m.observations;
+    const lo = obs.reduce((a, b) => (b.screening_counts.double_bounce < a.screening_counts.double_bounce ? b : a));
+    const hi = obs.reduce((a, b) => (b.screening_counts.double_bounce > a.screening_counts.double_bounce ? b : a));
+    if (lo.date === hi.date) return [{ o: obs[0], note: "First pass" }, { o: obs[obs.length - 1], note: "Latest pass" }];
+    return [{ o: lo, note: "Least hidden water" }, { o: hi, note: "Most hidden water" }];
+  }, [m]);
 
-export default function Hero({ onStory, onExplore }: { onStory: () => void; onExplore: () => void }) {
   const [k, setK] = useState(1);
   const [paused, setPaused] = useState(false);
+  const [sweeping, setSweeping] = useState(false);
   useEffect(() => {
-    if (paused || (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)) return;
-    const t = setInterval(() => setK((x) => (x + 1) % SCENES.length), 3500);
+    if (!scenes || paused || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const t = setInterval(() => setK((x) => 1 - x), 5200);
     return () => clearInterval(t);
-  }, [paused]);
+  }, [paused, scenes]);
+  useEffect(() => {
+    setSweeping(true);
+    const t = setTimeout(() => setSweeping(false), 1500);
+    return () => clearTimeout(t);
+  }, [k]);
+
+  const place = m ? m.name.replace(/\s*\(.*\)$/, "") : "";
+  const o0 = m?.observations[0], oN = m?.observations[m.observations.length - 1];
+  const ratio = m ? `${m.display.nx} / ${m.display.ny}` : "1 / 1";
 
   return (
-    <header id="top" className="scroll-mt-14 pt-10 pb-6 sm:pt-16">
-      <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
-        <div>
-          <div className="text-[12px] font-medium tracking-[0.18em] text-cyan uppercase">NASA Space Apps 2026 · NISAR radar</div>
-          <h1 className="mt-4 text-4xl leading-[1.08] font-semibold tracking-tight sm:text-6xl">
-            See the water that <span className="text-cyan">clouds</span> and <span className="text-amber">forests</span> hide.
+    <header id="top" className="atmosphere relative -mx-4 scroll-mt-14 px-4 pt-10 pb-10 sm:-mx-6 sm:px-6 sm:pt-14 lg:pb-14">
+      <div className="grid gap-x-12 gap-y-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-y-10">
+        <div className="min-w-0 lg:self-end">
+          <h1 className="text-[2.6rem] leading-[1.02] font-medium sm:text-6xl xl:text-[4.5rem]">
+            Revealing the water we cannot see.
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-text/80">
-            When rivers flood into forests, the water spreads under the trees, invisible to cameras. NASA-ISRO&apos;s NISAR satellite
-            uses radar that passes through cloud and leaves. <b className="text-text">DELTA PULSE turns that radar into plain answers:</b> where
-            water is spreading, how much changed, and how sure we can be.
+          <p className="mt-6 max-w-[34rem] text-[17px] leading-relaxed text-text/80">
+            When rivers flood into forests, the water spreads under the trees, invisible to cameras. NASA-ISRO&apos;s NISAR radar
+            passes through cloud and leaves, and DELTA PULSE turns it into plain answers: where water is spreading, how much
+            changed, and how sure we can be.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <button onClick={onStory} className="flex items-center gap-2 rounded-lg bg-amber px-5 py-3 text-[15px] font-semibold text-bg hover:bg-amber/90">
-              <Sparkles size={17} />Watch the Tonle Sap story
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <button onClick={onExplore} className="flex items-center gap-2 rounded-md bg-cyan px-5 py-3 text-[15px] font-semibold text-bg hover:bg-cyan/90">
+              Explore the data<ArrowRight size={17} />
             </button>
-            <button onClick={onExplore} className="flex items-center gap-2 rounded-lg border border-line bg-panel px-5 py-3 text-[15px] font-medium text-text hover:border-cyan/60">
-              <MapIcon size={17} />Explore the data
+            <button onClick={onStory} className="flex items-center gap-2 rounded-md border border-line-strong px-5 py-3 text-[15px] font-medium text-text hover:border-amber hover:text-amber">
+              <Sparkles size={16} />Watch the story
+            </button>
+            <button onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })}
+              className="flex items-center gap-1.5 px-1 py-3 text-[14px] text-muted hover:text-text">
+              How the radar sees it<ArrowDown size={14} />
             </button>
           </div>
-          <div className="mt-8 grid max-w-xl grid-cols-1 gap-3 text-[13px] sm:grid-cols-3">
-            <Fact icon={<CloudRain size={16} className="text-blue" />} text="Sees through cloud, rain and darkness" />
-            <Fact icon={<Trees size={16} className="text-amber" />} text="Finds water under tree canopy" />
-            <Fact icon={<MapIcon size={16} className="text-cyan" />} text="Any place NISAR images, every 12 days" />
-          </div>
+
         </div>
 
         <figure onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
-          className="relative overflow-hidden rounded-2xl border border-line bg-[#03060c] shadow-[0_30px_60px_-30px_rgba(0,0,0,0.9)]">
-          <div className="relative aspect-[1092/1112] w-full">
-            {SCENES.map((s, i) => (
-              <div key={s.date} className="absolute inset-0 transition-opacity duration-700" style={{ opacity: i === k ? 1 : 0 }} aria-hidden={i !== k}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`${IMG}/${s.date}_HH.png`} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`${IMG}/${s.date}_class.png`} alt={`NISAR radar of Tonle Sap Lake on ${s.label} 2026, ${s.note.toLowerCase()}`}
-                  className="absolute inset-0 h-full w-full object-cover" />
-              </div>
-            ))}
-            <div className="absolute top-3 left-3 flex gap-1 rounded-lg bg-bg/80 p-1 backdrop-blur">
-              {SCENES.map((s, i) => (
-                <button key={s.date} onClick={() => { setK(i); setPaused(true); }} aria-pressed={i === k}
-                  className={`rounded-md px-3 py-1.5 text-[12px] font-medium ${i === k ? "bg-text text-bg" : "text-muted hover:text-text"}`}>
-                  {s.note} · {s.label}
-                </button>
-              ))}
-            </div>
+          className="relative mx-auto w-full max-w-[640px] min-w-0 self-center border border-line bg-void lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:ml-auto">
+          {/* corner ticks, like a sensor viewport */}
+          {["-top-px -left-px border-t border-l", "-top-px -right-px border-t border-r", "-bottom-px -left-px border-b border-l", "-right-px -bottom-px border-r border-b"].map((c) => (
+            <span key={c} aria-hidden className={`pointer-events-none absolute z-20 h-3 w-3 border-cyan ${c}`} />
+          ))}
+          <div className="relative w-full overflow-hidden" style={{ aspectRatio: ratio }}>
+            {m && scenes ? (
+              <>
+                {scenes.map((s, i) => (
+                  <div key={s.o.date} aria-hidden={i !== k} className={i === 1 ? "hero-wipe absolute inset-0" : "absolute inset-0"}
+                    style={i === 1 ? { clipPath: `inset(0 0 0 ${k === 1 ? 0 : 100}%)` } : undefined}>
+                    <div className="absolute inset-0 bg-void" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={imgUrl(m, `${s.o.date}_HH`)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={imgUrl(m, `${s.o.date}_class`)} alt={`NISAR radar screening of ${place} on ${fmtDate(s.o.date)}`}
+                      className="absolute inset-0 h-full w-full object-cover" />
+                  </div>
+                ))}
+                <div aria-hidden className="hero-scan pointer-events-none absolute inset-0 z-10"
+                  style={{ transform: `translateX(${k === 1 ? 0 : 100}%)`, opacity: sweeping ? 1 : 0 }}>
+                  <div className="absolute inset-y-0 left-0 w-0.5 bg-cyan" />
+                </div>
+                <div className="absolute top-3 left-3 z-20 flex border border-line bg-bg/85 p-0.5 backdrop-blur-sm">
+                  {scenes.map((s, i) => (
+                    <button key={s.o.date} onClick={() => { setK(i); setPaused(true); }} aria-pressed={i === k}
+                      className={`rounded-sm px-2.5 py-1.5 text-left text-[12px] leading-tight ${i === k ? "bg-text text-bg" : "text-muted hover:text-text"}`}>
+                      <span className="block font-medium">{s.note}</span>
+                      <span className="block font-mono text-[11px] opacity-80">{fmtDate(s.o.date)}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : m === undefined ? <div className="skeleton absolute inset-0 rounded-none" /> : (
+              <div className="absolute inset-0 flex items-center justify-center p-8 text-center text-sm text-muted">No processed radar imagery is available yet.</div>
+            )}
           </div>
-          <figcaption className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line bg-panel px-4 py-3 text-[12px] text-muted">
-            <span className="font-medium text-text">Real NISAR radar · Tonle Sap Lake, Cambodia</span>
-            <span className="flex items-center gap-1.5"><i className="inline-block h-2.5 w-2.5 rounded-sm bg-cyan" />open water</span>
-            <span className="flex items-center gap-1.5"><i className="inline-block h-2.5 w-2.5 rounded-sm bg-amber" />water under trees</span>
+          <figcaption className="flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-line bg-bg-2 px-4 py-3 text-[12px] text-muted">
+            <span className="font-medium text-text">Real NISAR radar{place ? `, ${place}` : ""}</span>
+            <span className="flex items-center gap-1.5"><i className="inline-block h-2.5 w-2.5 bg-map-water" />looks like open water</span>
+            <span className="flex items-center gap-1.5"><i className="inline-block h-2.5 w-2.5 bg-map-veg" />looks like water under trees</span>
           </figcaption>
         </figure>
-      </div>
-      <button onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })}
-        className="mx-auto mt-10 flex items-center gap-1.5 text-[13px] text-muted hover:text-text">
-        How it works <ArrowDown size={14} />
-      </button>
-    </header>
-  );
-}
 
-function Fact({ icon, text }: { icon: React.ReactNode; text: string }) {
-  return (
-    <div className="rounded-xl border border-line bg-panel/60 p-3">
-      {icon}
-      <div className="mt-2 leading-snug text-text/80">{text}</div>
-    </div>
+        <div className="min-w-0 lg:col-start-1 lg:row-start-2 lg:self-start">
+          {m && o0 && oN ? (
+            <dl className="grid max-w-[34rem] grid-cols-2 gap-x-6 gap-y-4 border-t border-line pt-5 sm:grid-cols-4">
+              <Readout label="Radar passes">{m.observations.length}</Readout>
+              <Readout label="First">{fmtDate(o0.date)}</Readout>
+              <Readout label="Latest">{fmtDate(oN.date)}</Readout>
+              <Readout label="Map cell">{m.display.res_m} m</Readout>
+            </dl>
+          ) : m === undefined ? <div className="skeleton h-14 max-w-[34rem]" /> : null}
+        </div>
+      </div>
+    </header>
   );
 }

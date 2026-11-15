@@ -13,18 +13,27 @@ export const DEEP_ICONS = {
 export default function DeepDive({ tabs }: { tabs: DeepTab[] }) {
   const [active, setActive] = useState(tabs[0]?.id);
   const t = tabs.find((x) => x.id === active) ?? tabs[0];
+  const onKey = (e: React.KeyboardEvent) => {
+    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const next = tabs[(tabs.findIndex((x) => x.id === t.id) + d + tabs.length) % tabs.length];
+    setActive(next.id);
+    document.getElementById(`deep-tab-${next.id}`)?.focus();
+  };
   return (
     <div>
-      <div role="tablist" aria-label="Advanced tools" className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+      <div role="tablist" aria-label="Advanced tools" onKeyDown={onKey} className="no-scrollbar flex overflow-x-auto border-b border-line">
         {tabs.map((x) => (
-          <button key={x.id} role="tab" aria-selected={x.id === t.id} onClick={() => setActive(x.id)}
-            className={`flex shrink-0 items-center gap-2 rounded-lg border px-3.5 py-2 text-[13px] font-medium transition-colors ${x.id === t.id ? "border-cyan/60 bg-cyan/10 text-cyan" : "border-line bg-panel text-muted hover:text-text"}`}>
-            {x.icon}{x.label}
+          <button key={x.id} role="tab" id={`deep-tab-${x.id}`} aria-selected={x.id === t.id} aria-controls="deep-panel" tabIndex={x.id === t.id ? 0 : -1} onClick={() => setActive(x.id)}
+            className={`relative flex shrink-0 items-center gap-2 px-3.5 py-3 text-[14px] font-medium whitespace-nowrap sm:px-4 ${x.id === t.id ? "text-text" : "text-muted hover:text-text"}`}>
+            <span className={x.id === t.id ? "text-cyan" : ""}>{x.icon}</span>{x.label}
+            <span aria-hidden className={`absolute inset-x-2 -bottom-px h-0.5 bg-cyan transition-opacity duration-200 ${x.id === t.id ? "opacity-100" : "opacity-0"}`} />
           </button>
         ))}
       </div>
-      <p className="mt-3 mb-4 max-w-3xl text-[14px] text-text/75">{t.blurb}</p>
-      <div role="tabpanel">{t.render()}</div>
+      <p className="mt-5 mb-5 max-w-[70ch] text-[15px] text-text/75">{t.blurb}</p>
+      <div role="tabpanel" id="deep-panel" aria-labelledby={`deep-tab-${t.id}`} key={t.id} className="fade-in">{t.render()}</div>
     </div>
   );
 }

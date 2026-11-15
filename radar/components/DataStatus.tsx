@@ -46,7 +46,7 @@ export default function DataStatus({ status, stacks, stackId, setStackId, manife
             Latest acquisition listed over the area: {status.latest_listed_acquisition ?? "—"}.{" "}
             {status.new_since_previous_check != null && <>New since previous check: {status.new_since_previous_check}.</>}
           </div>
-          <div className="mt-1 text-[11px] text-muted">NISAR revisits every 12 days; products appear in the archive after processing, not in real time.</div>
+          <div className="mt-1 text-[12px] text-muted">NISAR revisits every 12 days; products appear in the archive after processing, not in real time.</div>
         </div>
       </div>
       <div className="flex gap-3">
@@ -67,7 +67,7 @@ export default function DataStatus({ status, stacks, stackId, setStackId, manife
             </div>
           ))}
           {pending.some((p) => p.maturity === "VALIDATED") && (
-            <div className="mt-1 text-[11px] text-muted">VALIDATED products are a separate release and are kept in their own stack, never mixed with PROVISIONAL.</div>
+            <div className="mt-1 text-[12px] text-muted">VALIDATED products are a separate release and are kept in their own stack, never mixed with PROVISIONAL.</div>
           )}
         </div>
       </div>

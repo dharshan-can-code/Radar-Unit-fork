@@ -136,7 +136,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   const est = detail === "quick" ? 10 : 12 + Math.max(0, picked.length - 2) * 3;
 
   return (
-    <div className={`rounded-xl border bg-panel p-4 ${active ? "border-cyan/50" : "border-line"}`}>
+    <div className={`rounded-lg border bg-panel p-4 sm:p-5 ${active ? "border-cyan/50" : "border-line"}`}>
       <div className="flex items-center gap-2 text-sm font-semibold">
         <Satellite size={16} className="text-cyan" /> Explore anywhere with live NISAR data
       </div>
@@ -146,7 +146,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
       </p>
 
       {backend && !backend.ok && (
-        <div className="mt-3 flex gap-2 rounded-md border border-amber/40 bg-amber/5 p-2 text-[12px] text-amber">
+        <div className="mt-3 flex gap-2 text-[13px] leading-relaxed text-amber" role="status">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />
           <span>
             Live search is offline in this copy of the app. Live search needs our server, which reads NASA&apos;s archive with an
@@ -164,12 +164,12 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
       )}
       <ExamplePicker onResult={onResult} label={backend && !backend.ok ? "Explore these places instead" : "Or open a ready-made example"} />
 
-      <form onSubmit={doGeocode} className="mt-3 flex gap-2">
+      <form onSubmit={doGeocode} className="mt-4 flex gap-2">
         <div className="relative flex-1">
           <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="e.g. Manaus, Sundarbans, Jakarta, or 12.56, 104.21"
             aria-label="Place name or coordinates"
-            className="w-full rounded-md border border-line bg-bg py-2 pr-3 pl-9 text-sm text-text placeholder:text-muted/60 focus:border-cyan focus:outline-none" />
+            className="w-full rounded-md border border-line bg-bg py-2 pr-3 pl-9 text-sm text-text focus:border-cyan focus:outline-none" />
         </div>
         <button type="submit" disabled={!backend?.ok || busy !== null || q.trim().length < 2}
           className="flex items-center gap-1.5 rounded-md bg-cyan px-4 text-sm font-medium text-bg disabled:opacity-40">
@@ -211,11 +211,11 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
                 title={s.usable ? s.caveat ?? undefined : "Pre-calibration or non-standard products are listed but not analysed"}
                 className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border px-3 py-2 text-left text-[12px] ${s.id === stackId ? "border-cyan bg-cyan/10" : "border-line hover:border-cyan/40"} disabled:cursor-not-allowed disabled:opacity-45`}>
                 <span className="font-mono text-text">Track {s.track}{s.direction?.[0]} · frame {s.frame} · {s.bandwidth} MHz</span>
-                <span className={`rounded border px-1.5 font-mono text-[10px] ${MAT[s.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[s.maturity] ?? s.maturity} {s.crid}</span>
+                <span className={`rounded border px-1.5 font-mono text-[11px] ${MAT[s.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[s.maturity] ?? s.maturity} {s.crid}</span>
                 <span className="text-muted">{s.n_dates} date{s.n_dates === 1 ? "" : "s"} · {s.dates[0]} → {s.latest}</span>
                 <span className="text-muted">{s.dual_pol_dates.length === s.n_dates ? "HH+HV" : `HV on ${s.dual_pol_dates.length}/${s.n_dates}`}</span>
-                {s.id === acq.recommended_stack && <span className="ml-auto text-[10px] text-cyan">latest compatible pair</span>}
-                {s.usable && s.n_dates < 2 && <span className="ml-auto text-[10px] text-muted">needs a 2nd date to compare</span>}
+                {s.id === acq.recommended_stack && <span className="ml-auto text-[11px] text-cyan">latest compatible pair</span>}
+                {s.usable && s.n_dates < 2 && <span className="ml-auto text-[11px] text-muted">needs a 2nd date to compare</span>}
               </button>
             ))}
           </div>
@@ -240,7 +240,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
                 })}
                 {stack.granules.length > 2 && (
                   <button onClick={() => setPicked(stack.granules.slice(-Math.min(12, stack.granules.length)).map((g) => g.scene))}
-                    className="rounded border border-dashed border-line px-2 py-1 text-[11px] text-muted hover:text-text">select all (max 12)</button>
+                    className="rounded border border-dashed border-line px-2 py-1 text-[12px] text-muted hover:text-text">select all (max 12)</button>
                 )}
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -261,7 +261,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
                   {running ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
                   Analyse {picked.length} acquisition{picked.length === 1 ? "" : "s"}
                 </button>
-                <span className="text-[11px] text-muted">≈ {est}–{est * 2} s</span>
+                <span className="text-[12px] text-muted">≈ {est}–{est * 2} s</span>
               </div>
             </div>
           )}
@@ -270,8 +270,8 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
 
       {jobState && (
         <div className="mt-3">
-          <div className="h-1.5 overflow-hidden rounded bg-panel-2">
-            <div className="h-full bg-cyan transition-all" style={{ width: `${Math.round((jobState.status === "done" ? 1 : jobState.progress ?? 0) * 100)}%` }} />
+          <div className="h-1 overflow-hidden rounded bg-panel-2" role="progressbar" aria-label="Analysis progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((jobState.status === "done" ? 1 : jobState.progress ?? 0) * 100)}>
+            <div className="h-full origin-left bg-cyan transition-transform duration-500 ease-out" style={{ transform: `scaleX(${jobState.status === "done" ? 1 : jobState.progress ?? 0})` }} />
           </div>
           <div className="mt-1 flex justify-between text-[12px] text-muted">
             <span>{jobState.status === "error" ? "" : jobState.message}</span>
@@ -293,7 +293,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
               <li key={r.id}>
                 <button onClick={() => openSaved(r)} className="w-full rounded-md border border-line px-2.5 py-1.5 text-left hover:border-cyan/40">
                   <div className="truncate text-text">{r.name}</div>
-                  <div className="font-mono text-[10px] text-muted">{r.n_obs} dates · {r.first} → {r.last} · {r.detail === "quick" ? "80 m" : `${r.size_km} km`} · {MAT_LABEL[r.maturity] ?? r.maturity}</div>
+                  <div className="font-mono text-[11px] text-muted">{r.n_obs} dates · {r.first} → {r.last} · {r.detail === "quick" ? "80 m" : `${r.size_km} km`} · {MAT_LABEL[r.maturity] ?? r.maturity}</div>
                 </button>
               </li>
             ))}

@@ -1,18 +1,19 @@
 import type { Manifest } from "@/lib/data";
 
-function Scatter({ title, tone, children, caption }: { title: string; tone: string; children: React.ReactNode; caption: string }) {
+function Scatter({ title, tone, children, caption }: { title: string; tone: "cyan" | "green" | "amber"; children: React.ReactNode; caption: string }) {
+  const color = `var(--${tone})`;
   return (
     <figure className="rounded-xl border border-line bg-panel p-4">
       <svg viewBox="0 0 220 140" className="w-full" role="img" aria-label={title}>
         <defs>
-          <marker id={`ar-${tone.slice(1)}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M0 0L10 5L0 10z" fill={tone} />
+          <marker id={`ar-${tone}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill={color} />
           </marker>
         </defs>
         {children}
       </svg>
       <figcaption className="mt-2">
-        <div className="text-sm font-semibold" style={{ color: tone }}>{title}</div>
+        <div className="text-sm font-semibold" style={{ color }}>{title}</div>
         <p className="mt-1 text-[13px] leading-relaxed text-muted">{caption}</p>
       </figcaption>
     </figure>
@@ -36,31 +37,31 @@ export function ScienceExplainer() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Scatter title="Open water → very dark" tone="#22d3ee" caption="Calm water acts like a mirror: the pulse reflects away from the satellite, so very little returns. Wind or waves can roughen water and brighten it.">
-          <rect x="0" y="105" width="220" height="35" fill="#0e3a52" />
-          <line x1="40" y1="10" x2="110" y2="105" stroke="#22d3ee" strokeWidth="2" markerEnd="url(#ar-22d3ee)" />
-          <line x1="110" y1="105" x2="180" y2="10" stroke="#22d3ee" strokeWidth="2" strokeDasharray="4 3" markerEnd="url(#ar-22d3ee)" />
-          <text x="30" y="10" fill="#8b9ab5" fontSize="9">NISAR</text>
-          <text x="140" y="30" fill="#8b9ab5" fontSize="9">reflected away</text>
+        <Scatter title="Open water → very dark" tone="cyan" caption="Calm water acts like a mirror: the pulse reflects away from the satellite, so very little returns. Wind or waves can roughen water and brighten it.">
+          <rect x="0" y="105" width="220" height="35" fill="var(--ill-water)" />
+          <line x1="40" y1="10" x2="110" y2="105" stroke="var(--cyan)" strokeWidth="2" markerEnd="url(#ar-cyan)" />
+          <line x1="110" y1="105" x2="180" y2="10" stroke="var(--cyan)" strokeWidth="2" strokeDasharray="4 3" markerEnd="url(#ar-cyan)" />
+          <text x="30" y="10" fill="var(--muted)" fontSize="9">NISAR</text>
+          <text x="140" y="30" fill="var(--muted)" fontSize="9">reflected away</text>
         </Scatter>
-        <Scatter title="Dry forest → volume scattering" tone="#34d399" caption="Leaves and branches scatter the wave in many directions. Some returns, including a relatively strong HV (cross-polarised) part.">
-          <rect x="0" y="118" width="220" height="22" fill="#3a2f1f" />
+        <Scatter title="Dry forest → volume scattering" tone="green" caption="Leaves and branches scatter the wave in many directions. Some returns, including a relatively strong HV (cross-polarised) part.">
+          <rect x="0" y="118" width="220" height="22" fill="var(--ill-soil)" />
           {[50, 95, 140, 185].map((x) => (
-            <g key={x}><rect x={x - 3} y="70" width="6" height="48" fill="#5b4630" /><circle cx={x} cy="62" r="22" fill="#1f5f3f" opacity="0.85" /></g>
+            <g key={x}><rect x={x - 3} y="70" width="6" height="48" fill="var(--ill-trunk)" /><circle cx={x} cy="62" r="22" fill="var(--ill-leaf)" opacity="0.85" /></g>
           ))}
-          <line x1="20" y1="8" x2="90" y2="58" stroke="#34d399" strokeWidth="2" markerEnd="url(#ar-34d399)" />
+          <line x1="20" y1="8" x2="90" y2="58" stroke="var(--green)" strokeWidth="2" markerEnd="url(#ar-green)" />
           {[[-30, -18], [-10, -30], [15, -25], [28, -8]].map(([dx, dy], i) => (
-            <line key={i} x1="92" y1="60" x2={92 + dx} y2={60 + dy} stroke="#34d399" strokeWidth="1.3" markerEnd="url(#ar-34d399)" />
+            <line key={i} x1="92" y1="60" x2={92 + dx} y2={60 + dy} stroke="var(--green)" strokeWidth="1.3" markerEnd="url(#ar-green)" />
           ))}
         </Scatter>
-        <Scatter title="Flooded forest → double bounce" tone="#f59e0b" caption="Water under the trees reflects the pulse into the trunks, which send it straight back — a corner reflector. HH becomes very bright while HV changes less. Buildings do the same.">
-          <rect x="0" y="112" width="220" height="28" fill="#0e3a52" />
+        <Scatter title="Flooded forest → double bounce" tone="amber" caption="Water under the trees reflects the pulse into the trunks, which send it straight back — a corner reflector. HH becomes very bright while HV changes less. Buildings do the same.">
+          <rect x="0" y="112" width="220" height="28" fill="var(--ill-water)" />
           {[60, 120, 180].map((x) => (
-            <g key={x}><rect x={x - 3} y="62" width="6" height="50" fill="#5b4630" /><circle cx={x} cy="54" r="20" fill="#1f5f3f" opacity="0.55" /></g>
+            <g key={x}><rect x={x - 3} y="62" width="6" height="50" fill="var(--ill-trunk)" /><circle cx={x} cy="54" r="20" fill="var(--ill-leaf)" opacity="0.55" /></g>
           ))}
-          <line x1="20" y1="10" x2="96" y2="111" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#ar-f59e0b)" />
-          <line x1="96" y1="111" x2="116" y2="92" stroke="#f59e0b" strokeWidth="2" />
-          <line x1="116" y1="92" x2="40" y2="-8" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 3" markerEnd="url(#ar-f59e0b)" />
+          <line x1="20" y1="10" x2="96" y2="111" stroke="var(--amber)" strokeWidth="2" markerEnd="url(#ar-amber)" />
+          <line x1="96" y1="111" x2="116" y2="92" stroke="var(--amber)" strokeWidth="2" />
+          <line x1="116" y1="92" x2="40" y2="-8" stroke="var(--amber)" strokeWidth="2" strokeDasharray="4 3" markerEnd="url(#ar-amber)" />
         </Scatter>
       </div>
 
@@ -106,7 +107,7 @@ export function Methods({ m }: { m: Manifest | null }) {
       <div className="rounded-xl border border-line bg-panel p-5">
         <div className="flex items-baseline justify-between">
           <div className="text-sm font-semibold">Screening thresholds</div>
-          {s && <span className="rounded border border-rose/40 bg-rose/10 px-1.5 py-0.5 font-mono text-[10px] text-rose">{s.status}</span>}
+          {s && <span className="rounded border border-rose/40 bg-rose/10 px-1.5 py-0.5 font-mono text-[11px] text-rose">{s.status}</span>}
         </div>
         {s && (
           <>

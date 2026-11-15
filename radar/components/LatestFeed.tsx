@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { GeoJSONSource, Map as MLMap } from "maplibre-gl";
-import { Loader2, RefreshCw, Satellite } from "lucide-react";
+import { CloudOff, Loader2, RefreshCw, Satellite } from "lucide-react";
 import { Latest, LatestGranule, Place, errorText, latest } from "@/lib/api";
 import { MAT, MAT_LABEL } from "@/components/LiveSearch";
+import { COLOR } from "@/lib/theme";
 
 const DAYS = [1, 3, 7];
 const ago = (iso: string) => {
@@ -40,9 +41,9 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
     m.on("load", () => {
       m.addSource("fp", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
       m.addLayer({ id: "fp-fill", type: "fill", source: "fp",
-        paint: { "fill-color": ["match", ["get", "maturity"], "VALIDATED", "#34d399", "PROVISIONAL", "#22d3ee", "URGENT_RESPONSE", "#f59e0b", "#8b9ab5"],
+        paint: { "fill-color": ["match", ["get", "maturity"], "VALIDATED", COLOR.green, "PROVISIONAL", COLOR.cyan, "URGENT_RESPONSE", COLOR.amber, COLOR.muted],
           "fill-opacity": ["interpolate", ["linear"], ["get", "age_h"], 0, 0.55, 168, 0.12] } });
-      m.addLayer({ id: "fp-line", type: "line", source: "fp", paint: { "line-color": "#e6edf7", "line-width": 0.4, "line-opacity": 0.5 } });
+      m.addLayer({ id: "fp-line", type: "line", source: "fp", paint: { "line-color": COLOR.text, "line-width": 0.4, "line-opacity": 0.5 } });
       m.on("click", "fp-fill", (e) => {
         const f = e.features?.[0];
         if (!f) return;
@@ -83,7 +84,7 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
       lat: g.centroid[1], lon: g.centroid[0], type: "feed" });
 
   return (
-    <div className="rounded-xl border border-line bg-panel p-4">
+    <div className="rounded-lg border border-line bg-panel p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-2">
         <Satellite size={16} className="text-cyan" />
         <span className="text-sm font-semibold">Newest NISAR acquisitions worldwide</span>
@@ -109,19 +110,24 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
         {data && <> (checked {data.checked_utc.slice(11, 16)} UTC · {data.n} products)</>}. Click a footprint or a row to explore it.
       </p>
       <div className="mt-3 grid gap-3 lg:grid-cols-5">
-        <div ref={el} className="h-80 overflow-hidden rounded-lg border border-line bg-[#03060c] lg:col-span-3" />
-        <div className="max-h-80 overflow-auto rounded-lg border border-line lg:col-span-2">
-          {err && <p className="p-3 text-[12px] text-rose">{err}</p>}
+        <div ref={el} className="h-80 overflow-hidden rounded-lg border border-line bg-void lg:col-span-3" />
+        <div className="max-h-80 overflow-auto border-t border-line lg:col-span-2 lg:border-t-0 lg:border-l">
+          {err && (
+            <div className="flex items-start gap-2.5 p-4 text-[13px] leading-relaxed text-muted">
+              <CloudOff size={16} className="mt-0.5 shrink-0 text-amber" />
+              <span><span className="font-medium text-text">The live feed is not available right now.</span> {err} The saved examples above open without it.</span>
+            </div>
+          )}
           {!data && !err && <p className="p-3 text-[12px] text-muted">Loading the newest acquisitions…</p>}
           {data && data.granules.length === 0 && <p className="p-3 text-[12px] text-muted">No GCOV products in this period yet.</p>}
           <ul>
             {data?.granules.slice(0, 80).map((g) => (
               <li key={g.scene} className="border-b border-line/60 last:border-0">
-                <button onClick={() => pick(g)} className="w-full px-3 py-1.5 text-left text-[11px] hover:bg-panel-2">
+                <button onClick={() => pick(g)} className="w-full px-3 py-1.5 text-left text-[12px] hover:bg-panel-2">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-text">{g.start_time.slice(0, 16).replace("T", " ")}</span>
                     <span className="text-muted">{ago(g.start_time)}</span>
-                    <span className={`ml-auto rounded border px-1 font-mono text-[9px] ${MAT[g.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[g.maturity] ?? g.maturity}</span>
+                    <span className={`ml-auto rounded border px-1 font-mono text-[11px] ${MAT[g.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[g.maturity] ?? g.maturity}</span>
                   </div>
                   <div className="font-mono text-muted">{g.centroid[1].toFixed(2)}°, {g.centroid[0].toFixed(2)}° · track {g.track}{g.direction?.[0]} · {g.pols.join("+")}</div>
                 </button>
@@ -130,7 +136,7 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
           </ul>
         </div>
       </div>
-      <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-muted">
+      <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-muted">
         <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 rounded-sm bg-green" />Validated</span>
         <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 rounded-sm bg-cyan" />Provisional</span>
         <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 rounded-sm bg-amber" />Urgent response</span>

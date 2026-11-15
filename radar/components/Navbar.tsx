@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { BookOpen, Radar, Sparkles } from "lucide-react";
+import { BookOpen, Menu, Sparkles, X } from "lucide-react";
+import { BrandMark } from "@/components/ui";
 
+/** Every section of the analysis view, in page order. */
 export const SECTIONS: [string, string][] = [
   ["how", "How it works"],
   ["findings", "Findings"],
@@ -12,12 +14,22 @@ export const SECTIONS: [string, string][] = [
   ["impact", "Who it helps"],
   ["deeper", "Go deeper"],
 ];
+const LABEL = new Map(SECTIONS);
+
+/** The same destinations, organised by what a visitor is trying to do (used by the menu). */
+const GROUPS: { name: string; ids: string[] }[] = [
+  { name: "Explore", ids: ["findings", "explorer", "fingerprint", "places"] },
+  { name: "Evidence", ids: ["checks"] },
+  { name: "Science", ids: ["how", "deeper"] },
+  { name: "Impact", ids: ["impact"] },
+];
 
 interface Props { view: "app" | "story"; setView: (v: "app" | "story") => void }
 
-/** Sticky top navigation: every section, the "Your Story" tab and the User Guide. */
+/** Sticky top navigation: the two views, every section, and the User Guide. */
 export default function Navbar({ view, setView }: Props) {
   const [active, setActive] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (view !== "app") return;
@@ -30,34 +42,93 @@ export default function Navbar({ view, setView }: Props) {
     return () => io.disconnect();
   }, [view]);
 
+  useEffect(() => {
+    if (!open) return;
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [open]);
+
   const go = (id: string) => {
+    setOpen(false);
     if (view !== "app") { setView("app"); setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 60); return; }
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+  const show = (v: "app" | "story") => { setOpen(false); setView(v); window.scrollTo({ top: 0 }); };
+  const here = view === "app" ? active : "";
 
   return (
-    <nav aria-label="Sections" className="sticky top-0 z-[60] -mx-4 border-b border-line bg-bg/85 px-4 backdrop-blur sm:-mx-6 sm:px-6">
-      <div className="no-scrollbar flex h-12 items-center gap-1 overflow-x-auto whitespace-nowrap text-[13px]">
-        <button onClick={() => { setView("app"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-          className="mr-2 flex shrink-0 items-center gap-1.5 font-mono text-[12px] font-semibold tracking-widest text-cyan">
-          <Radar size={15} />DELTA PULSE
+    <nav aria-label="Main" className="sticky top-0 z-[60] border-b border-line bg-bg/90 backdrop-blur-md">
+      <div className="mx-auto flex h-[52px] max-w-[1400px] items-center gap-2 px-4 sm:gap-3 sm:px-6">
+        <button onClick={() => { setOpen(false); setView("app"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          className="flex shrink-0 items-center gap-2 font-display text-[14px] font-semibold tracking-[0.04em] text-text sm:text-[15px]">
+          <span className="text-cyan"><BrandMark /></span>DELTA PULSE
         </button>
-        {SECTIONS.map(([id, label]) => (
-          <button key={id} onClick={() => go(id)} aria-current={view === "app" && active === id ? "true" : undefined}
-            className={`shrink-0 rounded-md px-2.5 py-1.5 transition-colors ${view === "app" && active === id ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>
-            {label}
+
+        <div role="group" aria-label="View" className="flex shrink-0 rounded-md border border-line p-0.5 text-[13px] sm:ml-1">
+          <button onClick={() => show("app")} aria-pressed={view === "app"}
+            className={`rounded-[3px] px-2 py-1 sm:px-2.5 ${view === "app" ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>
+            Analysis
           </button>
-        ))}
-        <span className="mx-1 h-5 w-px shrink-0 bg-line" />
-        <button onClick={() => { setView(view === "story" ? "app" : "story"); window.scrollTo({ top: 0 }); }}
-          aria-pressed={view === "story"}
-          className={`flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition-colors ${view === "story" ? "bg-amber text-bg" : "border border-amber/50 text-amber hover:bg-amber/10"}`}>
-          <Sparkles size={14} />Your Story
-        </button>
-        <a href="/guide" className="ml-auto flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-muted hover:text-text">
-          <BookOpen size={14} />User guide
-        </a>
+          <button onClick={() => show("story")} aria-pressed={view === "story"}
+            className={`flex items-center gap-1.5 rounded-[3px] px-2 py-1 sm:px-2.5 ${view === "story" ? "bg-amber/15 text-amber" : "text-muted hover:text-text"}`}>
+            <Sparkles size={13} className="hidden min-[400px]:block" />Your Story
+          </button>
+        </div>
+
+        {/* wide screens: every section, in page order */}
+        <div className="ml-2 hidden h-full min-w-0 items-stretch xl:flex">
+          {SECTIONS.map(([id, label]) => (
+            <button key={id} onClick={() => go(id)} aria-current={here === id ? "true" : undefined}
+              className={`relative px-2.5 text-[13px] whitespace-nowrap ${here === id ? "text-text" : "text-muted hover:text-text"}`}>
+              {label}
+              <span aria-hidden className={`absolute inset-x-2.5 -bottom-px h-0.5 bg-cyan transition-opacity duration-200 ${here === id ? "opacity-100" : "opacity-0"}`} />
+            </button>
+          ))}
+        </div>
+
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          {here && <span className="mr-1 hidden text-[13px] text-muted sm:inline xl:hidden">{LABEL.get(here)}</span>}
+          <a href="/guide" className="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] text-muted hover:text-text sm:flex">
+            <BookOpen size={14} />User guide
+          </a>
+          <button onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="site-menu" aria-label={open ? "Close menu" : "Open menu"}
+            className="flex items-center gap-1.5 rounded-md border border-line px-2 py-1.5 text-[13px] text-text hover:border-line-strong sm:px-2.5 xl:hidden">
+            {open ? <X size={16} /> : <Menu size={16} />}<span className="hidden sm:inline">Menu</span>
+          </button>
+        </div>
       </div>
+
+      {open && (
+        <div id="site-menu" className="panel-in border-t border-line bg-bg xl:hidden">
+          <div className="mx-auto grid max-h-[calc(100svh-52px)] max-w-[1400px] gap-x-8 gap-y-5 overflow-y-auto px-4 py-5 sm:grid-cols-3 sm:px-6 lg:grid-cols-5">
+            <div>
+              <div className="text-[12px] text-muted">Story</div>
+              <button onClick={() => show("story")} className={`mt-1 flex w-full items-center gap-1.5 py-1.5 text-left text-[15px] ${view === "story" ? "text-amber" : "text-text hover:text-amber"}`}>
+                <Sparkles size={14} />Your Story
+              </button>
+            </div>
+            {GROUPS.map((g) => (
+              <div key={g.name}>
+                <div className="text-[12px] text-muted">{g.name}</div>
+                <ul className="mt-1">
+                  {g.ids.map((id) => (
+                    <li key={id}>
+                      <button onClick={() => go(id)} aria-current={here === id ? "true" : undefined}
+                        className={`w-full py-1.5 text-left text-[15px] ${here === id ? "text-cyan" : "text-text hover:text-cyan"}`}>
+                        {LABEL.get(id)}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <a href="/guide" className="flex items-center gap-1.5 border-t border-line pt-4 text-[15px] text-text hover:text-cyan sm:col-span-3 lg:col-span-5">
+              <BookOpen size={15} />User guide
+            </a>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
