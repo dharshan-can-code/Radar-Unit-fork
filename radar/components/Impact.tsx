@@ -23,7 +23,7 @@ export default function Impact() {
       <ul className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
         {WHO.map(([icon, t, d]) => (
           <li key={t} className="border-t border-line-strong pt-5">
-            <div className="text-cyan">{icon}</div>
+            <div className="text-accent">{icon}</div>
             <h3 className="mt-3 text-[17px] font-medium">{t}</h3>
             <p className="mt-1.5 text-[14px] leading-relaxed text-text/75">{d}</p>
           </li>
@@ -41,7 +41,7 @@ export default function Impact() {
           </p>
         </div>
         <div className="rounded-xl border border-line bg-panel p-5">
-          <div className="flex items-center gap-2 text-sm font-semibold"><HeartHandshake size={16} className="text-cyan" />Open, honest, reusable</div>
+          <div className="flex items-center gap-2 text-sm font-semibold"><HeartHandshake size={16} className="text-accent" />Open, honest, reusable</div>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-[14px] text-text/80">
             <li>Open source, with the full processing chain documented and tested (32 automated tests).</li>
             <li>Checked against independent data: Landsat water maps, river-flow models and weather records.</li>
@@ -94,7 +94,7 @@ export function Sensitivity({ m, grid }: { m: Manifest | null; grid: GridIndex |
             {res.ths.map((t, i) => (
               <tr key={t} className={`border-t border-line/60 ${i === 1 ? "text-text" : "text-muted"}`}>
                 <td className="p-1">{t} dB{i === 1 ? " (used)" : ""}</td>
-                {res.area[i].map((a, k) => <td key={k} className={`p-1 ${k === res.peaks[i] ? "text-cyan" : ""}`}>{Math.round(a).toLocaleString()}</td>)}
+                {res.area[i].map((a, k) => <td key={k} className={`p-1 ${k === res.peaks[i] ? "text-accent" : ""}`}>{Math.round(a).toLocaleString()}</td>)}
               </tr>
             ))}
           </tbody>

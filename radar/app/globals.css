@@ -6,26 +6,38 @@
    MapLibre need as literals; keep the two in step.
    ------------------------------------------------------------------ */
 :root {
-  /* ground and surfaces */
-  --bg: #0b1118;
-  --bg-2: #101922;
-  --panel: #14212c;
-  --panel-2: #1a2935;
-  --line: #263641;
-  --line-strong: #3a5060;
-  --void: #05090d; /* behind radar imagery */
+  /* ---------- LIGHT (default): pearl + lavender, deep-indigo text, violet accent ---------- */
+  --bg: #f8f9fc;          /* pearl white */
+  --bg-2: #eee9fa;        /* light lavender */
+  --panel: #ffffff;
+  --panel-2: #f4f1fb;
+  --line: #dfd9ef;
+  --line-strong: #c4b9e2;
+  --void: #141a33;        /* frame behind radar images and maps: dark in light mode */
 
-  /* text */
-  --text: #e9f0f3;
-  --muted: #91a4b1;
+  --text: #29345b;        /* deep indigo */
+  --body: #303544;        /* charcoal, long-form copy */
+  --muted: #56688c;       /* slate blue, darkened to 5:1 for AA */
 
-  /* signal colours, used semantically */
-  --cyan: #35c5c1;  /* open water, observed, primary action */
-  --teal: #287e80;
-  --amber: #e7b45d; /* water under vegetation, interpreted */
-  --green: #6ac69d; /* validated, robust */
-  --rose: #d77b72;  /* unconfirmed, warnings, data gaps */
-  --blue: #6fa3dc;  /* calculated, weaker echo, rainfall */
+  --accent: #7053a6;        /* royal violet: buttons, active states, links, focus */
+  --accent-strong: #5b4190; /* hover / pressed */
+  --accent-soft: #9b83c9;   /* soft purple: decoration, highlights */
+  --on-accent: #ffffff;
+
+  /* signal colours, used semantically (tuned for 4.5:1 on white) */
+  --cyan: #0b7c88;  /* open water, observed */
+  --teal: #11656e;
+  --amber: #9a5b00; /* water under vegetation, interpreted */
+  --green: #1d7a50; /* validated, robust */
+  --rose: #b0463b;  /* unconfirmed, warnings, data gaps */
+  --blue: #2f62a6;  /* calculated, weaker echo, rainfall */
+
+  /* map chrome: maps are DARK in light mode */
+  --map-ui-bg: #1b2140;
+  --map-ui-line: #343c66;
+  --map-ui-text: #dfe3f2;
+  --map-icon-filter: invert(0.92);
+  --shadow-panel: 0 1px 2px rgb(41 52 91 / 0.05), 0 10px 30px -18px rgb(41 52 91 / 0.22);
 
   /* colours baked into the pipeline's PNG layers; legends must match the pixels */
   --map-water: #22d3ee;
@@ -33,17 +45,60 @@
   --map-darker: #288cff;
 
   /* physics illustrations (Science, Radar Lab) */
+  --ill-water: #2c6e8f;
+  --ill-soil: #8a6a49;
+  --ill-trunk: #6b5238;
+  --ill-leaf: #3f8a5f;
+  --ill-ripple: #8fd0ea;
+  --ill-sky: #eee9fa;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
+
+  /* width of the desktop sidebar; Sidebar.tsx narrows it when collapsed */
+  --sidebar-w: 16rem;
+}
+
+/* ---------- DARK: deep indigo night, lavender text, soft-purple accent ---------- */
+:root[data-theme="dark"] {
+  --bg: #10142a;
+  --bg-2: #161b36;
+  --panel: #1a2040;
+  --panel-2: #222949;
+  --line: #2e3560;
+  --line-strong: #464f84;
+  --void: #e9e6f3;        /* maps are LIGHT in dark mode */
+
+  --text: #eee9fa;
+  --body: #d9dcea;
+  --muted: #a9b4d0;
+
+  --accent: #b39ddb;
+  --accent-strong: #cbbbe8;
+  --accent-soft: #9b83c9;
+  --on-accent: #161b36;
+
+  --cyan: #45cfcb;
+  --teal: #2a8f91;
+  --amber: #e9b860;
+  --green: #6fcda2;
+  --rose: #ec8f84;
+  --blue: #86b6ea;
+
+  --map-ui-bg: #ffffff;
+  --map-ui-line: #d6d0ea;
+  --map-ui-text: #29345b;
+  --map-icon-filter: none;
+  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -20px rgb(0 0 0 / 0.7);
+
   --ill-water: #123f52;
   --ill-soil: #3a2f1f;
   --ill-trunk: #5b4630;
   --ill-leaf: #1f5f3f;
   --ill-ripple: #5fb4d6;
+  --ill-sky: #161b36;
 
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: dark;
-
-  /* width of the desktop sidebar; Sidebar.tsx narrows it when collapsed */
-  --sidebar-w: 16rem;
 }
 
 /* Type stacks. The per-subset variables come from app/fonts.ts and are set on <body>.
@@ -67,6 +122,11 @@ body {
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-cyan: var(--cyan);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-body: var(--body);
   --color-teal: var(--teal);
   --color-blue: var(--blue);
   --color-amber: var(--amber);
@@ -80,13 +140,13 @@ body {
   --font-display: var(--stack-display);
 }
 
-/* One radius scale for the whole product: crisp instrument corners, not pills. */
+/* One radius scale for the whole product: soft, consistent corners. */
 @theme {
-  --radius-sm: 0.125rem;
-  --radius-md: 0.1875rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.3125rem;
-  --radius-2xl: 0.375rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.4375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
 }
 
 html { scroll-behavior: smooth; overflow-x: clip; }
@@ -111,13 +171,13 @@ p { text-wrap: pretty; }
 table { font-variant-numeric: tabular-nums; }
 
 /* ---- Browser surfaces ---- */
-::selection { background: color-mix(in srgb, var(--cyan) 32%, transparent); color: var(--text); }
-:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 3px; }
+::selection { background: color-mix(in srgb, var(--accent-soft) 35%, transparent); color: var(--text); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 * { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
 *::-webkit-scrollbar { height: 8px; width: 8px; }
 *::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; }
 a { text-underline-offset: 3px; }
-input, select, textarea { caret-color: var(--cyan); }
+input, select, textarea { caret-color: var(--accent); }
 ::placeholder { color: color-mix(in srgb, var(--muted) 82%, transparent); opacity: 1; }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -133,21 +193,23 @@ select { cursor: pointer; }
 
 input[type="range"] {
   -webkit-appearance: none; appearance: none;
-  height: 16px; background: transparent; accent-color: var(--cyan); cursor: pointer;
+  height: 16px; background: transparent; accent-color: var(--accent); cursor: pointer;
 }
 input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--line-strong); border-radius: 2px; }
 input[type="range"]::-moz-range-track { height: 2px; background: var(--line-strong); border-radius: 2px; }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none; margin-top: -6px;
-  height: 14px; width: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--cyan);
+  height: 14px; width: 14px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent);
 }
 input[type="range"]::-moz-range-thumb {
-  height: 10px; width: 10px; border-radius: 50%; background: var(--bg); border: 2px solid var(--cyan);
+  height: 10px; width: 10px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent);
 }
 
 /* ---- Surfaces ---- */
-/* Every "border-line bg-panel" block is a flat instrument panel: one hairline, no gloss. */
-.rounded-xl.border-line.bg-panel, .rounded-2xl.border-line.bg-panel { background-color: var(--panel); }
+/* Every "border-line bg-panel" block is a card: one hairline and a soft lift. */
+.rounded-xl.border-line.bg-panel, .rounded-2xl.border-line.bg-panel, .rounded-lg.border-line.bg-panel {
+  background-color: var(--panel); box-shadow: var(--shadow-panel);
+}
 
 /* Hairline rule with tick marks, used under section headings. */
 .rule-ticks {
@@ -157,22 +219,34 @@ input[type="range"]::-moz-range-thumb {
     repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 48px) top / 100% 5px no-repeat;
 }
 
-/* Atmosphere behind the first screen only: a low-chroma lift of the ground, no coloured glow. */
-.atmosphere { background: linear-gradient(180deg, var(--bg-2), var(--bg) 88%); }
+/* Atmosphere behind the first screen: a faint nebula of lavender and violet, nothing loud. */
+.atmosphere {
+  background:
+    radial-gradient(60% 70% at 85% 10%, color-mix(in srgb, var(--accent-soft) 22%, transparent), transparent 70%),
+    radial-gradient(45% 55% at 5% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--bg-2), var(--bg) 88%);
+}
 
 /* ---- MapLibre ---- */
 .maplibregl-map { font-family: var(--stack-sans); }
-.maplibregl-ctrl-attrib { background: color-mix(in srgb, var(--bg) 78%, transparent) !important; color: var(--muted); font-size: 11px; }
-.maplibregl-ctrl-attrib, .maplibregl-ctrl-attrib-inner { color: var(--muted) !important; }
-.maplibregl-ctrl-attrib a { color: var(--muted) !important; }
-.maplibregl-ctrl-attrib-button { filter: invert(0.9); }
-.maplibregl-ctrl-group { background: var(--panel) !important; border: 1px solid var(--line); border-radius: 4px !important; box-shadow: none !important; }
-.maplibregl-ctrl-group button + button { border-top: 1px solid var(--line) !important; }
-.maplibregl-ctrl-icon { filter: invert(0.88); }
+.maplibregl-ctrl-attrib { background: color-mix(in srgb, var(--map-ui-bg) 80%, transparent) !important; font-size: 11px; }
+.maplibregl-ctrl-attrib, .maplibregl-ctrl-attrib-inner, .maplibregl-ctrl-attrib a { color: var(--map-ui-text) !important; }
+.maplibregl-ctrl-attrib-button { filter: var(--map-icon-filter); }
+.maplibregl-ctrl-group { background: var(--map-ui-bg) !important; border: 1px solid var(--map-ui-line); border-radius: 8px !important; box-shadow: none !important; }
+.maplibregl-ctrl-group button + button { border-top: 1px solid var(--map-ui-line) !important; }
+.maplibregl-ctrl-icon { filter: var(--map-icon-filter); }
 .maplibregl-ctrl-scale {
-  background: color-mix(in srgb, var(--bg) 78%, transparent) !important; color: var(--muted) !important;
-  border-color: var(--muted) !important; font-family: var(--stack-mono); font-size: 11px !important;
+  background: color-mix(in srgb, var(--map-ui-bg) 80%, transparent) !important; color: var(--map-ui-text) !important;
+  border-color: var(--map-ui-text) !important; font-family: var(--stack-mono); font-size: 11px !important;
 }
+/* Panels that sit ON a map use the map's colours, not the page's. */
+.on-map { background: color-mix(in srgb, var(--map-ui-bg) 90%, transparent); color: var(--map-ui-text); border-color: var(--map-ui-line); }
+.prose-body { color: var(--body); }
+
+/* Decorative orbits (purely visual; hidden from assistive tech). */
+@keyframes orbitSpin { to { transform: rotate(360deg); } }
+.orbit-spin { animation: orbitSpin 140s linear infinite; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .orbit-spin { animation: none; } }
 
 /* ---- Motion ----
    Content is visible by default; reveals only run once script marks the root as ready,

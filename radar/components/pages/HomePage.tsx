@@ -23,7 +23,7 @@ export default function HomePage() {
         lead={source === "case"
           ? "Tonle Sap is Southeast Asia's largest lake. Every monsoon it floods the forest around it, and that flood feeds one of the world's biggest inland fisheries. Here is what 10 radar passes from June to October 2026 show."
           : "The headline results for this place, computed from the same real NISAR passes shown on the Explore map."}
-        aside={source === "live" ? <button onClick={backToCase} className="mt-3 flex items-center gap-1.5 text-[13px] text-cyan hover:text-text"><ArrowLeft size={14} />Back to the Tonle Sap case study</button> : null}>
+        aside={source === "live" ? <button onClick={backToCase} className="mt-3 flex items-center gap-1.5 text-[13px] text-accent hover:text-accent-strong"><ArrowLeft size={14} />Back to the Tonle Sap case study</button> : null}>
         <Findings m={m ?? null} grid={grid} rain={rain} validation={validation} linkTo={(id) => href("/explore", id)} />
       </Section>
     </>

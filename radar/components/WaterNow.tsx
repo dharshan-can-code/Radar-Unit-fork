@@ -64,7 +64,7 @@ function CameraVsRadar({ m, rain }: { m: Manifest; rain: Rainfall | null }) {
   return (
     <div className="rounded-xl border border-line bg-panel p-5">
       <div className="flex flex-wrap items-center gap-2">
-        <Satellite size={16} className="text-cyan" />
+        <Satellite size={16} className="text-accent" />
         <span className="text-sm font-semibold">Same day: what a camera saw vs what radar saw</span>
         <select value={layer} onChange={(e) => setLayer(e.target.value)} aria-label="Optical satellite"
           className="ml-auto rounded-md border border-line bg-bg px-2 py-1 text-[12px]">
@@ -76,7 +76,7 @@ function CameraVsRadar({ m, rain }: { m: Manifest; rain: Rainfall | null }) {
           const c = cloudAtPass(rain, o.start_time);
           return (
             <button key={o.date} onClick={() => setDate(o.date)}
-              className={`rounded border px-2 py-0.5 font-mono text-[11px] ${o.date === date ? "border-cyan bg-cyan/15 text-cyan" : "border-line text-muted hover:text-text"}`}>
+              className={`rounded border px-2 py-0.5 font-mono text-[11px] ${o.date === date ? "border-accent bg-accent/15 text-accent" : "border-line text-muted hover:text-text"}`}>
               {o.date.slice(5)}{c != null && <span className="ml-1.5 inline-flex items-center gap-0.5 opacity-70"><Cloud size={10} />{Math.round(c)}%</span>}
             </button>
           );
@@ -93,10 +93,10 @@ function CameraVsRadar({ m, rain }: { m: Manifest; rain: Rainfall | null }) {
           <img src={imgUrl(m, `${date}_HH`)} alt={`NISAR radar, ${date}`} className="absolute inset-0 h-full w-full object-fill" />
         </div>
         <div className="absolute top-2 left-2 max-w-[58%] truncate rounded bg-bg/80 px-2 py-0.5 font-mono text-[11px]">NASA {shown} · camera{shown !== layer && " (fallback)"}</div>
-        <div className="absolute top-2 right-2 rounded bg-bg/80 px-2 py-0.5 font-mono text-[11px] text-cyan">NISAR · radar</div>
-        <div className="absolute top-0 bottom-0 w-px bg-cyan" style={{ left: `${split}%` }}>
+        <div className="absolute top-2 right-2 rounded bg-bg/80 px-2 py-0.5 font-mono text-[11px] text-accent">NISAR · radar</div>
+        <div className="absolute top-0 bottom-0 w-px bg-accent" style={{ left: `${split}%` }}>
           <button onPointerDown={drag} aria-label="Drag to compare camera and radar"
-            className="absolute top-1/2 -left-[18px] flex h-9 w-9 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full border border-cyan bg-bg text-cyan"><ChevronsLeftRight size={16} /></button>
+            className="absolute top-1/2 -left-[18px] flex h-9 w-9 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full border border-accent bg-bg text-accent"><ChevronsLeftRight size={16} /></button>
         </div>
       </div>
       <p className="mt-2 text-[13px] text-text/80">
@@ -157,7 +157,7 @@ export default function WaterNow({ m, rain }: { m: Manifest | null; rain: Rainfa
 
         <div className="rounded-xl border border-line bg-panel p-5 md:col-span-3">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <div className="flex items-center gap-2 text-sm font-semibold"><Waves size={16} className="text-cyan" />River flow: past 6 months and 30-day forecast</div>
+            <div className="flex items-center gap-2 text-sm font-semibold"><Waves size={16} className="text-accent" />River flow: past 6 months and 30-day forecast</div>
             <span className="flex items-center gap-2 text-[12px] text-muted"><Tag kind="CALCULATED" />{riv?.dataset ?? "GloFAS"}</span>
           </div>
           {riv && riv.has_river ? (
@@ -184,9 +184,9 @@ export default function WaterNow({ m, rain }: { m: Manifest | null; rain: Rainfa
                 </ResponsiveContainer>
               </div>
               <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[12px] text-muted">
-                <span className="flex items-center gap-1.5"><i className="inline-block h-0.5 w-4 bg-cyan" />modelled flow to today</span>
+                <span className="flex items-center gap-1.5"><i className="inline-block h-0.5 w-4 bg-accent" />modelled flow to today</span>
                 <span className="flex items-center gap-1.5"><i className="inline-block h-0 w-4 border-t-2 border-dashed border-amber" />30-day forecast</span>
-                <span className="flex items-center gap-1.5"><i className="inline-block h-3 w-px bg-cyan/50" />NISAR pass</span>
+                <span className="flex items-center gap-1.5"><i className="inline-block h-3 w-px bg-accent/50" />NISAR pass</span>
               </div>
               <p className="mt-2 max-w-[80ch] text-[12px] text-muted">
                 Faint lines mark NISAR passes. Peak in this period: <b className="text-text">{Math.round((peak.past ?? peak.fc ?? 0)).toLocaleString()} m³/s</b> ({peak.date}).

@@ -26,7 +26,7 @@ export default function ExamplePicker({ onResult, accent = "cyan", label = "Try 
     } finally { setBusy(null); }
   }
 
-  const ring = accent === "amber" ? "hover:border-amber/60 hover:text-amber" : "hover:border-cyan/60 hover:text-cyan";
+  const ring = accent === "amber" ? "hover:border-amber/60 hover:text-amber" : "hover:border-accent/60 hover:text-accent";
   return (
     <div className="mt-3">
       <div className="flex items-center gap-1.5 text-[12px] text-muted"><Globe2 size={13} />{label}: real NISAR analyses, saved so they open instantly</div>

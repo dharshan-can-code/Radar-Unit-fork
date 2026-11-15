@@ -20,7 +20,7 @@ const TAGS = [
 
 const BADGES = [
   ["VALIDATED", "border-green/50 text-green bg-green/10", "NASA's fully checked science data. The most trustworthy."],
-  ["PROVISIONAL", "border-cyan/50 text-cyan bg-cyan/10", "Calibrated and mostly checked. Good for comparisons."],
+  ["PROVISIONAL", "border-accent/50 text-accent bg-accent/10", "Calibrated and mostly checked. Good for comparisons."],
   ["URGENT RESPONSE", "border-amber/50 text-amber bg-amber/10", "The very newest images, released quickly for events. Not fully checked yet."],
 ] as const;
 
@@ -38,8 +38,8 @@ function Step({ n, icon, title, children }: { n: number; icon: React.ReactNode; 
   return (
     <div className="flex gap-4 rounded-xl border border-line bg-panel p-5">
       <div className="flex flex-col items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan font-mono text-sm font-medium text-cyan">{n}</span>
-        <span className="text-cyan">{icon}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-accent font-mono text-sm font-medium text-accent">{n}</span>
+        <span className="text-accent">{icon}</span>
       </div>
       <div className="min-w-0">
         <h3 className="text-base font-semibold text-text">{title}</h3>
@@ -66,8 +66,8 @@ export default function Guide() {
   return (
     <main className="mx-auto max-w-4xl px-4 pb-24 sm:px-6">
       <div className="flex items-center justify-between pt-6">
-        <Link href="/" className="flex items-center gap-1.5 text-sm text-cyan hover:text-text"><ArrowLeft size={15} />Back to the app</Link>
-        <span className="flex items-center gap-2 font-display text-[15px] font-semibold tracking-[0.04em] text-text"><span className="text-cyan"><BrandMark /></span>DELTA PULSE</span>
+        <Link href="/" className="flex items-center gap-1.5 text-sm text-accent hover:text-accent-strong"><ArrowLeft size={15} />Back to the app</Link>
+        <span className="flex items-center gap-2 font-display text-[15px] font-semibold tracking-[0.04em] text-text"><span className="text-accent"><BrandMark /></span>DELTA PULSE</span>
       </div>
 
       <header className="pt-8">
@@ -175,7 +175,7 @@ export default function Guide() {
               <li><Btn>Detailed 40 m</Btn> about 15 seconds for two dates, sharper.</li>
               <li><Btn>10 km</Btn> <Btn>20 km</Btn> <Btn>40 km</Btn> how big an area around your point.</li>
             </ul>
-            <p>Press <Btn>▶ Analyse</Btn>. A bar shows progress, and then the whole page switches to your place. A <span className="text-cyan">Live:</span> bar above the map tells you where you are. <Btn><ArrowLeft size={11} />Tonle Sap case study</Btn> takes you back.</p>
+            <p>Press <Btn>▶ Analyse</Btn>. A bar shows progress, and then the whole page switches to your place. A <span className="text-accent">Live:</span> bar above the map tells you where you are. <Btn><ArrowLeft size={11} />Tonle Sap case study</Btn> takes you back.</p>
           </Step>
         </div>
         <h3 className="mt-6 font-semibold">What the coloured badges mean</h3>
@@ -231,7 +231,7 @@ export default function Guide() {
             [<CloudRain key="i" size={15} />, "Rainfall", "Shown automatically under the time chart for every place."],
           ].map(([icon, t, d]) => (
             <div key={t as string} className="flex gap-3 rounded-lg border border-line bg-panel p-4">
-              <span className="text-cyan">{icon}</span>
+              <span className="text-accent">{icon}</span>
               <div><div className="text-sm font-semibold">{t}</div><p className="text-[13px] text-text/75">{d}</p></div>
             </div>
           ))}
@@ -264,7 +264,7 @@ export default function Guide() {
       <footer className="mt-14 border-t border-line pt-6 text-[13px] text-muted">
         <p>Data: NASA-ISRO NISAR radar from NASA&apos;s Alaska Satellite Facility archive; rainfall from ERA5 via Open-Meteo; place search by OpenStreetMap. Everything shown is real data. Nothing is simulated.</p>
         <p className="mt-2">DELTA PULSE is a student project by RADAR UNIT for the NASA Space Apps Challenge 2026, and is not an official NASA product.</p>
-        <Link href="/" className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-cyan px-4 py-2 text-sm font-medium text-bg"><ArrowLeft size={14} />Back to the app</Link>
+        <Link href="/" className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent"><ArrowLeft size={14} />Back to the app</Link>
       </footer>
     </main>
   );

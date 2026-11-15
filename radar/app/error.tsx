@@ -13,9 +13,9 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         case study, which works without the live server.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <button onClick={reset} className="rounded-md bg-cyan px-5 py-3 text-[15px] font-semibold text-bg hover:bg-cyan/90">Try again</button>
+        <button onClick={reset} className="rounded-md bg-accent px-5 py-3 text-[15px] font-semibold text-on-accent hover:bg-accent-strong">Try again</button>
         {/* a full reload on purpose: it clears whatever state caused the failure */}
-        <button onClick={() => window.location.assign("/")} className="rounded-md border border-line-strong px-5 py-3 text-[15px] font-medium text-text hover:border-cyan hover:text-cyan">Open the case study</button>
+        <button onClick={() => window.location.assign("/")} className="rounded-md border border-line-strong px-5 py-3 text-[15px] font-medium text-text hover:border-accent hover:text-accent">Open the case study</button>
       </div>
       <p className="mt-8 font-mono text-[12px] break-words text-muted">{error.message}</p>
     </main>

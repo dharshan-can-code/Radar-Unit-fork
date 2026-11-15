@@ -85,7 +85,7 @@ export default function RadarLab({ screening }: { screening: Screening | null })
       </div>
 
       <div className="rounded-xl border border-line bg-panel p-5 lg:col-span-2">
-        <div className="flex items-center gap-2 text-sm font-semibold"><FlaskConical size={16} className="text-cyan" />Try it</div>
+        <div className="flex items-center gap-2 text-sm font-semibold"><FlaskConical size={16} className="text-accent" />Try it</div>
         {[
           ["Standing water", water, setWater, ["dry", "deep"]],
           ["Trees / crops", trees, setTrees, ["none", "dense"]],
@@ -98,7 +98,7 @@ export default function RadarLab({ screening }: { screening: Screening | null })
         ))}
         <div className="mt-3 flex overflow-hidden rounded-md border border-line text-[12px]">
           {(["L", "C"] as const).map((b) => (
-            <button key={b} onClick={() => setBand(b)} className={`flex-1 px-3 py-1.5 ${band === b ? "bg-cyan/15 text-cyan" : "text-muted"}`}>
+            <button key={b} onClick={() => setBand(b)} className={`flex-1 px-3 py-1.5 ${band === b ? "bg-accent/15 text-accent" : "text-muted"}`}>
               {b === "L" ? "L-band (NISAR)" : "C-band (shorter)"}
             </button>
           ))}
@@ -107,7 +107,7 @@ export default function RadarLab({ screening }: { screening: Screening | null })
           <div className="rounded-lg bg-panel-2 p-2"><div className="text-[11px] text-muted">HH</div><div className="text-xl text-cyan">{r.hh.toFixed(1)} dB</div></div>
           <div className="rounded-lg bg-panel-2 p-2"><div className="text-[11px] text-muted">HV</div><div className="text-xl text-amber">{r.hv.toFixed(1)} dB</div></div>
         </div>
-        <p className="mt-3 text-[13px]">DELTA PULSE would label this: <b className={label.includes("amber") ? "text-amber" : label.includes("cyan") ? "text-cyan" : "text-text"}>{label}</b></p>
+        <p className="mt-3 text-[13px]">DELTA PULSE would label this: <b className={label.includes("amber") ? "text-amber" : label.includes("cyan") ? "text-accent" : "text-text"}>{label}</b></p>
         <p className="mt-2 text-[12px] text-muted">
           Try: water + dense trees with L-band, then switch to C-band. The double bounce fades, because short waves are stopped by the leaves.
           That is why NISAR&apos;s L-band can find flooding hidden under forest.

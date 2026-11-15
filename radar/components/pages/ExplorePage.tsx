@@ -81,11 +81,11 @@ function SourceBar({ m, source, live, onBack, pairId, channel }: { m: Manifest; 
   const copyLink = () => {
     navigator.clipboard?.writeText(window.location.href).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); });
   };
-  const act = "flex items-center gap-1.5 text-cyan hover:text-text";
+  const act = "flex items-center gap-1.5 text-accent hover:text-accent-strong";
   return (
-    <div className={`flex flex-wrap items-center gap-x-5 gap-y-1.5 border-b border-line px-3 py-2.5 text-[12px] sm:px-4 ${source === "live" ? "bg-cyan/5" : ""}`}>
+    <div className={`flex flex-wrap items-center gap-x-5 gap-y-1.5 border-b border-line px-3 py-2.5 text-[12px] sm:px-4 ${source === "live" ? "bg-accent/5" : ""}`}>
       <span className="flex items-center gap-1.5 text-[13px] font-semibold text-text">
-        {source === "live" ? <Globe2 size={14} className="text-cyan" /> : <Radar size={14} className="text-cyan" />}
+        {source === "live" ? <Globe2 size={14} className="text-accent" /> : <Radar size={14} className="text-accent" />}
         {source === "live" ? `${m.area === "examples" ? "Example" : "Live"}: ${m.name}` : `Case study: ${m.name}`}
       </span>
       <span className="font-mono text-[12px] text-muted">
@@ -128,7 +128,7 @@ function PairPicker({ m, pairIdx, setPairIdx }: { m: Manifest; pairIdx: number; 
         {m.pairs.map((p, i) => (
           <button key={p.id} onClick={() => setPairIdx(i)} aria-pressed={i === pairIdx}
             title={`${p.before} → ${p.after} · ${p.delta_days} days apart`}
-            className={`shrink-0 rounded-md border px-2 py-1 font-mono text-[11px] ${i === pairIdx ? "border-cyan bg-cyan/15 text-cyan" : "border-line bg-bg-2 text-muted hover:border-line-strong hover:text-text"}`}>
+            className={`shrink-0 rounded-md border px-2 py-1 font-mono text-[11px] ${i === pairIdx ? "border-accent bg-accent/15 text-accent" : "border-line bg-bg-2 text-muted hover:border-line-strong hover:text-text"}`}>
             {p.before.slice(5)} → {p.after.slice(5)}{p.delta_days !== 12 && <span className="ml-1 text-rose">{p.delta_days}d</span>}
           </button>
         ))}
@@ -142,7 +142,7 @@ function NoData() {
   return (
     <div className="rounded-lg border border-line bg-panel p-8 text-sm text-muted">
       <div className="font-medium text-text">No processed radar data yet.</div>
-      <p className="mt-2">Run <code className="text-cyan">scripts/refresh.py</code> with an Earthdata token to retrieve and process NISAR GCOV acquisitions. See README.md.</p>
+      <p className="mt-2">Run <code className="text-accent">scripts/refresh.py</code> with an Earthdata token to retrieve and process NISAR GCOV acquisitions. See README.md.</p>
     </div>
   );
 }

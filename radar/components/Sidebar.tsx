@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, ChevronsLeft, ChevronsRight, Sparkles } from "lucide-react";
 import { BrandMark } from "@/components/ui";
+import ThemeToggle from "@/components/ThemeToggle";
 import { PAGES, STORY, type NavItem, type NavPage } from "@/components/site/nav";
 import { useSite } from "@/components/site/SiteState";
 
@@ -70,7 +71,7 @@ export default function Sidebar() {
       <div className={`flex h-[52px] shrink-0 items-center border-b border-line ${collapsed ? "justify-center" : "justify-between pr-2 pl-4"}`}>
         <Link href={href("/")} className="flex items-center gap-2 font-display text-[15px] font-semibold tracking-[0.04em] text-text"
           title="DELTA PULSE: home" aria-label="DELTA PULSE: home">
-          <span className="text-cyan"><BrandMark /></span>{!collapsed && "DELTA PULSE"}
+          <span className="text-accent"><BrandMark /></span>{!collapsed && "DELTA PULSE"}
         </Link>
         {!collapsed && (
           <button onClick={() => setCollapsed(true)} aria-label="Collapse sidebar" title="Collapse sidebar"
@@ -89,7 +90,7 @@ export default function Sidebar() {
                 : (
                   <Link href={href(p.href)} aria-current={here ? "page" : undefined}
                     className={`flex items-center gap-2 px-3 pb-1.5 text-[12px] ${here ? "text-text" : "text-muted hover:text-text"}`}>
-                    {here && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-cyan" />}{p.title}
+                    {here && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" />}{p.title}
                   </Link>
                 )}
               <ul className="space-y-0.5">
@@ -99,7 +100,7 @@ export default function Sidebar() {
                     <li key={x.id}>
                       <Link href={target(p, x)} onClick={(e) => onClick(p, x, e)} aria-current={on ? "location" : undefined}
                         title={collapsed ? `${p.title}: ${x.label}` : undefined} aria-label={collapsed ? `${p.title}: ${x.label}` : undefined}
-                        className={`flex w-full items-center rounded-md py-1.5 text-[13px] ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${on ? "bg-cyan/10 text-cyan" : "text-muted hover:bg-panel hover:text-text"}`}>
+                        className={`flex w-full items-center rounded-md py-1.5 text-[13px] ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${on ? "bg-accent/10 text-accent" : "text-muted hover:bg-panel hover:text-text"}`}>
                         <x.icon size={16} className="shrink-0" />
                         {!collapsed && <span className="truncate">{x.label}</span>}
                       </Link>
@@ -118,6 +119,7 @@ export default function Sidebar() {
           className={`flex w-full items-center rounded-md border py-2 text-[13px] font-medium ${collapsed ? "justify-center" : "gap-3 px-3"} ${story ? "border-amber bg-amber/15 text-amber" : "border-amber/45 text-amber hover:border-amber hover:bg-amber/10"}`}>
           <Sparkles size={15} className="shrink-0" />{!collapsed && "Your Story"}
         </Link>
+        <ThemeToggle compact={collapsed} className={`w-full border-transparent py-2 ${collapsed ? "justify-center" : "gap-3 px-3"}`} />
         <Link href="/guide" title={collapsed ? "User guide" : undefined} aria-label="User guide"
           className={`flex items-center rounded-md py-2 text-[13px] text-muted hover:bg-panel hover:text-text ${collapsed ? "justify-center" : "gap-3 px-3"}`}>
           <BookOpen size={16} className="shrink-0" />{!collapsed && "User guide"}

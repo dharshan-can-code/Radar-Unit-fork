@@ -19,6 +19,17 @@ export const COLOR = {
   mapDarker: "#288cff",
 } as const;
 
+/** Standard basemaps. Maps are inverted relative to the page:
+ *  light page -> dark map, dark page -> light map (radar stays readable, and the map stands apart). */
+export const BASEMAP_TILES = {
+  dark: ["https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"],
+  light: ["https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"],
+} as const;
+export const mapTilesFor = (pageTheme: "light" | "dark") => [...(pageTheme === "dark" ? BASEMAP_TILES.light : BASEMAP_TILES.dark)];
+
+/** Land colour for classification canvases, matching the inverted map look. */
+export const landRGB = (pageTheme: "light" | "dark") => (pageTheme === "dark" ? [214, 210, 228] : [38, 46, 74]) as readonly number[];
+
 /** RGB triplets for canvas ImageData. */
 export const RGB = {
   mapWater: [34, 211, 238],

@@ -30,7 +30,7 @@ export function ScienceExplainer() {
           ["HH and HV", "HH: sent and received horizontally — strong for smooth-surface and trunk-ground (double bounce) reflections. HV: sent horizontal, received vertical — produced mainly by random volume scattering in vegetation."],
         ].map(([t, d]) => (
           <div key={t} className="rounded-xl border border-line bg-panel p-5">
-            <div className="text-sm font-semibold text-cyan">{t}</div>
+            <div className="text-sm font-semibold text-accent">{t}</div>
             <p className="mt-2 text-[13px] leading-relaxed text-muted">{d}</p>
           </div>
         ))}

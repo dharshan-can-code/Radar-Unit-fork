@@ -90,12 +90,12 @@ function Flipbook({ m, layer = "HH", interval = 1100, big = false }: { m: Manife
         ))}
         <div className="absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-sm text-text">{obs[cur] ? fmtDate(obs[cur].date) : ""}</div>
         <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pause" : "Play"}
-          className="absolute top-3 right-3 rounded-full bg-bg/80 p-1.5 text-cyan">{playing ? <Pause size={14} /> : <Play size={14} />}</button>
+          className="absolute top-3 right-3 rounded-full bg-bg/80 p-1.5 text-accent">{playing ? <Pause size={14} /> : <Play size={14} />}</button>
       </div>
       <div className="mt-2 flex gap-1" role="tablist" aria-label="Acquisition dates">
         {obs.map((o, k) => (
           <button key={o.date} onClick={() => { setI(k); setPlaying(false); }} title={o.date} aria-label={o.date}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${k === cur ? "bg-cyan" : "bg-line hover:bg-muted"}`} />
+            className={`h-1.5 flex-1 rounded-full transition-colors ${k === cur ? "bg-accent" : "bg-line hover:bg-muted"}`} />
         ))}
       </div>
       <figcaption className="mt-1 text-center text-[12px] text-muted">
@@ -279,7 +279,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </div>
 
       <button onClick={toggleSound} aria-label={sound ? "Turn sound off" : "Turn sound on"} title="Narration, data sound and rain"
-        className={`fixed right-4 bottom-4 z-50 flex items-center gap-1.5 rounded-full border px-3 py-2 text-[12px] shadow-lg backdrop-blur ${sound ? "border-cyan bg-cyan/20 text-cyan" : "border-line bg-bg/80 text-muted"}`}>
+        className={`fixed right-4 bottom-4 z-50 flex items-center gap-1.5 rounded-full border px-3 py-2 text-[12px] shadow-lg backdrop-blur ${sound ? "border-accent bg-accent/20 text-accent" : "border-line bg-bg/80 text-muted"}`}>
         {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}<span className="hidden sm:inline">{sound ? "Sound on" : "Sound off"}</span>
       </button>
 
@@ -289,7 +289,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
           <div>
             <div className="reveal text-[13px] text-amber">A story written by radar: {f.satellite}</div>
             <h1 className="reveal reveal-d1 mt-4 text-[2.6rem] leading-[1.02] font-medium sm:text-6xl">
-              The water we cannot see<span className="block text-cyan">in {f.place}</span>
+              The water we cannot see<span className="block text-accent">in {f.place}</span>
             </h1>
             <p className="reveal reveal-d2 mt-4 text-lg text-text/80">
               Between <b>{fmtDate(f.first)}</b> and <b>{fmtDate(f.last)}</b>, NISAR passed over this place <b>{f.n} times</b>, sending its own
@@ -300,7 +300,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                 {auto ? <Pause size={14} /> : <Play size={14} />}{auto ? "Pause story" : "Play the story"}
               </button>
               <button onClick={toggleSound} aria-pressed={sound}
-                className={`flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm ${sound ? "border-cyan bg-cyan/15 text-cyan" : "border-line text-text hover:border-cyan/50"}`}>
+                className={`flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm ${sound ? "border-accent bg-accent/15 text-accent" : "border-line text-text hover:border-accent/50"}`}>
                 {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}{sound ? "Sound on" : "Turn sound on"}
               </button>
               <a href="#s-sky" className="flex items-center gap-1.5 rounded-md border border-line px-4 py-2 text-sm text-text hover:border-amber/50"><ArrowDown size={14} />Scroll to read</a>
@@ -403,7 +403,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                 </p>
               )}
               <button onClick={() => { if (!sound) { storySound.start(); setSound(true); } setTimeout(() => storySound.playSeries(f.passes.map((p) => p.water_km2), 420, f.passes.map((p) => p.flooded_veg_km2)), 60); }}
-                className="flex items-center gap-1.5 rounded-md border border-cyan/40 px-3 py-1.5 text-[13px] text-cyan hover:bg-cyan/10">
+                className="flex items-center gap-1.5 rounded-md border border-accent/40 px-3 py-1.5 text-[13px] text-accent hover:bg-accent/10">
                 <Music size={14} />Hear the water: one note per pass, higher = more water
               </button>
               {f.partialPasses.length > 0 && (
@@ -504,8 +504,8 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
         <h2 className="max-w-3xl text-3xl leading-[1.08] font-medium sm:text-5xl">Every place has water we cannot see.</h2>
         <p className="mt-3 max-w-2xl text-lg text-text/80">Explore {f.place} in detail on the map, share this story, or tell the story of another place.</p>
         <div className="mt-6 flex flex-wrap gap-2">
-          <button onClick={onOpenMap} className="flex items-center gap-1.5 rounded-md bg-cyan px-4 py-2 text-sm font-medium text-bg"><MapIcon size={14} />Explore on the map</button>
-          {shareUrl && <button onClick={share} className="flex items-center gap-1.5 rounded-md border border-line px-4 py-2 text-sm hover:border-cyan/50"><Share2 size={14} />{copied ? "Link copied" : "Share this story"}</button>}
+          <button onClick={onOpenMap} className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent"><MapIcon size={14} />Explore on the map</button>
+          {shareUrl && <button onClick={share} className="flex items-center gap-1.5 rounded-md border border-line px-4 py-2 text-sm hover:border-accent/50"><Share2 size={14} />{copied ? "Link copied" : "Share this story"}</button>}
         </div>
         <div className="mt-8 max-w-3xl"><Builder onResult={onResult} compact /></div>
       </section>
