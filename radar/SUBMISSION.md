@@ -103,16 +103,35 @@ In our Tonle Sap case study, the radar signature of water under vegetation grew 
 ---
 
 ## 30-second demo video script (English captions on every shot)
-| Time | Screen | Caption / voice |
-|---|---|---|
-| 0–4 s | Story cover, "The water we cannot see in Tonle Sap" | "Floodwater hides under forests and clouds. Cameras can't see it. NISAR's radar can." |
-| 4–9 s | Chapter 1 cloud bars animate | "On 9 of 10 passes, clouds covered the sky. NISAR's radar saw through." |
-| 9–15 s | Radar flipbook, then hidden-water bars | "Water hidden under trees grew six-fold. Water-like ground grew 48%." |
-| 15–21 s | Type a new place in Your Story, steps tick, story appears | "Type any place on Earth. Real NASA data, read live, about 30 seconds." |
-| 21–26 s | Chapter 5 tags (OBSERVED / INTERPRETED / UNCONFIRMED) | "Every claim is labelled. We show what we know, and what we don't." |
-| 26–30 s | Logo, GitHub link | "DELTA PULSE: revealing the water we cannot see. Team RADAR UNIT." |
+Voice-over: about 65 words, read calmly by a team member (a human voice needs no AI label).
+Music: the app's own story score playing quietly underneath (see the AI note in the end card).
 
-Record at 1080p with the browser zoomed to 110%. Keep the captions burned in.
+| Time | Screen (what to record) | Voice-over = burned-in caption |
+|---|---|---|
+| 0–4 s | **Your Story** opening for Tonle Sap: radar images drifting behind the title. Hold still. | "Floods hide under clouds and forests, where cameras can't see." |
+| 4–9 s | Click **Begin the story**. Chapter 1: the cloud bars grow. | "At Tonle Sap, clouds covered the sky on nine of ten satellite passes." |
+| 9–15 s | Chapter 2 radar flipbook, then Chapter 3 hidden-water bars and the "1,704 km²" figure. | "NISAR's radar sees through, and finds water hidden under the trees: 1,700 square kilometres." |
+| 15–21 s | Scroll to the top. In **Choose your place**, type "Dhaka, Bangladesh", press **Tell it**, the new story appears. | "Choose any place on Earth. DELTA PULSE reads real NISAR data live, and tells its story." |
+| 21–26 s | Chapter 5: the evidence labels (OBSERVED, CALCULATED, INTERPRETED, UNCONFIRMED). | "Every claim is labelled, so you know what's measured and what's not." |
+| 26–30 s | End card (see below). | "DELTA PULSE. Revealing the water we cannot see." |
+
+**End card text (static, 4 s):**
+> DELTA PULSE: Revealing the water we cannot see
+> Team RADAR UNIT · NASA Space Apps 2026 · "Dancing with the SARs"
+> github.com/haricharanparna/Radar-Unit
+> *Real NASA-ISRO NISAR data. App code, story script and music were made with AI assistance (Anthropic Claude).*
+
+**Before recording**
+- Run the app locally with the backend on (`npm run dev` and `npm.cmd run api`), and run the Dhaka story once beforehand, so it appears in about 2 seconds on camera instead of about 30.
+- Use Edge or Chrome at 1920×1080, zoom 110%, light or dark theme (pick one and keep it), sidebar collapsed.
+- Turn the app's narrator off (player → VO) so it doesn't talk over the voice-over; keep the music on, quiet.
+
+**Recording and editing (free, on Windows)**
+- Record the screen with Xbox Game Bar (Win + Alt + R) or OBS. Record each shot separately; it's easier to trim.
+- Edit in Clipchamp (built into Windows): cut each shot to the times above, add the captions as text, record the voice-over, export 1080p.
+- **Check the length is 30 s or less** before uploading.
+- Upload to YouTube as **Unlisted** (anyone with the link can watch; no sign-in), and paste the full `https://youtu.be/...` link into the Demo field.
+- Don't use NASA logos in the video or the end card.
 
 ## Backup: 7-slide outline
 1. **Title:** DELTA PULSE, "Revealing the water we cannot see", team, challenge.

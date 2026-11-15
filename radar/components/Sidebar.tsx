@@ -5,8 +5,6 @@ import { usePathname } from "next/navigation";
 import { BookOpen, ChevronsLeft, ChevronsRight, Sparkles } from "lucide-react";
 import { BrandMark } from "@/components/ui";
 import ThemeToggle from "@/components/ThemeToggle";
-import LanguageSelector from "@/components/site/LanguageSelector";
-import { useLanguage } from "@/components/site/LanguageContext";
 import { PAGES, PLACE_SECTIONS, STORY, navName, type NavItem, type NavPage } from "@/components/site/nav";
 import { useSite } from "@/components/site/SiteState";
 
@@ -58,8 +56,7 @@ export function useNavLinks() {
 export default function Sidebar() {
   const { pathname, target, onClick, isOn, href } = useNavLinks();
   const [collapsed, setCollapsed] = useState(false);
-  const { t, language, dir } = useLanguage();
-  const name = (x: NavItem | NavPage) => navName(x, language, t);
+  const name = (x: NavItem | NavPage) => navName(x);
 
   // remember the collapsed state (storage can be blocked, so every access is wrapped)
   useEffect(() => {
@@ -74,15 +71,15 @@ export default function Sidebar() {
   const row = `flex w-full items-center rounded-md text-[14px] font-medium ${collapsed ? "justify-center py-2.5" : "gap-3 px-3 py-2"}`;
   const storyLink = (
     <li key={STORY}>
-      <Link href={href(STORY)} aria-current={story ? "page" : undefined} title={collapsed ? t("story") : undefined} aria-label={t("story")}
+      <Link href={href(STORY)} aria-current={story ? "page" : undefined} title={collapsed ? "Your Story" : undefined} aria-label={"Your Story"}
         className={`${row} ${story ? "bg-amber/15 text-amber" : "text-amber hover:bg-amber/10"}`}>
-        <Sparkles size={17} className="shrink-0" />{!collapsed && t("story")}
+        <Sparkles size={17} className="shrink-0" />{!collapsed && "Your Story"}
       </Link>
     </li>
   );
 
   return (
-    <aside aria-label="Pages" lang={language} style={{ width: "var(--sidebar-w)" }}
+    <aside aria-label="Pages" style={{ width: "var(--sidebar-w)" }}
       className="fixed inset-y-0 left-0 z-[60] hidden flex-col border-r border-line bg-bg transition-[width] duration-200 motion-reduce:transition-none xl:flex">
       {/* brand + collapse / expand: the button keeps its place at the top in both states */}
       <div className={`flex h-[52px] shrink-0 items-center border-b border-line ${collapsed ? "justify-center" : "justify-between pr-2 pl-4"}`}>
@@ -93,14 +90,14 @@ export default function Sidebar() {
           </Link>
         )}
         <button onClick={() => setCollapsed((c) => !c)} aria-expanded={!collapsed}
-          aria-label={collapsed ? t("expand") : t("collapse")} title={collapsed ? t("expand") : t("collapse")}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           className="rounded-md p-2 text-muted hover:bg-panel hover:text-text">
           {collapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
         </button>
       </div>
 
       {/* the pages in reading order; the open page lists its sections */}
-      <nav aria-label="Main" dir={dir} className="flex-1 overflow-y-auto px-2 py-3">
+      <nav aria-label="Main" className="flex-1 overflow-y-auto px-2 py-3">
         <ul className="space-y-1">
           {PAGES.flatMap((p, gi) => {
             const here = p.href === pathname;
@@ -135,12 +132,11 @@ export default function Sidebar() {
       </nav>
 
       {/* language + theme + guide */}
-      <div dir={dir} className="shrink-0 space-y-1 border-t border-line p-2">
-        {!collapsed && <LanguageSelector className="w-full border-transparent py-2 px-3 gap-3" />}
+      <div className="shrink-0 space-y-1 border-t border-line p-2">
         <ThemeToggle compact={collapsed} className={`w-full border-transparent py-2 ${collapsed ? "justify-center" : "gap-3 px-3"}`} />
-        <Link href="/guide" title={collapsed ? t("guide") : undefined} aria-label={t("guide")}
+        <Link href="/guide" title={collapsed ? "User guide" : undefined} aria-label={"User guide"}
           className={`flex items-center rounded-md py-2 text-[13px] text-muted hover:bg-panel hover:text-text ${collapsed ? "justify-center" : "gap-3 px-3"}`}>
-          <BookOpen size={16} className="shrink-0" />{!collapsed && t("guide")}
+          <BookOpen size={16} className="shrink-0" />{!collapsed && "User guide"}
         </Link>
       </div>
     </aside>
