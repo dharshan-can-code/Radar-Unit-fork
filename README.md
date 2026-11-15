@@ -15,7 +15,6 @@ DELTA PULSE uses NASA-ISRO **NISAR L-band radar** to show water that cameras mis
 | | |
 |---|---|
 | **The app and how to run it** | [radar/README.md](radar/README.md) |
-| **For judges** | [radar/SUBMISSION.md](radar/SUBMISSION.md) |
 | **User manual** | [radar/USER_MANUAL.md](radar/USER_MANUAL.md) (also `/guide` in the app) |
 | **Science and methods** | [radar/SCIENCE.md](radar/SCIENCE.md) · [radar/LIMITATIONS.md](radar/LIMITATIONS.md) |
 | **Live backend** | [radar/BACKEND.md](radar/BACKEND.md) |
