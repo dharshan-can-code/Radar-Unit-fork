@@ -20,6 +20,7 @@ import { Place, Rainfall, loadResult, rainfall } from "@/lib/api";
 import { dataBase } from "@/lib/data";
 import type { InventoryArea } from "@/lib/data";
 import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import Story from "@/components/Story";
 import Impact, { Sensitivity } from "@/components/Impact";
 import WaterNow from "@/components/WaterNow";
@@ -191,14 +192,16 @@ export default function Home() {
     const fp = fingerprint(grid, rect, bi, ai);
     return { fp, ...interpret(fp, m.screening), series: timeSeries(grid, rect) };
   }, [grid, m, pair, rect]);
-
+    const changeView = (v: "app" | "story") => {
+    setView(v);
+    if (m && m.area !== AREA) window.history.replaceState(null, "", `?${resultQuery(m)}${v === "story" ? "&view=story" : ""}`);    else window.history.replaceState(null, "", v === "story" ? "?view=story" : window.location.pathname);
+  };
   return (
+ <div className="transition-[padding-left] duration-200 lg:pl-[var(--sidebar-w)]">
+    <Sidebar view={view} setView={changeView} />
     <main className="mx-auto max-w-[1400px] px-4 pb-24 sm:px-6">
-      <Navbar view={view} setView={(v) => {
-        setView(v);
-        if (m && m.area !== AREA) window.history.replaceState(null, "", `?${resultQuery(m)}${v === "story" ? "&view=story" : ""}`);
-        else window.history.replaceState(null, "", v === "story" ? "?view=story" : window.location.pathname);
-      }} />
+      <Navbar view={view} setView={changeView} />
+  
       {view === "story" ? (
         <Story m={m ?? null} grid={grid} rain={rain} onResult={storyResult} onOpenMap={openMapFromStory} shareUrl={shareStoryUrl} />
       ) : (<>
@@ -300,6 +303,7 @@ export default function Home() {
         DELTA PULSE is an open-source student project by RADAR UNIT and is not an official NASA product.
       </footer>
     </main>
+    </div>
   );
 }
 

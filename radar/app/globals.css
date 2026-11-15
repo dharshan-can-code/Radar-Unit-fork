@@ -12,6 +12,7 @@
   --amber: #f59e0b;
   --rose: #fb7185;
   --green: #34d399;
+  --sidebar-w: 16rem;
 }
 
 @theme inline {

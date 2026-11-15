@@ -39,7 +39,7 @@ export default function Navbar({ view, setView }: Props) {
   };
 
   return (
-    <nav aria-label="Sections" className="sticky top-0 z-[60] -mx-4 border-b border-line bg-bg/85 px-4 backdrop-blur sm:-mx-6 sm:px-6">
+      <nav aria-label="Sections" className="sticky top-0 z-[60] lg:hidden -mx-4 border-b border-line bg-bg/85 px-4 backdrop-blur sm:-mx-6 sm:px-6">
       <div className="no-scrollbar flex h-12 items-center gap-1 overflow-x-auto whitespace-nowrap text-[13px]">
         <button onClick={() => { setView("app"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
           className="mr-2 flex shrink-0 items-center gap-1.5 font-mono text-[12px] font-semibold tracking-widest text-cyan">
