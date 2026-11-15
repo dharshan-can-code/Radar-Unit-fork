@@ -16,7 +16,7 @@ When rivers and lakes flood into forests, the water spreads under the trees, whe
 - **Your Story:** turns any place into an animated story about the water hidden there.
 - **Honest by design:** every statement is labelled *observed*, *calculated*, *interpreted* or *unconfirmed*, so the app never claims a flood it cannot prove.
 
-In our Tonle Sap case study, the radar signature of water under vegetation grew about 6.5× (260 → 1,704 km², peak 11 Sep) and water-like ground grew 48%, while clouds covered more than half the sky at 9 of 10 pass times. Independent checks back it up: the water class finds most of Landsat's permanent water with almost no false alarms on dry land, and the flooded area tracks river flow.
+In our Tonle Sap case study, the radar signature of water under vegetation grew about 6.6× (260 → 1,704 km², peak 11 Sep) and water-like ground grew 48%, while clouds covered more than half the sky at 9 of 10 pass times. Independent checks back it up: the water class finds most of Landsat's permanent water with almost no false alarms on dry land, and the flooded area tracks river flow.
 
 ## Links
 - **Live app:** https://delta-pulse-nisar.vercel.app (case study, Your Story and three worldwide examples work without a server; live search of new places needs the Python backend)
@@ -119,7 +119,7 @@ Record at 1080p with the browser zoomed to 110%. Keep the captions burned in.
 2. **Problem:** forest canopy and clouds hide floodwater (Tonle Sap: flooded forest invisible to cameras; 9 of 10 passes cloudy).
 3. **Why NISAR:** 24 cm L-band reaches under the canopy (double bounce off water and trunks), unlike shorter-wavelength radars; also through cloud and darkness; every 12 days, worldwide.
 4. **What we built:** live search, remote chunk reading, Fingerprint, Your Story (screenshots).
-5. **Results:** Tonle Sap flood pulse (water-under-vegetation signature about 6.5× larger at its 11 Sep peak, +48% water-like area); live examples.
+5. **Results:** Tonle Sap flood pulse (water-under-vegetation signature about 6.6× larger at its 11 Sep peak, +48% water-like area); live examples.
 6. **Why trust it:** independent checks (82% of JRC permanent water found, ~0% false alarms; tracks river flow r = 0.81), quality masks, fair comparisons, sensitivity test, evidence labels, 32 tests.
 7. **Impact and next steps:** users, gauge calibration, alerts, languages, GitHub link.
 

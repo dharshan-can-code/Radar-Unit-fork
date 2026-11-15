@@ -1,25 +1,54 @@
 "use client";
 import { useEffect, useState, type ComponentType } from "react";
 import {
-  Activity, Atom, BookOpen, ChevronsLeft, ChevronsRight, Clock, Droplets, FileText, Fingerprint,
-  FlaskConical, Globe2, Map as MapIcon, Radar, Search, Sparkles, Users,
+  Activity, BookOpen, CalendarDays, ChevronsLeft, ChevronsRight, Droplets, FileText, Fingerprint,
+  FlaskConical, Globe2, Map as MapIcon, Microscope, Radar, Search, ShieldCheck, Sparkles, Users, Waves,
 } from "lucide-react";
+import { BrandMark } from "@/components/ui";
 
 type Icon = ComponentType<{ size?: number; className?: string }>;
+interface Item { id: string; label: string; icon: Icon; /** a tool inside the "Go deeper" tabs, not a section of its own */ tab?: boolean }
 
-// [section id, label, icon]. The ids must match the ids on the <Section> blocks in page.tsx.
-const GROUPS: { title: string; items: [string, string, Icon][] }[] = [
-  { title: "Explore the data", items: [["live", "Explore", Search], ["globe", "Globe", Globe2], ["explorer", "Map", MapIcon], ["fingerprint", "Fingerprint", Fingerprint]] },
-  { title: "Live and lab", items: [["now", "Water Now", Droplets], ["scatter", "Scatter Lab", Activity], ["timeline", "Timeline", Clock], ["lab", "Radar Lab", FlaskConical]] },
-  { title: "Learn more", items: [["impact", "Impact", Users], ["science", "Science", Atom], ["methods", "Methods", FileText]] },
+// Section ids must match the ids on the <Section> blocks in page.tsx; tab ids must match the
+// DeepDive tabs there. The tools used to be sections of their own and now live behind tabs in
+// #deeper, so those links open the tab and scroll to it.
+const GROUPS: { title: string; items: Item[] }[] = [
+  { title: "Start here", items: [
+    { id: "how", label: "How it works", icon: Radar },
+    { id: "findings", label: "Findings", icon: Droplets },
+  ] },
+  { title: "Explore the data", items: [
+    { id: "explorer", label: "Map", icon: MapIcon },
+    { id: "fingerprint", label: "What changed", icon: Fingerprint },
+    { id: "checks", label: "Is it real?", icon: ShieldCheck },
+    { id: "live", label: "Search a place", icon: Search },
+    { id: "globe", label: "Globe", icon: Globe2 },
+  ] },
+  { title: "Live and lab", items: [
+    { id: "now", label: "Water now", icon: Waves, tab: true },
+    { id: "scatter", label: "Scatter Lab", icon: Activity, tab: true },
+    { id: "lab", label: "Radar Lab", icon: FlaskConical, tab: true },
+    { id: "timeline", label: "Every pass", icon: CalendarDays, tab: true },
+  ] },
+  { title: "Learn more", items: [
+    { id: "impact", label: "Who it helps", icon: Users },
+    { id: "science", label: "The physics", icon: Microscope, tab: true },
+    { id: "methods", label: "Methods & data", icon: FileText, tab: true },
+  ] },
 ];
-const IDS = GROUPS.flatMap((g) => g.items.map(([id]) => id));
+const DEEPER = "deeper";
+const SPY_IDS = [...GROUPS.flatMap((g) => g.items.filter((x) => !x.tab).map((x) => x.id)), DEEPER];
 
-interface Props { view: "app" | "story"; setView: (v: "app" | "story") => void }
+interface Props {
+  view: "app" | "story"; setView: (v: "app" | "story") => void;
+  /** The tool that is open in the "Go deeper" tabs, and a way to open another. */
+  tab: string; onOpenTab: (id: string) => void;
+}
 
-/** Desktop left sidebar: grouped section links, scroll-spy highlight, Your Story, User guide, collapsible to icons. */
-export default function Sidebar({ view, setView }: Props) {
-  const [active, setActive] = useState<string>("live");
+/** Desktop left sidebar (xl and up): grouped section links, scroll-spy highlight, Your Story,
+ *  User guide, collapsible to icons. Narrower screens use the top bar in Navbar.tsx. */
+export default function Sidebar({ view, setView, tab, onOpenTab }: Props) {
+  const [active, setActive] = useState<string>("");
   const [collapsed, setCollapsed] = useState(false);
 
   // remember the collapsed state (storage can be blocked, so every access is wrapped)
@@ -34,7 +63,7 @@ export default function Sidebar({ view, setView }: Props) {
   // highlight the section currently in view
   useEffect(() => {
     if (view !== "app") return;
-    const els = IDS.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const els = SPY_IDS.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver((entries) => {
       const vis = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
       if (vis[0]) setActive(vis[0].target.id);
@@ -43,42 +72,46 @@ export default function Sidebar({ view, setView }: Props) {
     return () => io.disconnect();
   }, [view]);
 
-  const go = (id: string) => {
-    if (view !== "app") { setView("app"); setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 60); return; }
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const go = (x: Item) => {
+    if (x.tab) onOpenTab(x.id);
+    const target = x.tab ? DEEPER : x.id;
+    if (view !== "app") { setView("app"); setTimeout(() => document.getElementById(target)?.scrollIntoView({ behavior: "smooth" }), 60); return; }
+    document.getElementById(target)?.scrollIntoView({ behavior: "smooth" });
   };
+  const isOn = (x: Item) => view === "app" && (x.tab ? active === DEEPER && tab === x.id : active === x.id);
 
   return (
     <aside aria-label="Sections" style={{ width: "var(--sidebar-w)" }}
-      className="fixed inset-y-0 left-0 z-[60] hidden flex-col border-r border-line/80 bg-bg/90 backdrop-blur-xl transition-[width] duration-200 lg:flex">
+      className="fixed inset-y-0 left-0 z-[60] hidden flex-col border-r border-line bg-bg transition-[width] duration-200 motion-reduce:transition-none xl:flex">
       {/* brand + collapse */}
-      <div className={`flex h-14 shrink-0 items-center ${collapsed ? "justify-center" : "justify-between px-4"}`}>
+      <div className={`flex h-[52px] shrink-0 items-center border-b border-line ${collapsed ? "justify-center" : "justify-between pr-2 pl-4"}`}>
         <button onClick={() => { setView("app"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-          className="flex items-center gap-2 text-[13px] font-semibold tracking-[0.14em] text-cyan" title="DELTA PULSE: back to top">
-          <Radar size={18} />{!collapsed && "DELTA PULSE"}
+          className="flex items-center gap-2 font-display text-[15px] font-semibold tracking-[0.04em] text-text" title="DELTA PULSE: back to top"
+          aria-label="DELTA PULSE: back to top">
+          <span className="text-cyan"><BrandMark /></span>{!collapsed && "DELTA PULSE"}
         </button>
         {!collapsed && (
           <button onClick={() => setCollapsed(true)} aria-label="Collapse sidebar" title="Collapse sidebar"
-            className="rounded-md p-1.5 text-muted hover:bg-panel-2 hover:text-text"><ChevronsLeft size={16} /></button>
+            className="rounded-md p-1.5 text-muted hover:bg-panel hover:text-text"><ChevronsLeft size={16} /></button>
         )}
       </div>
 
       {/* sections */}
-      <nav className="no-scrollbar flex-1 overflow-y-auto px-2 pb-4">
+      <nav aria-label="Main" className="no-scrollbar flex-1 overflow-y-auto px-2 pt-3 pb-4">
         {GROUPS.map((g, gi) => (
-          <div key={g.title} className={gi === 0 ? "mt-1" : "mt-5"}>
+          <div key={g.title} className={gi === 0 ? "" : "mt-4"}>
             {collapsed
               ? (gi > 0 && <div className="mx-3 mb-2 h-px bg-line" />)
               : <div className="px-3 pb-1.5 text-[12px] text-muted">{g.title}</div>}
             <ul className="space-y-0.5">
-              {g.items.map(([id, label, Icon]) => {
-                const on = view === "app" && active === id;
+              {g.items.map((x) => {
+                const on = isOn(x);
                 return (
-                  <li key={id}>
-                    <button onClick={() => go(id)} aria-current={on ? "true" : undefined} title={collapsed ? label : undefined} aria-label={label}
-                      className={`relative flex w-full items-center rounded-lg py-2 text-[13px] ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${on ? "bg-cyan/10 text-cyan before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-cyan" : "text-muted hover:bg-panel-2 hover:text-text"}`}>
-                      <Icon size={16} className="shrink-0" />
-                      {!collapsed && <span className="truncate">{label}</span>}
+                  <li key={x.id}>
+                    <button onClick={() => go(x)} aria-current={on ? "true" : undefined} title={collapsed ? x.label : undefined} aria-label={x.label}
+                      className={`flex w-full items-center rounded-md py-1.5 text-[13px] ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${on ? "bg-cyan/10 text-cyan" : "text-muted hover:bg-panel hover:text-text"}`}>
+                      <x.icon size={16} className="shrink-0" />
+                      {!collapsed && <span className="truncate">{x.label}</span>}
                     </button>
                   </li>
                 );
@@ -89,19 +122,19 @@ export default function Sidebar({ view, setView }: Props) {
       </nav>
 
       {/* story + guide + expand */}
-      <div className="shrink-0 space-y-1 border-t border-line/80 p-2">
+      <div className="shrink-0 space-y-1 border-t border-line p-2">
         <button onClick={() => { setView(view === "story" ? "app" : "story"); window.scrollTo({ top: 0 }); }}
           aria-pressed={view === "story"} title={collapsed ? "Your Story" : undefined} aria-label="Your Story"
-          className={`flex w-full items-center rounded-full py-2 text-[13px] font-medium ${collapsed ? "justify-center" : "gap-2 px-3"} ${view === "story" ? "bg-amber text-bg" : "border border-amber/50 text-amber hover:bg-amber/10"}`}>
+          className={`flex w-full items-center rounded-md border py-2 text-[13px] font-medium ${collapsed ? "justify-center" : "gap-3 px-3"} ${view === "story" ? "border-amber bg-amber/15 text-amber" : "border-amber/45 text-amber hover:border-amber hover:bg-amber/10"}`}>
           <Sparkles size={15} className="shrink-0" />{!collapsed && "Your Story"}
         </button>
         <a href="/guide" title={collapsed ? "User guide" : undefined} aria-label="User guide"
-          className={`flex items-center rounded-lg py-2 text-[13px] text-muted hover:bg-panel-2 hover:text-text ${collapsed ? "justify-center" : "gap-3 px-3"}`}>
+          className={`flex items-center rounded-md py-2 text-[13px] text-muted hover:bg-panel hover:text-text ${collapsed ? "justify-center" : "gap-3 px-3"}`}>
           <BookOpen size={16} className="shrink-0" />{!collapsed && "User guide"}
         </a>
         {collapsed && (
           <button onClick={() => setCollapsed(false)} aria-label="Expand sidebar" title="Expand sidebar"
-            className="flex w-full justify-center rounded-lg py-2 text-muted hover:bg-panel-2 hover:text-text"><ChevronsRight size={16} /></button>
+            className="flex w-full justify-center rounded-md py-2 text-muted hover:bg-panel hover:text-text"><ChevronsRight size={16} /></button>
         )}
       </div>
     </aside>

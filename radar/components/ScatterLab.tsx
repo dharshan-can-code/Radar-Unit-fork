@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw, ScatterChart } from "lucide-react";
 import type { GridIndex, Manifest } from "@/lib/data";
 import { Tag } from "@/components/Fingerprint";
+import { RGB } from "@/lib/theme";
 
 const X0 = -30, X1 = 10, Y0 = -40, Y1 = 0; // HH (x) and HV (y) axes, dB
 const W = 360, H = 300, PAD = 34;
@@ -85,7 +86,7 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
     const img = ctx.createImageData(grid.nx, grid.ny);
     for (let i = 0; i < stats.cls.length; i++) {
       const k = stats.cls[i];
-      const [r, g, b, a] = k === 1 ? [34, 211, 238, 255] : k === 2 ? [245, 158, 11, 255] : k === 3 ? [40, 50, 70, 255] : [0, 0, 0, 0];
+      const [r, g, b, a] = k === 1 ? [...RGB.mapWater, 255] : k === 2 ? [...RGB.mapVeg, 255] : k === 3 ? [...RGB.land, 255] : [0, 0, 0, 0];
       img.data[i * 4] = r; img.data[i * 4 + 1] = g; img.data[i * 4 + 2] = b; img.data[i * 4 + 3] = a;
     }
     ctx.putImageData(img, 0, 0);
@@ -116,19 +117,19 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
         <div className="relative mt-3 select-none" onPointerMove={onMove} onPointerUp={() => setDrag(null)} onPointerLeave={() => setDrag(null)}>
           <canvas ref={plot} width={W} height={H} className="w-full" />
           <svg ref={svg} viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full">
-            <rect x={px(X0)} y={py(th.wHV)} width={px(th.wHH) - px(X0)} height={py(Y0) - py(th.wHV)} fill="#22d3ee" opacity="0.08" />
-            {[-30, -20, -10, 0, 10].map((v) => <text key={v} x={px(v)} y={H - 14} fill="#8b9ab5" fontSize="9" textAnchor="middle">{v}</text>)}
-            {[-40, -30, -20, -10, 0].map((v) => <text key={v} x={PAD - 6} y={py(v) + 3} fill="#8b9ab5" fontSize="9" textAnchor="end">{v}</text>)}
-            <text x={W / 2} y={H - 2} fill="#8b9ab5" fontSize="10" textAnchor="middle">HH (dB) → brighter</text>
-            <text x={10} y={H / 2} fill="#8b9ab5" fontSize="10" transform={`rotate(-90 10 ${H / 2})`} textAnchor="middle">HV (dB)</text>
+            <rect x={px(X0)} y={py(th.wHV)} width={px(th.wHH) - px(X0)} height={py(Y0) - py(th.wHV)} fill="var(--cyan)" opacity="0.08" />
+            {[-30, -20, -10, 0, 10].map((v) => <text key={v} x={px(v)} y={H - 14} fill="var(--muted)" fontSize="9" textAnchor="middle">{v}</text>)}
+            {[-40, -30, -20, -10, 0].map((v) => <text key={v} x={PAD - 6} y={py(v) + 3} fill="var(--muted)" fontSize="9" textAnchor="end">{v}</text>)}
+            <text x={W / 2} y={H - 2} fill="var(--muted)" fontSize="10" textAnchor="middle">HH (dB) → brighter</text>
+            <text x={10} y={H / 2} fill="var(--muted)" fontSize="10" transform={`rotate(-90 10 ${H / 2})`} textAnchor="middle">HV (dB)</text>
             {/* draggable thresholds */}
-            <g className="cursor-ew-resize" onPointerDown={() => setDrag("wHH")}><line x1={px(th.wHH)} x2={px(th.wHH)} y1={py(Y1)} y2={py(Y0)} stroke="#22d3ee" strokeWidth="2" /><rect x={px(th.wHH) - 6} y={py(Y1)} width="12" height={py(Y0) - py(Y1)} fill="transparent" /></g>
-            <g className="cursor-ns-resize" onPointerDown={() => setDrag("wHV")}><line x1={px(X0)} x2={px(X1)} y1={py(th.wHV)} y2={py(th.wHV)} stroke="#22d3ee" strokeDasharray="4 3" strokeWidth="2" /><rect x={px(X0)} y={py(th.wHV) - 6} width={px(X1) - px(X0)} height="12" fill="transparent" /></g>
-            <g className="cursor-ew-resize" onPointerDown={() => setDrag("dHH")}><line x1={px(th.dHH)} x2={px(th.dHH)} y1={py(Y1)} y2={py(Y0)} stroke="#f59e0b" strokeWidth="2" /><rect x={px(th.dHH) - 6} y={py(Y1)} width="12" height={py(Y0) - py(Y1)} fill="transparent" /></g>
-            <g className="cursor-move" onPointerDown={() => setDrag("dDiff")}><path d={diffLine(th.dDiff)} stroke="#f59e0b" strokeDasharray="4 3" strokeWidth="2" fill="none" /><path d={diffLine(th.dDiff)} stroke="transparent" strokeWidth="14" fill="none" /></g>
+            <g className="cursor-ew-resize" onPointerDown={() => setDrag("wHH")}><line x1={px(th.wHH)} x2={px(th.wHH)} y1={py(Y1)} y2={py(Y0)} stroke="var(--cyan)" strokeWidth="2" /><rect x={px(th.wHH) - 6} y={py(Y1)} width="12" height={py(Y0) - py(Y1)} fill="transparent" /></g>
+            <g className="cursor-ns-resize" onPointerDown={() => setDrag("wHV")}><line x1={px(X0)} x2={px(X1)} y1={py(th.wHV)} y2={py(th.wHV)} stroke="var(--cyan)" strokeDasharray="4 3" strokeWidth="2" /><rect x={px(X0)} y={py(th.wHV) - 6} width={px(X1) - px(X0)} height="12" fill="transparent" /></g>
+            <g className="cursor-ew-resize" onPointerDown={() => setDrag("dHH")}><line x1={px(th.dHH)} x2={px(th.dHH)} y1={py(Y1)} y2={py(Y0)} stroke="var(--amber)" strokeWidth="2" /><rect x={px(th.dHH) - 6} y={py(Y1)} width="12" height={py(Y0) - py(Y1)} fill="transparent" /></g>
+            <g className="cursor-move" onPointerDown={() => setDrag("dDiff")}><path d={diffLine(th.dDiff)} stroke="var(--amber)" strokeDasharray="4 3" strokeWidth="2" fill="none" /><path d={diffLine(th.dDiff)} stroke="transparent" strokeWidth="14" fill="none" /></g>
           </svg>
         </div>
-        <p className="mt-1 text-[11px] text-muted">Drag the <span className="text-cyan">cyan</span> lines (water: HH and HV both low) and the <span className="text-amber">amber</span> lines (double bounce: HH high, and HH−HV large).</p>
+        <p className="mt-1 text-[12px] text-muted">Drag the <span className="text-cyan">cyan</span> lines (water: HH and HV both low) and the <span className="text-amber">amber</span> lines (double bounce: HH high, and HH−HV large).</p>
       </div>
       <div className="rounded-xl border border-line bg-panel p-5">
         <div className="flex items-center justify-between">
@@ -138,12 +139,12 @@ export default function ScatterLab({ m, grid }: { m: Manifest | null; grid: Grid
         <canvas ref={mapC} className="mt-3 w-full rounded border border-line" style={{ imageRendering: "pixelated", aspectRatio: `${grid.nx} / ${grid.ny}` }} />
         {stats && (
           <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[12px]">
-            <div className="rounded bg-panel-2 p-2"><div className="text-[10px] text-muted">water-like</div><div className="text-lg text-cyan">{Math.round(stats.water).toLocaleString()} km²</div></div>
-            <div className="rounded bg-panel-2 p-2"><div className="text-[10px] text-muted">double bounce</div><div className="text-lg text-amber">{Math.round(stats.dbl).toLocaleString()} km²</div></div>
+            <div className="rounded bg-panel-2 p-2"><div className="text-[11px] text-muted">water-like</div><div className="text-lg text-cyan">{Math.round(stats.water).toLocaleString()} km²</div></div>
+            <div className="rounded bg-panel-2 p-2"><div className="text-[11px] text-muted">double bounce</div><div className="text-lg text-amber">{Math.round(stats.dbl).toLocaleString()} km²</div></div>
           </div>
         )}
         <p className="mt-2 font-mono text-[11px] text-muted">water HH&lt;{th.wHH} & HV&lt;{th.wHV} · bounce HH&gt;{th.dHH} & HH−HV&gt;{th.dDiff}{changed && <span className="text-amber"> (changed)</span>}</p>
-        <div className="mt-2 flex flex-wrap gap-2 text-[11px]"><Tag kind="OBSERVED" /><span className="text-muted">Real NISAR pixels ({m.grid.res_m} m), {m.observations[oi].date}. Your changes are local and do not alter the app&apos;s results.</span></div>
+        <div className="mt-2 flex flex-wrap gap-2 text-[12px]"><Tag kind="OBSERVED" /><span className="text-muted">Real NISAR pixels ({m.grid.res_m} m), {m.observations[oi].date}. Your changes are local and do not alter the app&apos;s results.</span></div>
       </div>
     </div>
   );

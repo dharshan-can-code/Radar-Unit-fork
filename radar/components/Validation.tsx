@@ -20,14 +20,16 @@ export default function ValidationPanel({ v }: { v: Validation }) {
   const low = v.per_date.filter((d) => d.water_found_in_permanent != null && d.water_found_in_permanent < 0.75);
 
   return (
-    <div className="rounded-xl border border-green/30 bg-panel p-5">
-      <div className="flex items-center gap-2 text-sm font-semibold"><ShieldCheck size={16} className="text-green" />Independent checks</div>
-      <p className="mt-1 max-w-3xl text-[13px] text-muted">
+    <div className="overflow-hidden rounded-lg border border-line bg-panel">
+      <div className="px-5 pt-5 sm:px-6">
+      <div className="flex items-center gap-2 text-base font-semibold"><ShieldCheck size={17} className="text-green" />Independent checks</div>
+      <p className="mt-1 max-w-[62ch] text-[14px] text-muted">
         We compared the radar screening with data that were <b className="text-text">not</b> used to make it. Agreement is supporting evidence, not proof:
         the optical water record describes 1984–2021 and river flow is a model.
       </p>
+      </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-5 grid gap-px border-y border-line bg-line lg:grid-cols-2">
         <Block title="Does the “water-like” class find real water?" tag="CALCULATED">
           <p>
             On <b className="text-text">{v.jrc.cells.permanent.toLocaleString()}</b> cells that Landsat saw as water in at least 90% of observations
@@ -97,7 +99,7 @@ export default function ValidationPanel({ v }: { v: Validation }) {
           <MiniBars rows={v.per_date.map((d) => ({ label: d.date.slice(5), value: d.wind_ms == null ? null : d.wind_ms / 10, text: d.wind_ms == null ? "–" : `${d.wind_ms} m/s` }))} color="bg-blue" />
         </Block>
       </div>
-      <p className="mt-4 font-mono text-[11px] text-muted">
+      <p className="max-w-[76ch] px-5 py-4 font-mono text-[12px] leading-relaxed break-words text-muted sm:px-6">
         Reproduce: {v.script} · generated {v.generated_utc} · {v.jrc.dataset} ({v.jrc.tile}) · {v.rivers.dataset} · ERA5 via Open-Meteo
       </p>
     </div>
@@ -106,8 +108,8 @@ export default function ValidationPanel({ v }: { v: Validation }) {
 
 function Block({ title, tag, children }: { title: string; tag: "OBSERVED" | "CALCULATED" | "INTERPRETED" | "UNCONFIRMED"; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-line bg-panel-2/40 p-4 text-[13px] text-muted">
-      <div className="mb-2 flex items-center gap-2 text-text"><Tag kind={tag} /><span className="font-semibold">{title}</span></div>
+    <div className="bg-panel p-5 text-[13px] leading-relaxed text-muted sm:p-6 [&_p]:max-w-[58ch]">
+      <div className="mb-3 flex flex-wrap items-center gap-2 text-text"><Tag kind={tag} /><span className="text-[15px] font-semibold">{title}</span></div>
       {children}
     </div>
   );
@@ -117,7 +119,7 @@ function MiniBars({ rows, color }: { rows: { label: string; value: number | null
   return (
     <div className="mt-3 space-y-0.5">
       {rows.map((r) => (
-        <div key={r.label} className="flex items-center gap-2 font-mono text-[10px]">
+        <div key={r.label} className="flex items-center gap-2 font-mono text-[11px]">
           <span className="w-10 shrink-0">{r.label}</span>
           <div className="h-1.5 flex-1 rounded bg-line/60"><div className={`h-1.5 rounded ${color}`} style={{ width: `${Math.max(0, Math.min(1, r.value ?? 0)) * 100}%` }} /></div>
           <span className="w-14 shrink-0 text-right">{r.text ?? (r.value == null ? "–" : `${Math.round(r.value * 100)}%`)}</span>

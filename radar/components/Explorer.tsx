@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { Map as MLMap, GeoJSONSource, StyleSpecification } from "maplibre-gl";
-import { BoxSelect, Crosshair, MousePointer2, Layers, Mountain, SplitSquareHorizontal } from "lucide-react";
+import { BoxSelect, ChevronDown, ChevronsLeftRight, Crosshair, Loader2, MousePointer2, Layers, Mountain, SplitSquareHorizontal } from "lucide-react";
 import { gibsTiles } from "@/lib/api";
 import type { Bounds, Channel, InventoryArea, Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
+import { COLOR } from "@/lib/theme";
+import { Segmented } from "@/components/ui";
 
 export type Mode = "compare" | "change" | "screening";
 export type Selection = { kind: "point"; lng: number; lat: number } | { kind: "box"; bounds: Bounds } | { kind: "area" };
@@ -49,14 +51,14 @@ function addOverlays(map: MLMap, m: Manifest, inv: InventoryArea | undefined) {
   map.addSource("dem", { type: "raster-dem", tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
     encoding: "terrarium", tileSize: 256, maxzoom: 14, attribution: "Terrain: AWS Terrain Tiles (Mapzen, USGS, SRTM and others)" });
   map.addSource("aoi", { type: "geojson", data: boxPoly({ w, s, e, n }) });
-  map.addLayer({ id: "aoi", type: "line", source: "aoi", paint: { "line-color": "#22d3ee", "line-width": 1.2, "line-dasharray": [3, 2] } });
+  map.addLayer({ id: "aoi", type: "line", source: "aoi", paint: { "line-color": COLOR.cyan, "line-width": 1.2, "line-dasharray": [3, 2] } });
   if (inv?.primary_footprint) {
     map.addSource("foot", { type: "geojson", data: { type: "Feature", properties: {}, geometry: inv.primary_footprint } });
-    map.addLayer({ id: "foot", type: "line", source: "foot", paint: { "line-color": "#8b9ab5", "line-width": 1, "line-opacity": 0.6 } });
+    map.addLayer({ id: "foot", type: "line", source: "foot", paint: { "line-color": COLOR.muted, "line-width": 1, "line-opacity": 0.6 } });
   }
   map.addSource("sel", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-  map.addLayer({ id: "sel-fill", type: "fill", source: "sel", paint: { "fill-color": "#f59e0b", "fill-opacity": 0.08 } });
-  map.addLayer({ id: "sel-line", type: "line", source: "sel", paint: { "line-color": "#f59e0b", "line-width": 2 } });
+  map.addLayer({ id: "sel-fill", type: "fill", source: "sel", paint: { "fill-color": COLOR.amber, "fill-opacity": 0.1 } });
+  map.addLayer({ id: "sel-line", type: "line", source: "sel", paint: { "line-color": COLOR.amber, "line-width": 2 } });
 }
 
 interface Props {
@@ -105,25 +107,27 @@ export default function Explorer(p: Props) {
     };
     a.on("load", onLoad(a)); b.on("load", onLoad(b));
 
-    // click = point selection; drag in draw mode = box selection
+    // click = point selection; drag in draw mode = box selection (mouse or one finger)
     let start: maplibregl.LngLat | null = null;
-    a.on("mousedown", (ev) => {
+    const boxTo = (ll: maplibregl.LngLat) => ({ w: Math.min(start!.lng, ll.lng), e: Math.max(start!.lng, ll.lng),
+      s: Math.min(start!.lat, ll.lat), n: Math.max(start!.lat, ll.lat) });
+    const begin = (ev: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
       if (!drawRef.current) return;
       ev.preventDefault(); a.dragPan.disable(); start = ev.lngLat;
-    });
-    a.on("mousemove", (ev) => {
+    };
+    const drag = (ev: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
       if (!start) return;
-      const bb = { w: Math.min(start.lng, ev.lngLat.lng), e: Math.max(start.lng, ev.lngLat.lng),
-        s: Math.min(start.lat, ev.lngLat.lat), n: Math.max(start.lat, ev.lngLat.lat) };
+      const bb = boxTo(ev.lngLat);
       for (const mp of [a, b]) (mp.getSource("sel") as GeoJSONSource | undefined)?.setData(boxPoly(bb));
-    });
-    a.on("mouseup", (ev) => {
+    };
+    const end = (ev: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
       if (!start) return;
-      const bb = { w: Math.min(start.lng, ev.lngLat.lng), e: Math.max(start.lng, ev.lngLat.lng),
-        s: Math.min(start.lat, ev.lngLat.lat), n: Math.max(start.lat, ev.lngLat.lat) };
+      const bb = boxTo(ev.lngLat);
       start = null; a.dragPan.enable(); setDraw(false);
       if (bb.e - bb.w > 0.002 && bb.n - bb.s > 0.002) onSelectRef.current({ kind: "box", bounds: bb });
-    });
+    };
+    a.on("mousedown", begin); a.on("mousemove", drag); a.on("mouseup", end);
+    a.on("touchstart", begin); a.on("touchmove", drag); a.on("touchend", end);
     a.on("click", (ev) => {
       if (pickRef.current) { setPicking(false); onPickRef.current?.(ev.lngLat.lat, ev.lngLat.lng); return; }
       if (!drawRef.current) onSelectRef.current({ kind: "point", lng: ev.lngLat.lng, lat: ev.lngLat.lat });
@@ -205,71 +209,91 @@ export default function Explorer(p: Props) {
     window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
   };
 
+  const onHandleKey = (e: React.KeyboardEvent) => {
+    const d = e.key === "ArrowLeft" ? -2 : e.key === "ArrowRight" ? 2 : 0;
+    if (!d) return;
+    e.preventDefault();
+    setSwipe((v) => Math.min(98, Math.max(2, v + d)));
+  };
+  const tool = "flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 whitespace-nowrap";
+  const idle = "border-line bg-bg-2 text-text hover:border-line-strong";
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
       {/* toolbar */}
-      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
-        <Seg value={mode} onChange={(v) => p.setMode(v as Mode)} options={[
+      <div className="flex flex-wrap items-center gap-2 border-b border-line px-3 py-2 text-[12px] sm:px-4 sm:text-[13px]">
+        <Segmented label="Map view" value={mode} onChange={(v) => p.setMode(v as Mode)} options={[
           { v: "compare", label: "Before / After", icon: <SplitSquareHorizontal size={14} /> },
           { v: "change", label: "Measured change", icon: <Layers size={14} /> },
           { v: "screening", label: "Screening", icon: <BoxSelect size={14} /> },
         ]} />
         {mode !== "screening" && (
-          <Seg value={channel} onChange={(v) => p.setChannel(v as Channel)} options={[
-            { v: "HH", label: "HH" }, { v: "HV", label: "HV", disabled: !hvOk },
+          <Segmented label="Radar channel" value={channel} onChange={(v) => p.setChannel(v as Channel)} options={[
+            { v: "HH", label: "HH", title: "Sent and received horizontally" }, { v: "HV", label: "HV", disabled: !hvOk, title: "Sent horizontally, received vertically" },
           ]} />
         )}
-        <div className="flex min-w-0 basis-full flex-wrap gap-2 xl:ml-auto xl:basis-auto">
-          <label className="flex items-center gap-1.5 rounded-md border border-line bg-panel px-3 py-1.5 text-muted" title="Radar layer opacity">
-            Opacity
-            <input type="range" min={0.1} max={1} step={0.05} value={opacity} onChange={(e) => setOpacity(+e.target.value)}
-              className="w-20" aria-label="Radar layer opacity" />
-          </label>
+        <div className="no-scrollbar -mx-3 flex min-w-0 basis-[calc(100%+1.5rem)] items-center gap-2 overflow-x-auto px-3 sm:mx-0 sm:basis-full sm:flex-wrap sm:overflow-visible sm:px-0">
           {p.onPickLocation && (
-            <button onClick={() => { setPicking((v) => !v); setDraw(false); }}
-              className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 ${picking ? "border-cyan bg-cyan/15 text-cyan" : "border-line bg-panel text-text hover:border-cyan/50"}`}>
+            <button onClick={() => { setPicking((v) => !v); setDraw(false); }} aria-pressed={picking}
+              className={`${tool} ${picking ? "border-cyan bg-cyan/15 text-cyan" : idle}`}>
               <Crosshair size={14} />{picking ? "Click anywhere on the map…" : "Analyse a new place here"}
             </button>
           )}
-          <button onClick={() => { setDraw((d) => !d); setPicking(false); }}
-            className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 ${draw ? "border-amber bg-amber/15 text-amber" : "border-line bg-panel text-text hover:border-cyan/50"}`}>
+          <button onClick={() => { setDraw((d) => !d); setPicking(false); }} aria-pressed={draw}
+            className={`${tool} ${draw ? "border-amber bg-amber/15 text-amber" : idle}`}>
             {draw ? <BoxSelect size={14} /> : <MousePointer2 size={14} />}{draw ? "Drag a box on the map…" : "Draw region"}
           </button>
-          <button onClick={() => p.onSelect({ kind: "area" })}
-            className="rounded-md border border-line bg-panel px-3 py-1.5 hover:border-cyan/50">Whole area</button>
+          <button onClick={() => p.onSelect({ kind: "area" })} disabled={p.selection.kind === "area"}
+            className={`${tool} ${idle} disabled:opacity-40`}>Whole area</button>
+          <span aria-hidden className="mx-1 hidden h-5 w-px bg-line sm:block" />
           <select value={base} onChange={(e) => setBase(e.target.value as typeof base)} aria-label="Basemap"
-            className="rounded-md border border-line bg-panel px-2 py-1.5 text-text">
+            className="shrink-0 rounded-md border border-line bg-bg-2 px-2 py-1.5 text-text hover:border-line-strong sm:max-w-full sm:shrink">
             <option value="dark">Basemap: dark</option>
             <option value="optical">Basemap: optical (Esri, undated)</option>
             <option value="nasa">Basemap: NASA same day ({(m.pairs[pairIdx]?.after ?? "").slice(5)})</option>
           </select>
           <button onClick={() => setThreeD((v) => !v)} aria-pressed={threeD}
-            className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 ${threeD ? "border-cyan bg-cyan/15 text-cyan" : "border-line bg-panel hover:border-cyan/50"}`}>
+            className={`${tool} ${threeD ? "border-cyan bg-cyan/15 text-cyan" : idle}`}>
             <Mountain size={14} />{threeD ? "3D on" : "3D terrain"}
           </button>
+          <label className="flex shrink-0 items-center gap-2 px-1 py-1.5 text-muted" title="Radar layer opacity">
+            Opacity
+            <input type="range" min={0.1} max={1} step={0.05} value={opacity} onChange={(e) => setOpacity(+e.target.value)}
+              className="w-20" aria-label="Radar layer opacity" />
+            <span className="w-8 font-mono text-[11px] text-text">{Math.round(opacity * 100)}%</span>
+          </label>
         </div>
       </div>
 
       {/* maps */}
-      <div ref={wrap} className="relative h-[62vh] min-h-[420px] overflow-hidden rounded-xl border border-line bg-panel">
+      <div ref={wrap} className="relative h-[70svh] min-h-[420px] overflow-hidden bg-void sm:h-[68vh]">
         {/* maplibre sets position:relative on its container, so each map lives inside an absolute wrapper */}
         <div className="absolute inset-0"><div ref={aEl} className="h-full w-full" /></div>
         <div className="pointer-events-none absolute inset-0" style={{ clipPath: `inset(0 0 0 ${clip}%)` }}>
           <div ref={bEl} className="h-full w-full" />
         </div>
+        {!ready && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-void text-[13px] text-muted" role="status">
+            <Loader2 size={15} className="animate-spin text-cyan" />Loading the map and radar layers…
+          </div>
+        )}
         {mode !== "change" && pair && (
           <>
-            <div className="pointer-events-none absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-[10px] text-muted sm:text-xs"><span className="hidden sm:inline">BEFORE · </span>{pair.before}</div>
-            <div className="pointer-events-none absolute top-3 right-14 rounded bg-bg/80 px-2 py-1 font-mono text-[10px] text-muted sm:text-xs"><span className="hidden sm:inline">AFTER · </span>{pair.after}</div>
-            <div className="absolute top-0 bottom-0 z-10 w-0.5 bg-cyan/80" style={{ left: `${swipe}%` }}>
-              <button aria-label="Drag to compare" onPointerDown={onHandle}
-                className="absolute top-1/2 -left-4 h-8 w-8 -translate-y-1/2 cursor-ew-resize rounded-full border-2 border-cyan bg-bg text-cyan">⇔</button>
+            <div className="pointer-events-none absolute top-3 left-3 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">Before </span>{pair.before}</div>
+            <div className="pointer-events-none absolute top-3 right-14 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">After </span>{pair.after}</div>
+            <div className="absolute top-0 bottom-0 z-10 w-px bg-cyan" style={{ left: `${swipe}%` }}>
+              <button aria-label="Drag to compare before and after" role="slider" aria-orientation="horizontal"
+                aria-valuemin={2} aria-valuemax={98} aria-valuenow={Math.round(swipe)}
+                onPointerDown={onHandle} onKeyDown={onHandleKey}
+                className="absolute top-1/2 -left-[18px] flex h-9 w-9 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full border border-cyan bg-bg text-cyan shadow-[0_2px_12px_rgba(0,0,0,0.6)]">
+                <ChevronsLeftRight size={16} />
+              </button>
             </div>
           </>
         )}
         {mode === "change" && pair && (
-          <div className="pointer-events-none absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-xs text-muted">
-            Δ{channel} = {pair.after} − {pair.before} · {pair.delta_days} days</div>
+          <div className="pointer-events-none absolute top-3 left-3 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text">
+            Δ{channel} = {pair.after} − {pair.before} <span className="text-muted">({pair.delta_days} days)</span></div>
         )}
         <Legend m={m} mode={mode} channel={channel} />
       </div>
@@ -277,59 +301,50 @@ export default function Explorer(p: Props) {
   );
 }
 
-function Seg({ value, onChange, options }: { value: string; onChange: (v: string) => void;
-  options: { v: string; label: string; icon?: React.ReactNode; disabled?: boolean }[] }) {
-  return (
-    <div className="flex overflow-hidden rounded-md border border-line bg-panel">
-      {options.map((o) => (
-        <button key={o.v} disabled={o.disabled} onClick={() => onChange(o.v)}
-          title={o.disabled ? "Not available for this pair" : undefined}
-          className={`flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1.5 sm:px-3 ${value === o.v ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"} disabled:cursor-not-allowed disabled:opacity-35`}>
-          {o.icon}{o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 function Legend({ m, mode, channel }: { m: Manifest; mode: Mode; channel: Channel }) {
   const [lo, hi] = m.stretch_db[channel];
+  // Open by default where there is room; on phones it starts folded so the map stays visible.
+  const [open, setOpen] = useState(true);
+  useEffect(() => { if (window.matchMedia("(max-width: 639px)").matches) setOpen(false); }, []);
+  const title = mode === "screening" ? "Screening (interpreted, uncalibrated)"
+    : mode === "change" ? `Right: measured Δ${channel} (dB). Left: before` : `Measured ${channel} backscatter γ⁰ (dB)`;
   return (
-    <div className="absolute bottom-8 left-3 z-10 w-56 rounded-lg sm:w-64 border border-line bg-bg/90 p-3 text-xs backdrop-blur">
-      {mode === "screening" ? (
-        <>
-          <div className="mb-1.5 font-semibold text-text">Screening (interpreted, uncalibrated)</div>
-          <Row color="#22d3ee" text="Very low HH/HV — consistent with open water" />
-          <Row color="#f59e0b" text="Bright HH, large HH−HV — consistent with double bounce (flooded vegetation or buildings)" />
-          <div className="mt-1.5 text-muted">Not confirmed flooding. See Methods.</div>
-        </>
-      ) : (
-        <>
-          <div className="mb-1.5 font-semibold text-text">
-            {mode === "change" ? <>Right: measured Δ{channel} (dB) · Left: before</> : <>Measured {channel} backscatter γ⁰ (dB)</>}
-          </div>
-          {mode === "change" ? (
+    <div className="absolute bottom-8 left-3 z-10 w-60 border border-line bg-bg/90 text-xs backdrop-blur-sm sm:w-64">
+      <button onClick={() => setOpen((o) => !o)} aria-expanded={open}
+        className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left font-semibold text-text">
+        <span>{open ? title : "Legend"}</span>
+        <ChevronDown size={14} className={`shrink-0 text-muted transition-transform duration-200 ${open ? "" : "rotate-180"}`} />
+      </button>
+      {open && (
+        <div className="px-3 pb-3">
+          {mode === "screening" ? (
             <>
-              <div className="h-2.5 rounded" style={{ background: "linear-gradient(90deg,#288cff,#14141400 50%,#f59e0b)" }} />
+              <Row color="var(--map-water)" text="Very low HH/HV — consistent with open water" />
+              <Row color="var(--map-veg)" text="Bright HH, large HH−HV — consistent with double bounce (flooded vegetation or buildings)" />
+              <div className="mt-1.5 text-muted">Not confirmed flooding. See Methods.</div>
+            </>
+          ) : mode === "change" ? (
+            <>
+              <div className="h-2.5" style={{ background: "linear-gradient(90deg, var(--map-darker), transparent 50%, var(--map-veg))" }} />
               <div className="mt-1 flex justify-between font-mono text-muted"><span>−{m.change_range_db}</span><span>0</span><span>+{m.change_range_db}</span></div>
               <div className="mt-1 text-muted">Blue = darker, amber = brighter radar return.</div>
             </>
           ) : (
             <>
-              <div className="h-2.5 rounded" style={{ background: "linear-gradient(90deg,#000,#fff)" }} />
+              <div className="h-2.5 border border-line" style={{ background: "linear-gradient(90deg, black, white)" }} />
               <div className="mt-1 flex justify-between font-mono text-muted"><span>{lo}</span><span>{hi}</span></div>
             </>
           )}
-        </>
+          <div className="mt-2 flex items-center gap-2 text-muted">
+            <span className="inline-block h-0 w-5 border-t border-dashed border-cyan" />Study area
+            <span className="ml-2 inline-block h-0 w-5 border-t border-muted" />NISAR frame
+          </div>
+        </div>
       )}
-      <div className="mt-2 flex items-center gap-2 text-muted">
-        <span className="inline-block h-0 w-5 border-t border-dashed border-cyan" />Study area
-        <span className="ml-2 inline-block h-0 w-5 border-t border-muted" />NISAR frame
-      </div>
     </div>
   );
 }
 
 const Row = ({ color, text }: { color: string; text: string }) => (
-  <div className="mb-1 flex items-start gap-2"><span className="mt-0.5 h-3 w-3 shrink-0 rounded-sm" style={{ background: color }} /><span className="text-muted">{text}</span></div>
+  <div className="mb-1 flex items-start gap-2"><span className="mt-0.5 h-3 w-3 shrink-0" style={{ background: color }} /><span className="text-muted">{text}</span></div>
 );

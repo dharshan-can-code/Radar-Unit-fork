@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ArrowDown, Cloud, CloudRain, Droplets, Loader2, Map as MapIcon, MapPin, Pause, Play, Search, Share2, ShieldCheck, Sparkles, Trees,
+  ArrowDown, Check, Cloud, CloudRain, Loader2, Map as MapIcon, MapPin, Pause, Play, Search, Share2, ShieldCheck, Sparkles,
 } from "lucide-react";
 import type { GridIndex, Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
 import { Rainfall, acquisitions, errorText, geocode, job as getJob, loadResult, startAnalysis } from "@/lib/api";
 import { StoryFacts, buildStory, fmtDate, fmtKm2 } from "@/lib/story";
-import { Tag } from "@/components/Fingerprint";
+import { Tag } from "@/components/ui";
 import { MAT, MAT_LABEL, LiveResult } from "@/components/LiveSearch";
 import { storySound } from "@/lib/sound";
 import ExamplePicker from "@/components/ExamplePicker";
@@ -59,9 +59,11 @@ function Chapter({ id, n, kicker, title, children, onEnter }: { id: string; n: n
   }, [ref]);
   return (
     <section id={id} ref={ref} className={`story-chapter flex min-h-[85vh] flex-col justify-center py-16 ${seen ? "is-in" : ""}`}>
-      <div className="reveal font-mono text-xs tracking-widest text-amber">CHAPTER {n} · {kicker}</div>
-      <h2 className="reveal reveal-d1 mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
-      <div className="reveal reveal-d2 mt-6">{children(seen)}</div>
+      <div className="reveal flex items-center gap-3 text-[13px] text-amber">
+        <span className="font-mono">Chapter {n}</span><span aria-hidden className="h-px w-8 bg-amber/50" /><span>{kicker}</span>
+      </div>
+      <h2 className="reveal reveal-d1 mt-3 max-w-4xl text-3xl leading-[1.08] font-medium sm:text-5xl">{title}</h2>
+      <div className="reveal reveal-d2 mt-8">{children(seen)}</div>
     </section>
   );
 }
@@ -79,7 +81,7 @@ function Flipbook({ m, layer = "HH", interval = 1100, big = false }: { m: Manife
   const cur = obs.length ? i % obs.length : 0; // never index past the end (e.g. after switching places)
   return (
     <figure className={`relative mx-auto w-full ${big ? "max-w-2xl" : "max-w-md"}`}>
-      <div className="relative overflow-hidden rounded-xl border border-line bg-[#05080f]" style={{ paddingTop: `${ratio * 100}%` }}>
+      <div className="relative overflow-hidden rounded-xl border border-line bg-void" style={{ paddingTop: `${ratio * 100}%` }}>
         {obs.map((o, k) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img key={o.date} src={imgUrl(m, `${o.date}_${layer === "class" ? "class" : "HH"}`)} alt={`NISAR ${layer} radar image, ${o.date}`}
@@ -153,7 +155,7 @@ function Builder({ onResult, compact }: { onResult: (r: LiveResult) => void; com
   }
 
   return (
-    <div className={`rounded-2xl border border-amber/40 bg-gradient-to-br from-amber/10 to-transparent ${compact ? "p-4" : "p-6"}`}>
+    <div className={`rounded-lg border border-amber/40 bg-amber/[0.06] ${compact ? "p-4 sm:p-5" : "p-5 sm:p-7"}`}>
       <div className="flex items-center gap-2 text-sm font-semibold text-amber"><Sparkles size={16} />Build the story of any place</div>
       <p className="mt-1 text-[13px] text-muted">Type a place. DELTA PULSE reads the newest real NISAR radar images of it and writes its story, about 20–40 seconds.</p>
       <form onSubmit={build} className="mt-3 flex flex-wrap gap-2">
@@ -174,7 +176,7 @@ function Builder({ onResult, compact }: { onResult: (r: LiveResult) => void; com
         <ol className="mt-3 space-y-1 text-[13px]" aria-live="polite">
           {steps.map((s, k) => (
             <li key={k} className={`story-line flex items-start gap-2 ${s.done ? "text-muted" : "text-text"}`}>
-              {s.done ? <span className="text-green">✓</span> : <Loader2 size={13} className="mt-0.5 animate-spin text-amber" />}{s.text}
+              {s.done ? <Check size={13} className="mt-0.5 shrink-0 text-green" /> : <Loader2 size={13} className="mt-0.5 shrink-0 animate-spin text-amber" />}{s.text}
             </li>
           ))}
         </ol>
@@ -255,7 +257,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
   if (!m || !f) {
     return (
       <div className="py-16">
-        <h1 className="text-4xl font-semibold tracking-tight">Your Story</h1>
+        <h1 className="text-[2.6rem] leading-[1.02] font-medium sm:text-6xl">Your Story</h1>
         <p className="mt-2 max-w-2xl text-lg text-text/80">Every place has water we cannot see: under clouds, under trees, under the night. Pick a place and NISAR&apos;s radar will tell its story.</p>
         <div className="mt-6"><Builder onResult={onResult} /></div>
       </div>
@@ -267,23 +269,23 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
   const share = () => { if (shareUrl) navigator.clipboard?.writeText(shareUrl).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); }); };
 
   return (
-    <div className="story">
+    <div className="story js-motion">
       {/* progress rail */}
       <div className="pointer-events-none fixed top-1/2 right-3 z-50 hidden -translate-y-1/2 flex-col gap-2 lg:flex">
-        {CHAPTERS.map((c) => <a key={c} href={`#${c}`} className="pointer-events-auto h-2 w-2 rounded-full bg-line hover:bg-amber" aria-label={`Go to ${c}`} />)}
+        {CHAPTERS.map((c, i) => <a key={c} href={`#${c}`} className="pointer-events-auto h-2 w-2 rounded-full bg-line-strong hover:bg-amber" aria-label={i === 0 ? "Go to the cover" : i === CHAPTERS.length - 1 ? "Go to the end" : `Go to chapter ${i}`} />)}
       </div>
 
       <button onClick={toggleSound} aria-label={sound ? "Turn sound off" : "Turn sound on"} title="Narration, data sound and rain"
         className={`fixed right-4 bottom-4 z-50 flex items-center gap-1.5 rounded-full border px-3 py-2 text-[12px] shadow-lg backdrop-blur ${sound ? "border-cyan bg-cyan/20 text-cyan" : "border-line bg-bg/80 text-muted"}`}>
-        {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}{sound ? "Sound on" : "Sound off"}
+        {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}<span className="hidden sm:inline">{sound ? "Sound on" : "Sound off"}</span>
       </button>
 
       {/* COVER */}
-      <section id="s-cover" className="story-chapter is-in relative flex min-h-[92vh] flex-col justify-center py-12">
+      <section id="s-cover" className="story-chapter is-in atmosphere relative -mx-4 flex min-h-[calc(100svh-52px)] flex-col justify-center px-4 py-12 sm:-mx-6 sm:px-6 xl:min-h-svh">
         <div className="grid items-center gap-8 lg:grid-cols-2">
           <div>
-            <div className="reveal font-mono text-xs tracking-widest text-amber">A STORY WRITTEN BY RADAR · {f.satellite.toUpperCase()}</div>
-            <h1 className="reveal reveal-d1 mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
+            <div className="reveal text-[13px] text-amber">A story written by radar: {f.satellite}</div>
+            <h1 className="reveal reveal-d1 mt-4 text-[2.6rem] leading-[1.02] font-medium sm:text-6xl">
               The water we cannot see<span className="block text-cyan">in {f.place}</span>
             </h1>
             <p className="reveal reveal-d2 mt-4 text-lg text-text/80">
@@ -300,7 +302,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
               </button>
               <a href="#s-sky" className="flex items-center gap-1.5 rounded-md border border-line px-4 py-2 text-sm text-text hover:border-amber/50"><ArrowDown size={14} />Scroll to read</a>
             </div>
-            <div className="reveal reveal-d3 mt-6 flex flex-wrap gap-2 text-[11px]">
+            <div className="reveal reveal-d3 mt-6 flex flex-wrap gap-2 text-[12px]">
               <span className={`rounded border px-2 py-0.5 font-mono ${MAT[f.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[f.maturity] ?? f.maturity} {f.crid}</span>
               <span className="rounded border border-line px-2 py-0.5 font-mono text-muted">track {f.track} · {f.resM} m cells · ~{fmtKm2(f.windowKm2)} km² studied</span>
             </div>
@@ -310,10 +312,10 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </section>
 
       {/* 1. SKY */}
-      <Chapter id="s-sky" n={1} kicker="ABOVE THE CLOUDS" title={passLocal?.dark ? "A camera would have seen clouds, or nothing at all." : "A camera would have seen clouds."} onEnter={() => narrate("sky")}>
+      <Chapter id="s-sky" n={1} kicker="Above the clouds" title={passLocal?.dark ? "A camera would have seen clouds, or nothing at all." : "A camera would have seen clouds."} onEnter={() => narrate("sky")}>
         {(seen) => (
           <div className="grid gap-8 lg:grid-cols-2">
-            <div className="space-y-4 text-lg text-text/85">
+            <div className="max-w-[60ch] space-y-4 text-[17px] leading-relaxed text-text/85">
               {f.cloudyPasses != null ? (
                 <p>
                   At the exact hour NISAR flew over, clouds covered more than half the sky on{" "}
@@ -335,7 +337,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                 </p>
               )}
               <p className="text-base text-muted">NISAR&apos;s 24 cm L-band waves pass through cloud and rain, and even partly through leaves. That&apos;s how we can see water that is hidden from above.</p>
-              <div className="flex flex-wrap gap-2 text-[11px]"><Tag kind="OBSERVED" /><span className="text-muted">Cloud and rain: ERA5 reanalysis via Open-Meteo, at this location.</span></div>
+              <div className="flex flex-wrap gap-2 text-[12px]"><Tag kind="OBSERVED" /><span className="text-muted">Cloud and rain: ERA5 reanalysis via Open-Meteo, at this location.</span></div>
             </div>
             <div className="rounded-xl border border-line bg-panel p-4">
               <div className="mb-2 text-[12px] text-muted">Sky at each NISAR pass</div>
@@ -344,8 +346,8 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                   <div key={p.date} className="flex items-center gap-3 text-[12px]">
                     <span className="w-24 shrink-0 font-mono text-muted">{p.date}</span>
                     <div className="h-4 flex-1 overflow-hidden rounded bg-panel-2">
-                      <div className="grow-bar h-full rounded bg-gradient-to-r from-slate-400 to-slate-200"
-                        style={{ width: seen && p.cloud_pct != null ? `${p.cloud_pct}%` : "0%", transitionDelay: `${k * 90}ms` }} />
+                      <div className="grow-bar h-full bg-muted"
+                        style={{ width: p.cloud_pct != null ? `${p.cloud_pct}%` : "0%", transform: `scaleX(${seen ? 1 : 0})`, transitionDelay: `${k * 90}ms` }} />
                     </div>
                     <span className="flex w-16 shrink-0 items-center gap-1 text-text">{p.cloud_pct != null ? <><Cloud size={12} className="text-muted" />{Math.round(p.cloud_pct)}%</> : "–"}</span>
                   </div>
@@ -357,24 +359,24 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       </Chapter>
 
       {/* 2. RADAR */}
-      <Chapter id="s-radar" n={2} kicker="WHAT THE RADAR SAW" title={`${f.n} looks at ${f.place}, through everything.`} onEnter={() => narrate("radar")}>
+      <Chapter id="s-radar" n={2} kicker="What the radar saw" title={`${f.n} looks at ${f.place}, through everything.`} onEnter={() => narrate("radar")}>
         {() => (
           <div className="grid items-center gap-8 lg:grid-cols-2">
             <Flipbook key={`${m.stack}-b`} m={m} big />
-            <div className="space-y-4 text-lg text-text/85">
+            <div className="max-w-[60ch] space-y-4 text-[17px] leading-relaxed text-text/85">
               <p>These are the real radar images, one every pass. Watch for <b>dark areas growing or shrinking</b>: calm water reflects the radar away like a mirror, so it shows up black.</p>
               <p>Very <b>bright</b> patches near water can mean something hidden: water standing under trees bounces the radar straight back, like light off the corner of a mirror.</p>
-              <div className="flex flex-wrap gap-2 text-[11px]"><Tag kind="OBSERVED" /><span className="text-muted">NISAR L2 GCOV, HH polarisation, {f.resM} m cells, read live from NASA&apos;s ASF archive.</span></div>
+              <div className="flex flex-wrap gap-2 text-[12px]"><Tag kind="OBSERVED" /><span className="text-muted">NISAR L2 GCOV, HH polarisation, {f.resM} m cells, read live from NASA&apos;s ASF archive.</span></div>
             </div>
           </div>
         )}
       </Chapter>
 
       {/* 3. HIDDEN WATER */}
-      <Chapter id="s-water" n={3} kicker="THE HIDDEN WATER" title="How much water-like ground did the radar find?" onEnter={() => narrate("water")}>
+      <Chapter id="s-water" n={3} kicker="The hidden water" title="How much water-like ground did the radar find?" onEnter={() => narrate("water")}>
         {(seen) => (
           <div className="grid gap-8 lg:grid-cols-2">
-            <div className="space-y-4 text-lg text-text/85">
+            <div className="max-w-[60ch] space-y-4 text-[17px] leading-relaxed text-text/85">
               {f.waterPeak.water_km2 < 1 ? (
                 <p>
                   Almost no open, calm water showed up here: under <b className="text-cyan">1 km²</b> on every pass. Rivers narrower
@@ -408,21 +410,21 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                   numbers count only the {f.commonKm2 != null ? `${fmtKm2(f.commonKm2)} km² of ` : ""}ground seen on every pass.
                 </p>
               )}
-              <div className="flex flex-wrap gap-2 text-[11px]"><Tag kind="CALCULATED" /><Tag kind="INTERPRETED" />
+              <div className="flex flex-wrap gap-2 text-[12px]"><Tag kind="CALCULATED" /><Tag kind="INTERPRETED" />
                 <span className="text-muted">Compared over ground seen on every pass{f.commonKm2 != null ? ` (${fmtKm2(f.commonKm2)} km²)` : ""}. Screening thresholds are uncalibrated; they show the pattern and its timing, not surveyed flood extents.</span></div>
             </div>
             <div className="rounded-xl border border-line bg-panel p-4">
-              <div className="mb-2 flex gap-4 text-[11px] text-muted">
-                <span className="flex items-center gap-1"><Droplets size={12} className="text-cyan" />water-like</span>
-                <span className="flex items-center gap-1"><Trees size={12} className="text-amber" />hidden under vegetation?</span>
+              <div className="mb-2 flex gap-4 text-[12px] text-muted">
+                <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 bg-map-water" />water-like</span>
+                <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 bg-map-veg" />hidden under vegetation?</span>
               </div>
               <div className="space-y-2">
                 {f.passes.map((p, k) => (
                   <div key={p.date} className="flex items-center gap-3 text-[12px]">
                     <span className="w-24 shrink-0 font-mono text-muted">{p.date}</span>
                     <div className="flex h-5 flex-1 overflow-hidden rounded bg-panel-2">
-                      <div className="grow-bar h-full bg-cyan" style={{ width: seen ? `${(p.water_km2 / maxArea) * 100}%` : "0%", transitionDelay: `${k * 110}ms` }} />
-                      <div className="grow-bar h-full bg-amber" style={{ width: seen ? `${(p.flooded_veg_km2 / maxArea) * 100}%` : "0%", transitionDelay: `${k * 110 + 60}ms` }} />
+                      <div className="grow-bar h-full bg-map-water" style={{ width: `${(p.water_km2 / maxArea) * 100}%`, transform: `scaleX(${seen ? 1 : 0})`, transitionDelay: `${k * 110}ms` }} />
+                      <div className="grow-bar h-full bg-map-veg" style={{ width: `${(p.flooded_veg_km2 / maxArea) * 100}%`, transform: `scaleX(${seen ? 1 : 0})`, transitionDelay: `${k * 110 + 60}ms` }} />
                     </div>
                     <span className="w-20 shrink-0 text-right font-mono text-text">{fmtKm2(p.water_km2 + p.flooded_veg_km2)} km²</span>
                   </div>
@@ -436,7 +438,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
 
       {/* 4. BIGGEST CHANGE */}
       {f.biggest && (
-        <Chapter id="s-change" n={4} kicker="THE MOMENT IT CHANGED" title={`${fmtDate(f.biggest.before)} → ${fmtDate(f.biggest.after)}`} onEnter={() => narrate("change")}>
+        <Chapter id="s-change" n={4} kicker="The moment it changed" title={`${fmtDate(f.biggest.before)} → ${fmtDate(f.biggest.after)}`} onEnter={() => narrate("change")}>
           {(seen) => {
             const big = f.biggest!;
             const c = (big as unknown as { HH_change?: { frac_increase: number; frac_decrease: number; mean_db: number } }).HH_change;
@@ -444,7 +446,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
             return (
               <div className="grid items-center gap-8 lg:grid-cols-2">
                 <figure className="mx-auto w-full max-w-xl">
-                  <div className="relative overflow-hidden rounded-xl border border-line bg-[#05080f]" style={{ paddingTop: `${(m.display.ny / m.display.nx) * 100}%` }}>
+                  <div className="relative overflow-hidden rounded-xl border border-line bg-void" style={{ paddingTop: `${(m.display.ny / m.display.nx) * 100}%` }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={imgUrl(m, `${big.before}_HH`)} alt="Radar before" className="absolute inset-0 h-full w-full object-contain opacity-40" />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -452,7 +454,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                   </div>
                   <figcaption className="mt-1 text-center text-[12px] text-muted"><span className="text-amber">Amber</span> = got brighter · <span className="text-blue">blue</span> = got darker ({big.delta_days} days apart)</figcaption>
                 </figure>
-                <div className="space-y-4 text-lg text-text/85">
+                <div className="max-w-[60ch] space-y-4 text-[17px] leading-relaxed text-text/85">
                   <p>
                     In just <b>{big.delta_days} days</b>, <b className="text-amber"><CountUp to={(c?.frac_increase ?? 0) * 100} active={seen} decimals={1} />%</b> of the
                     ground got clearly brighter and <b className="text-blue"><CountUp to={(c?.frac_decrease ?? 0) * 100} active={seen} decimals={1} />%</b> got clearly darker.
@@ -462,7 +464,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                     <p className="flex items-start gap-2"><CloudRain size={18} className="mt-1 shrink-0 text-blue" />
                       <span>In the 7 days before {fmtDate(big.after)}, about <b>{after.rain7_mm.toFixed(0)} mm</b> of rain fell. Rain wets soil and leaves, which can change the radar too.</span></p>
                   )}
-                  <div className="flex flex-wrap gap-2 text-[11px]"><Tag kind="CALCULATED" /><span className="text-muted">Share of {f.resM} m cells changing by ≥3 dB (twice as bright, or half).</span></div>
+                  <div className="flex flex-wrap gap-2 text-[12px]"><Tag kind="CALCULATED" /><span className="text-muted">Share of {f.resM} m cells changing by ≥3 dB (twice as bright, or half).</span></div>
                 </div>
               </div>
             );
@@ -471,7 +473,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
       )}
 
       {/* 5. HOW SURE */}
-      <Chapter id="s-sure" n={5} onEnter={() => narrate("sure")} kicker="HOW SURE ARE WE?" title={f.verdict ? `Verdict: ${f.verdict.toLowerCase()}.` : "What we can, and cannot, say."}>
+      <Chapter id="s-sure" n={5} onEnter={() => narrate("sure")} kicker="How sure are we?" title={f.verdict ? `Verdict: ${f.verdict.toLowerCase()}.` : "What we can, and cannot, say."}>
         {() => (
           <div className="grid gap-8 lg:grid-cols-2">
             <ul className="space-y-3">
@@ -496,8 +498,7 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
 
       {/* 6. NEXT */}
       <section id="s-next" className="flex min-h-[60vh] flex-col justify-center py-16">
-        <div className="font-mono text-xs tracking-widest text-amber">YOUR TURN</div>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight">Every place has water we cannot see.</h2>
+        <h2 className="max-w-3xl text-3xl leading-[1.08] font-medium sm:text-5xl">Every place has water we cannot see.</h2>
         <p className="mt-3 max-w-2xl text-lg text-text/80">Explore {f.place} in detail on the map, share this story, or tell the story of another place.</p>
         <div className="mt-6 flex flex-wrap gap-2">
           <button onClick={onOpenMap} className="flex items-center gap-1.5 rounded-md bg-cyan px-4 py-2 text-sm font-medium text-bg"><MapIcon size={14} />Explore on the map</button>

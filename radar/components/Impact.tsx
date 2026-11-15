@@ -1,83 +1,39 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { GraduationCap, HeartHandshake, Fish, Siren, Sprout, Waves } from "lucide-react";
+import { AlertTriangle, CircleCheck, GraduationCap, HeartHandshake, Fish, Siren, Sprout } from "lucide-react";
 import type { GridIndex, Manifest } from "@/lib/data";
 import { latest } from "@/lib/api";
-import { buildStory } from "@/lib/story";
 import { Tag } from "@/components/Fingerprint";
 
 const WHO: [React.ReactNode, string, string][] = [
-  [<Siren key="i" size={18} />, "Disaster responders", "See where floodwater may be spreading under clouds and forest canopy, days after a storm, anywhere NISAR has passed."],
   [<Fish key="i" size={18} />, "Wetland & fisheries managers", "Track the seasonal flood pulse that fish breeding and wetland health depend on, pass by pass, without field trips into flooded forest."],
-  [<Sprout key="i" size={18} />, "Farmers & water agencies", "Watch rice paddies flood and drain, and compare this season with rainfall at the same place."],
+  [<Sprout key="i" size={18} />, "Farmers & water agencies", "Watch fields and floodplains flood and drain, and compare this season with rainfall at the same place."],
+  [<Siren key="i" size={18} />, "Flood & recovery planners", "See where water lingered under clouds and canopy over the season. NISAR revisits every 12 days, so this is for planning, not minute-by-minute alerts."],
   [<GraduationCap key="i" size={18} />, "Students & the public", "Learn how radar sees what cameras cannot, with every number labelled by how certain it is."],
 ];
 
 /** Why DELTA PULSE matters, with every number taken from real data in the app. */
-export default function Impact({ m, grid }: { m: Manifest | null; grid: GridIndex | null }) {
+export default function Impact() {
   const [recent, setRecent] = useState<number | null>(null);
   useEffect(() => { latest(3).then((l) => setRecent(l.n)).catch(() => setRecent(null)); }, []);
 
-  // Same fair comparison as the story: only ground seen on every pass.
-  const stats = useMemo(() => {
-    if (!m || m.observations.length < 2) return null;
-    const f = buildStory(m, null, grid);
-    const first = f.passes[0];
-    return { name: m.name, first, firstW: first.water_km2, peakW: f.waterPeak, peakWv: f.waterPeak.water_km2,
-      peakV: f.vegPeak, peakVv: f.vegPeak.flooded_veg_km2, firstV: first.flooded_veg_km2 };
-  }, [m, grid]);
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-line bg-panel p-5 md:col-span-2">
-          <div className="flex items-center gap-2 text-sm font-semibold text-cyan"><Waves size={16} />The problem</div>
-          <p className="mt-2 text-[15px] leading-relaxed text-text/85">
-            Floods and wetlands change fastest exactly when it is cloudy and raining, when ordinary satellite photos see only cloud.
-            Water spreading <b>under forests</b> is invisible from above even on clear days. Communities, responders and ecosystems
-            depend on knowing where that hidden water is.
-          </p>
-          <p className="mt-3 text-[15px] leading-relaxed text-text/85">
-            NISAR&apos;s L-band radar sees through cloud, at night, and partly through vegetation, and it has imaged nearly all of
-            Earth&apos;s land every 12 days since 2025. But its data arrives as multi-gigabyte scientific files. <b>DELTA PULSE turns
-            them into answers anyone can read, for any place, in about 10–15 seconds.</b>
-          </p>
-        </div>
-        <div className="rounded-xl border border-line bg-panel p-5">
-          <div className="text-sm font-semibold text-cyan">Live right now</div>
-          <div className="mt-2 text-4xl font-semibold text-text">{recent ?? "…"}</div>
-          <p className="text-[13px] text-muted">new NISAR radar products published for the last 3 days, all explorable in DELTA PULSE</p>
-          <div className="mt-2"><Tag kind="OBSERVED" /></div>
-        </div>
-      </div>
-
-      {stats && (
-        <div className="rounded-xl border border-amber/30 bg-amber/5 p-5">
-          <div className="text-sm font-semibold text-amber">What the radar showed here: {stats.name}</div>
-          <p className="mt-2 text-[15px] leading-relaxed text-text/85">
-            Water-like ground went from about <b>{Math.round(stats.firstW).toLocaleString()} km²</b> ({stats.first.date}) to a peak of
-            about <b>{Math.round(stats.peakWv).toLocaleString()} km²</b> ({stats.peakW.date}). Signs of water hidden under vegetation peaked at
-            about <b>{Math.round(stats.peakVv).toLocaleString()} km²</b> ({stats.peakV.date}), from {Math.round(stats.firstV).toLocaleString()} km²
-            at the start. That is ground an optical satellite would show as ordinary forest or fields.
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2 text-[11px]"><Tag kind="CALCULATED" /><Tag kind="INTERPRETED" /><span className="text-muted">Screening areas, uncalibrated: see the sensitivity test in Methods.</span></div>
-        </div>
-      )}
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
         {WHO.map(([icon, t, d]) => (
-          <div key={t} className="rounded-xl border border-line bg-panel p-5">
+          <li key={t} className="border-t border-line-strong pt-5">
             <div className="text-cyan">{icon}</div>
-            <div className="mt-2 text-sm font-semibold">{t}</div>
-            <p className="mt-1 text-[13px] leading-relaxed text-text/75">{d}</p>
-          </div>
+            <h3 className="mt-3 text-[17px] font-medium">{t}</h3>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-text/75">{d}</p>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-line bg-panel p-5">
           <div className="text-sm font-semibold">Case study: Tonle Sap, Cambodia</div>
-          <p className="mt-2 text-[14px] leading-relaxed text-text/80">
+          <p className="mt-2 max-w-[58ch] text-[14px] leading-relaxed text-text/80">
             Tonle Sap is Southeast Asia&apos;s largest freshwater lake and a UNESCO Biosphere Reserve. Each monsoon the Mekong pushes so much
             water into it that the Tonle Sap River reverses direction and the lake floods the surrounding forest. The Mekong River
             Commission describes this flood pulse as the engine of one of the world&apos;s most productive inland fisheries. DELTA PULSE
@@ -87,7 +43,9 @@ export default function Impact({ m, grid }: { m: Manifest | null; grid: GridInde
         <div className="rounded-xl border border-line bg-panel p-5">
           <div className="flex items-center gap-2 text-sm font-semibold"><HeartHandshake size={16} className="text-cyan" />Open, honest, reusable</div>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-[14px] text-text/80">
-            <li>Open source, with the full processing chain documented and tested (28 automated tests).</li>
+            <li>Open source, with the full processing chain documented and tested (32 automated tests).</li>
+            <li>Checked against independent data: Landsat water maps, river-flow models and weather records.</li>
+            {recent != null && <li>Ready for new data: NISAR published {recent} new radar products in the last 3 days.</li>}
             <li>Every statement is labelled observed, calculated, interpreted or unconfirmed.</li>
             <li>Built to grow: next steps are calibrating against river gauges, alerts for watched places, and more languages.</li>
           </ul>
@@ -130,8 +88,8 @@ export function Sensitivity({ m, grid }: { m: Manifest | null; grid: GridIndex |
       </div>
       <p className="mt-1 text-[13px] text-muted">Water-like area (km²) recomputed with the HH threshold moved by ±2 dB, using the {m.grid.res_m} m grid.</p>
       <div className="mt-3 overflow-auto">
-        <table className="w-full text-left font-mono text-[11px]">
-          <thead className="text-muted"><tr><th className="p-1">HH below</th>{m.observations.map((o) => <th key={o.date} className="p-1">{o.date.slice(5)}</th>)}</tr></thead>
+        <table className="w-full text-left font-mono text-[11px] whitespace-nowrap">
+          <thead className="text-muted"><tr><th className="p-1 font-normal">HH below</th>{m.observations.map((o) => <th key={o.date} className="p-1 font-normal">{o.date.slice(5)}</th>)}</tr></thead>
           <tbody>
             {res.ths.map((t, i) => (
               <tr key={t} className={`border-t border-line/60 ${i === 1 ? "text-text" : "text-muted"}`}>
@@ -142,12 +100,14 @@ export function Sensitivity({ m, grid }: { m: Manifest | null; grid: GridIndex |
           </tbody>
         </table>
       </div>
-      <ul className="mt-3 space-y-1 text-[13px]">
-        <li className={res.robustTrend ? "text-green" : "text-amber"}>
-          {res.robustTrend ? "✓ Robust: the direction of change (first → last date) is the same at all three thresholds." : "⚠ Sensitive: the direction of change depends on the threshold. Treat it with care."}
+      <ul className="mt-4 space-y-1.5 text-[13px]">
+        <li className={`flex items-start gap-2 ${res.robustTrend ? "text-green" : "text-amber"}`}>
+          {res.robustTrend ? <CircleCheck size={15} className="mt-0.5 shrink-0" /> : <AlertTriangle size={15} className="mt-0.5 shrink-0" />}
+          {res.robustTrend ? "Robust: the direction of change (first → last date) is the same at all three thresholds." : "Sensitive: the direction of change depends on the threshold. Treat it with care."}
         </li>
-        <li className={res.robustPeak ? "text-green" : "text-amber"}>
-          {res.robustPeak ? "✓ Robust: the date with the most water-like area is the same at all three thresholds." : "⚠ The peak date shifts with the threshold. The timing is uncertain."}
+        <li className={`flex items-start gap-2 ${res.robustPeak ? "text-green" : "text-amber"}`}>
+          {res.robustPeak ? <CircleCheck size={15} className="mt-0.5 shrink-0" /> : <AlertTriangle size={15} className="mt-0.5 shrink-0" />}
+          {res.robustPeak ? "Robust: the date with the most water-like area is the same at all three thresholds." : "The peak date shifts with the threshold. The timing is uncertain."}
         </li>
       </ul>
     </div>

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BrandMark, Tag } from "@/components/ui";
 import {
-  ArrowLeft, BoxSelect, CloudRain, Crosshair, Download, Globe2, HelpCircle, Layers, Link2, MousePointer2, Radar,
-  Satellite, Search, SplitSquareHorizontal, Zap,
+  ArrowLeft, BoxSelect, ChevronsLeftRight, CloudRain, Crosshair, Download, Globe2, HelpCircle, Layers, Link2, MousePointer2,
+  Satellite, Search, Sparkles, SplitSquareHorizontal, Zap,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -37,12 +38,12 @@ function Step({ n, icon, title, children }: { n: number; icon: React.ReactNode; 
   return (
     <div className="flex gap-4 rounded-xl border border-line bg-panel p-5">
       <div className="flex flex-col items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan font-mono text-sm font-semibold text-bg">{n}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan font-mono text-sm font-medium text-cyan">{n}</span>
         <span className="text-cyan">{icon}</span>
       </div>
       <div className="min-w-0">
         <h3 className="text-base font-semibold text-text">{title}</h3>
-        <div className="mt-1 space-y-2 text-[14px] leading-relaxed text-text/80">{children}</div>
+        <div className="mt-1 max-w-[60ch] space-y-2 text-[14px] leading-relaxed text-text/80">{children}</div>
       </div>
     </div>
   );
@@ -55,7 +56,7 @@ const Btn = ({ children }: { children: React.ReactNode }) => (
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section id={id} className="mt-14 scroll-mt-6">
-      <h2 className="mb-4 text-2xl font-semibold tracking-tight">{title}</h2>
+      <h2 className="mb-5 border-t border-line pt-6 text-[1.75rem] leading-tight font-medium">{title}</h2>
       {children}
     </section>
   );
@@ -66,12 +67,12 @@ export default function Guide() {
     <main className="mx-auto max-w-4xl px-4 pb-24 sm:px-6">
       <div className="flex items-center justify-between pt-6">
         <Link href="/" className="flex items-center gap-1.5 text-sm text-cyan hover:text-text"><ArrowLeft size={15} />Back to the app</Link>
-        <span className="flex items-center gap-2 font-mono text-xs tracking-widest text-cyan"><Radar size={14} />DELTA PULSE</span>
+        <span className="flex items-center gap-2 font-display text-[15px] font-semibold tracking-[0.04em] text-text"><span className="text-cyan"><BrandMark /></span>DELTA PULSE</span>
       </div>
 
       <header className="pt-8">
-        <h1 className="text-4xl font-semibold tracking-tight">User Guide</h1>
-        <p className="mt-3 text-lg text-text/80">
+        <h1 className="text-[2.6rem] leading-[1.02] font-medium sm:text-6xl">User Guide</h1>
+        <p className="mt-4 max-w-[62ch] text-lg text-text/80">
           DELTA PULSE lets you see how water and land changed anywhere on Earth, using radar images from the
           NASA-ISRO <b>NISAR</b> satellite. Radar works through clouds and at night, so it can reveal flooding that
           normal satellite photos miss.
@@ -80,7 +81,7 @@ export default function Guide() {
         <nav className="mt-6 flex flex-wrap gap-2 text-[13px]">
           {[["start", "Quick start"], ["map", "Reading the map"], ["fingerprint", "Understanding the results"],
             ["anywhere", "Explore any place"], ["story", "Your Story"], ["more", "More to explore"], ["save", "Save & share"], ["labels", "What the labels mean"], ["faq", "Questions"]].map(([id, t]) => (
-            <a key={id} href={`#${id}`} className="rounded-full border border-line px-3 py-1 text-muted hover:border-cyan/50 hover:text-text">{t}</a>
+            <a key={id} href={`#${id}`} className="rounded-md border border-line px-3 py-1 text-muted hover:border-line-strong hover:text-text">{t}</a>
           ))}
         </nav>
       </header>
@@ -88,13 +89,13 @@ export default function Guide() {
       <Section id="start" title="Quick start: 3 steps">
         <div className="grid gap-3">
           <Step n={1} icon={<SplitSquareHorizontal size={16} />} title="Look at the example">
-            <p>Use the bar at the top to jump between sections. The app opens on <b>Tonle Sap Lake in Cambodia</b>, which swells enormously every monsoon. Drag the round <Btn>⇔</Btn> handle on the map left and right to compare two dates.</p>
+            <p>Use the bar at the top to jump between sections. The app opens on <b>Tonle Sap Lake in Cambodia</b>, which swells enormously every monsoon. Drag the round <Btn><ChevronsLeftRight size={12} /></Btn> handle on the map left and right to compare two dates.</p>
           </Step>
           <Step n={2} icon={<MousePointer2 size={16} />} title="Click anywhere on the map">
             <p>The <b>Radar Change Fingerprint</b> below the map tells you, in plain words, what changed at that spot and how sure we can be.</p>
           </Step>
           <Step n={3} icon={<Search size={16} />} title="Try your own place">
-            <p>Type a place like <i>Jakarta</i> or <i>New Orleans</i> into the search box at the top, press <Btn><Search size={11} />Search</Btn>, then <Btn>▶ Analyse</Btn>. After about 10–15 seconds the whole page shows real radar for your place.</p>
+            <p>Type a place like <i>Jakarta</i> or <i>New Orleans</i> into the search box in the <b>Other places</b> section, press <Btn><Search size={11} />Search</Btn>, then <Btn>▶ Analyse</Btn>. After about 10–15 seconds the whole page shows real radar for your place. No server running? Open one of the three ready-made examples there instead.</p>
           </Step>
         </div>
       </Section>
@@ -191,7 +192,7 @@ export default function Guide() {
 
       <Section id="story" title="Your Story: an animated story of any place">
         <div className="rounded-xl border border-amber/40 bg-amber/5 p-5 text-[14px] leading-relaxed text-text/85">
-          <p>Click <Btn><span className="text-amber">✦ Your Story</span></Btn> in the top bar. Type any place (your hometown works) and press <Btn>Tell its story</Btn>.
+          <p>Click <Btn><Sparkles size={12} className="text-amber" /><span className="text-amber">Your Story</span></Btn> in the top bar. Type any place (your hometown works) and press <Btn>Tell its story</Btn>.
             In 20–40 seconds DELTA PULSE reads the newest real NISAR images of that place and turns them into a story you can scroll through,
             or press <Btn>▶ Play the story</Btn> to watch it play by itself.</p>
           <ul className="mt-3 list-disc space-y-1 pl-5">
@@ -208,10 +209,10 @@ export default function Guide() {
         <div className="grid gap-3 sm:grid-cols-2">
           {[
             ["Sound in Your Story", "Press “Turn sound on”. A voice reads each chapter, soft rain follows the real rainfall, and “Hear the water” plays one note per satellite pass: higher notes mean more water."],
-            ["Globe", "A spinning 3D globe of every NISAR image taken in the last day, 3 days or week. Click any strip to explore it."],
-            ["Water Now", "Live weather at your place, river flow for the past 6 months plus a 30-day forecast, and NASA’s normal camera photo from the same day as each radar image. Drag the slider to see what the clouds hid."],
-            ["Scatter Lab", "Every real radar pixel as a dot. Drag the coloured lines to change what counts as water and watch the map change."],
-            ["Radar Lab", "Add water, trees and wind, switch the radar wavelength, and see why NISAR can find flooding under forest. (A teaching model, not data.)"],
+            ["Globe (Other places)", "A spinning 3D globe of every NISAR image taken in the last day, 3 days or week. Click any strip to explore it."],
+            ["Water now (Go deeper)", "Live weather at your place, river flow for the past 6 months plus a 30-day forecast, and NASA’s normal camera photo from the same day as each radar image. Drag the slider to see what the clouds hid."],
+            ["Scatter Lab (Go deeper)", "Every real radar pixel as a dot. Drag the coloured lines to change what counts as water and watch the map change."],
+            ["Radar Lab (Go deeper)", "Add water, trees and wind, switch the radar wavelength, and see why NISAR can find flooding under forest. (A teaching model, not data.)"],
             ["3D terrain", "On the main map, press “3D terrain” to lay the radar over real hills and valleys. Choose “Basemap: NASA same day” to see NASA’s photo from that date underneath."],
           ].map(([t, d]) => (
             <div key={t} className="rounded-lg border border-line bg-panel p-4"><div className="text-sm font-semibold">{t}</div><p className="mt-1 text-[13px] text-text/75">{d}</p></div>
@@ -240,9 +241,9 @@ export default function Guide() {
       <Section id="labels" title="What the labels mean">
         <p className="text-[14px] text-text/80">Every sentence in the results has a label, so you always know how much to trust it:</p>
         <div className="mt-3 grid gap-2">
-          {TAGS.map(([t, cls, d]) => (
+          {TAGS.map(([t, , d]) => (
             <div key={t} className="flex items-center gap-3 text-[14px]">
-              <span className={`w-32 shrink-0 rounded border px-2 py-0.5 text-center font-mono text-[11px] tracking-wider ${cls}`}>{t}</span>
+              <span className="w-32 shrink-0"><Tag kind={t} /></span>
               <span className="text-text/80">{d}</span>
             </div>
           ))}

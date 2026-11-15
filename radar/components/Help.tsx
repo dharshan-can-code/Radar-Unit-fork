@@ -1,10 +1,10 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Tag } from "@/components/Fingerprint";
 
 const STEPS: [string, string][] = [
-  ["Look at the case study", "The page opens on Tonle Sap Lake, Cambodia: 10 real NISAR radar images from June to October 2026. Drag the round ⇔ handle on the map to compare two dates."],
+  ["Look at the case study", "The page opens on Tonle Sap Lake, Cambodia: 10 real NISAR radar images from June to October 2026. Drag the round handle on the map to compare two dates."],
   ["Pick two dates", "The buttons above the map (e.g. 09-11 → 09-23) choose which pair of acquisitions you compare. Red numbers mean the gap was longer than the usual 12 days."],
   ["Change the view", "Before / After shows the radar images. Measured change colours what got brighter (amber) or darker (blue). Screening marks signatures that may be water (cyan) or flooded vegetation (amber)."],
   ["Inspect a spot", "Click the map to inspect a small area, or press Draw region and drag a box. The Radar Change Fingerprint below updates for that area."],
@@ -14,20 +14,29 @@ const STEPS: [string, string][] = [
 ];
 
 export default function Help({ onClose }: { onClose: () => void }) {
+  const closeBtn = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
   }, [onClose]);
+  // Move focus into the dialog, stop the page scrolling behind it, and put focus back on close.
+  useEffect(() => {
+    const before = document.activeElement as HTMLElement | null;
+    closeBtn.current?.focus();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = overflow; before?.focus?.(); };
+  }, []);
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-bg/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="How to use DELTA PULSE" onClick={onClose}>
-      <div className="my-8 w-full max-w-3xl rounded-xl border border-line bg-panel p-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fade-in fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-bg/85 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="How to use DELTA PULSE" onClick={onClose}>
+      <div className="panel-in my-8 w-full max-w-3xl rounded-lg border border-line-strong bg-panel p-6 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)] sm:p-8" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold">How to use DELTA PULSE</h2>
+            <h2 className="text-2xl font-medium">How to use DELTA PULSE</h2>
             <p className="mt-1 text-sm text-muted">No radar background needed. For pictures, examples and answers to common questions, open the <a href="/guide" className="text-cyan underline">full User Guide</a>.</p>
           </div>
-          <button onClick={onClose} aria-label="Close" className="rounded-md border border-line p-1.5 text-muted hover:text-text"><X size={16} /></button>
+          <button ref={closeBtn} onClick={onClose} aria-label="Close" className="rounded-md border border-line p-1.5 text-muted hover:text-text"><X size={16} /></button>
         </div>
 
         <ol className="mt-5 space-y-3">
