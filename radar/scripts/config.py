@@ -5,6 +5,10 @@ processing) uses exactly the same geometry.
 """
 from pathlib import Path
 
+from system_certs import use_system_certificates
+
+use_system_certificates()  # Windows: trust the same HTTPS roots as the OS (antivirus HTTPS scanning)
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 RAW = DATA / "raw"

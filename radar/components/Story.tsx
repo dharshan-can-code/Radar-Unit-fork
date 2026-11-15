@@ -10,6 +10,7 @@ import { StoryFacts, buildStory, fmtDate, fmtKm2 } from "@/lib/story";
 import { Tag } from "@/components/Fingerprint";
 import { MAT, MAT_LABEL, LiveResult } from "@/components/LiveSearch";
 import { storySound } from "@/lib/sound";
+import ExamplePicker from "@/components/ExamplePicker";
 import { Music, Volume2, VolumeX } from "lucide-react";
 
 /* ---------- small animation helpers ---------- */
@@ -179,6 +180,7 @@ function Builder({ onResult, compact }: { onResult: (r: LiveResult) => void; com
         </ol>
       )}
       {err && <p className="mt-3 text-[13px] text-rose">{err}</p>}
+      <ExamplePicker onResult={onResult} accent="amber" label="Or read a story we already built" />
     </div>
   );
 }

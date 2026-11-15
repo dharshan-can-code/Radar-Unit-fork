@@ -6,6 +6,7 @@ import {
   Acquisitions, Detail, GalleryItem, Job, LiveStack, Place, acquisitions, gallery, geocode, health, job as getJob,
   loadResult, startAnalysis,
 } from "@/lib/api";
+import ExamplePicker from "@/components/ExamplePicker";
 
 export const MAT: Record<string, string> = {
   VALIDATED: "border-green/50 text-green bg-green/10",
@@ -149,7 +150,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />
           <span>
             Live search is offline in this copy of the app. Live search needs our server, which reads NASA&apos;s archive with an
-            Earthdata login. The Tonle Sap case study, Your Story, weather and river data all still work.
+            Earthdata login. The worldwide examples below, the Tonle Sap case study, Your Story, weather and river data all still work.
             {typeof window !== "undefined" && /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname) && (
               <span className="mt-1 block text-muted">Developers: in the radar folder run <code className="text-text">npm.cmd run api</code>, then reload.</span>
             )}
@@ -161,6 +162,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
           Search works, but analysis needs an Earthdata token on the server (.earthdata_token).
         </div>
       )}
+      <ExamplePicker onResult={onResult} label={backend && !backend.ok ? "Explore these places instead" : "Or open a ready-made example"} />
 
       <form onSubmit={doGeocode} className="mt-3 flex gap-2">
         <div className="relative flex-1">

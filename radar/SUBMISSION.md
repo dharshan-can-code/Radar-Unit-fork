@@ -19,6 +19,7 @@ When rivers and lakes flood into forests, the water spreads under the trees, whe
 In our Tonle Sap case study, the radar signature of water under vegetation grew about 6.5× (260 → 1,704 km², peak 11 Sep) and water-like ground grew 48%, while clouds covered more than half the sky at 9 of 10 pass times. Independent checks back it up: the water class finds most of Landsat's permanent water with almost no false alarms on dry land, and the flooded area tracks river flow.
 
 ## Links
+- **Live app:** https://delta-pulse-nisar.vercel.app (case study, Your Story and three worldwide examples work without a server; live search of new places needs the Python backend)
 - **Code:** https://github.com/haricharanparna/Radar-Unit
 - **Demo:** *(30-second video link)*
 - **Guide for users:** `/guide` in the app

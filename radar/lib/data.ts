@@ -89,6 +89,24 @@ export async function loadManifest(area: string, stack: string): Promise<Manifes
   const r = await fetch(`${BASE}/${area}/${stack}/manifest.json`, { cache: "no-store" });
   return r.ok ? r.json() : null;
 }
+/** Worldwide examples: real live analyses saved as static files (scripts/processing/export_examples.py),
+ *  so the hosted site can show them without the backend. */
+export interface ExampleInfo {
+  id: string; name: string; blurb: string; center: [number, number]; n_obs: number; first: string; last: string;
+  maturity: string; track: string; computed_utc: string; footprint: GeoJSON.Geometry | null;
+}
+export async function loadExamples(): Promise<ExampleInfo[]> {
+  const r = await fetch(`${BASE}/examples/index.json`, { cache: "no-store" });
+  return r.ok ? (await r.json()).examples ?? [] : [];
+}
+export async function loadExample(id: string): Promise<Manifest | null> {
+  if (!/^[a-z0-9_-]{1,40}$/.test(id)) return null;
+  const r = await fetch(`${BASE}/examples/${id}/manifest.json`, { cache: "no-store" });
+  return r.ok ? r.json() : null;
+}
+/** Query string that reopens a result: live results by id, saved examples by name. */
+export const resultQuery = (m: Manifest) => (m.area === "examples" ? `example=${m.stack}` : `result=${m.stack}`);
+
 /** Independent checks written by scripts/validation/validate_area.py (case study only). */
 export interface ValidationDate {
   date: string; water_found_in_permanent: number | null; water_flagged_on_never_water_land: number | null;
