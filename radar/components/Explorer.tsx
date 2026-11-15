@@ -82,6 +82,7 @@ export default function Explorer(p: Props) {
   const [threeD, setThreeD] = useState(false);
   const [picking, setPicking] = useState(false);
   const [opacity, setOpacity] = useState(0.92);
+  const [imgFailed, setImgFailed] = useState(false);
   const drawRef = useRef(draw); drawRef.current = draw;
   const pickRef = useRef(picking); pickRef.current = picking;
   const onPickRef = useRef(p.onPickLocation); onPickRef.current = p.onPickLocation;
@@ -106,6 +107,9 @@ export default function Explorer(p: Props) {
       if (++maps.current.ready === 2) setReady(true);
     };
     a.on("load", onLoad(a)); b.on("load", onLoad(b));
+    // A radar image that fails to load would otherwise leave a bare basemap with no explanation.
+    const onError = (ev: { sourceId?: string }) => { if (ev.sourceId === "radar") setImgFailed(true); };
+    a.on("error", onError); b.on("error", onError);
 
     // click = point selection; drag in draw mode = box selection (mouse or one finger)
     let start: maplibregl.LngLat | null = null;
@@ -172,6 +176,7 @@ export default function Explorer(p: Props) {
     if (mode === "compare") { left = `${pair.before}_${ch}`; right = `${pair.after}_${ch}`; }
     else if (mode === "screening") { left = `${pair.before}_class`; right = `${pair.after}_class`; }
     else { left = `${pair.before}_${ch}`; right = `d_${pair.id}_${ch}`; }
+    setImgFailed(false);
     setRadar(maps.current.a!, imgUrl(m, left), c, mode === "change" ? 0.35 * opacity : opacity);
     setRadar(maps.current.b!, imgUrl(m, right), c, mode === "change" ? 1 : opacity);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -294,6 +299,12 @@ export default function Explorer(p: Props) {
         {mode === "change" && pair && (
           <div className="pointer-events-none absolute top-3 left-3 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text">
             Δ{channel} = {pair.after} − {pair.before} <span className="text-muted">({pair.delta_days} days)</span></div>
+        )}
+        {ready && imgFailed && (
+          <div role="alert" className="absolute top-14 left-1/2 z-10 w-[min(92%,26rem)] -translate-x-1/2 border border-amber/60 bg-bg/95 px-3 py-2 text-[13px] text-text">
+            The radar image for this view did not load, so only the basemap is showing.{" "}
+            {m.area === "live" ? "Check that the DELTA PULSE server is still running, then reload the page." : "Reload the page to try again."}
+          </div>
         )}
         <Legend m={m} mode={mode} channel={channel} />
       </div>

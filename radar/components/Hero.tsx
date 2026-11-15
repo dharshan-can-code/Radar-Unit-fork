@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 import type { Manifest } from "@/lib/data";
-import { imgUrl } from "@/lib/data";
+import { IMG_CORS, imgUrl } from "@/lib/data";
 import { fmtDate } from "@/lib/story";
 import { Readout } from "@/components/ui";
 
@@ -80,9 +80,9 @@ export default function Hero({ m, storyHref, exploreHref }: { m: Manifest | null
                     style={i === 1 ? { clipPath: `inset(0 0 0 ${k === 1 ? 0 : 100}%)` } : undefined}>
                     <div className="absolute inset-0 bg-void" />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imgUrl(m, `${s.o.date}_HH`)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
+                    <img crossOrigin={IMG_CORS} src={imgUrl(m, `${s.o.date}_HH`)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imgUrl(m, `${s.o.date}_class`)} alt={`NISAR radar screening of ${place} on ${fmtDate(s.o.date)}`}
+                    <img crossOrigin={IMG_CORS} src={imgUrl(m, `${s.o.date}_class`)} alt={`NISAR radar screening of ${place} on ${fmtDate(s.o.date)}`}
                       className="absolute inset-0 h-full w-full object-cover" />
                   </div>
                 ))}

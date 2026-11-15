@@ -144,8 +144,14 @@ export async function loadGrid(m: Manifest): Promise<Int16Array> {
   if (!r.ok) throw new Error(`grid not found (${r.status})`);
   return new Int16Array(await r.arrayBuffer());
 }
+/** A radar image. Live results come from the backend, on another origin, and the map reads them
+ *  with CORS. Every <img> that shows one must ask the same way (see IMG_CORS), or the browser
+ *  hands the map a cached copy that has no CORS header and the map draws nothing. "cors=1" keeps
+ *  these requests apart from copies cached before that was the rule. */
 export const imgUrl = (m: Manifest, name: string) =>
-  `${dataBase(m)}/img/${name}.png?v=${encodeURIComponent(m.generated_utc)}`;
+  `${dataBase(m)}/img/${name}.png?v=${encodeURIComponent(m.generated_utc)}${m.area === "live" ? "&cors=1" : ""}`;
+/** Put on every <img> whose src is imgUrl(). */
+export const IMG_CORS = "anonymous" as const;
 
 // ---- geometry -------------------------------------------------------------
 

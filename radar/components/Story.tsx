@@ -4,7 +4,7 @@ import {
   ArrowDown, Check, Cloud, CloudRain, Loader2, Map as MapIcon, MapPin, Pause, Play, Search, Share2, ShieldCheck, Sparkles,
 } from "lucide-react";
 import type { GridIndex, Manifest } from "@/lib/data";
-import { imgUrl } from "@/lib/data";
+import { IMG_CORS, imgUrl } from "@/lib/data";
 import { Rainfall, acquisitions, errorText, geocode, job as getJob, loadResult, startAnalysis } from "@/lib/api";
 import { StoryFacts, buildStory, fmtDate, fmtKm2 } from "@/lib/story";
 import { Tag } from "@/components/ui";
@@ -84,7 +84,7 @@ function Flipbook({ m, layer = "HH", interval = 1100, big = false }: { m: Manife
       <div className="relative overflow-hidden rounded-xl border border-line bg-void" style={{ paddingTop: `${ratio * 100}%` }}>
         {obs.map((o, k) => (
           // eslint-disable-next-line @next/next/no-img-element
-          <img key={o.date} src={imgUrl(m, `${o.date}_${layer === "class" ? "class" : "HH"}`)} alt={`NISAR ${layer} radar image, ${o.date}`}
+          <img key={o.date} crossOrigin={IMG_CORS} src={imgUrl(m, `${o.date}_${layer === "class" ? "class" : "HH"}`)} alt={`NISAR ${layer} radar image, ${o.date}`}
             className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500" style={{ opacity: k === cur ? 1 : 0, imageRendering: "pixelated" }} />
         ))}
         <div className="absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-sm text-text">{obs[cur] ? fmtDate(obs[cur].date) : ""}</div>
@@ -448,9 +448,9 @@ export default function Story({ m, grid, rain, onResult, onOpenMap, shareUrl }: 
                 <figure className="mx-auto w-full max-w-xl">
                   <div className="relative overflow-hidden rounded-xl border border-line bg-void" style={{ paddingTop: `${(m.display.ny / m.display.nx) * 100}%` }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imgUrl(m, `${big.before}_HH`)} alt="Radar before" className="absolute inset-0 h-full w-full object-contain opacity-40" />
+                    <img crossOrigin={IMG_CORS} src={imgUrl(m, `${big.before}_HH`)} alt="Radar before" className="absolute inset-0 h-full w-full object-contain opacity-40" />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imgUrl(m, `d_${big.id}_HH`)} alt="Measured radar change" className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-[1500ms] ${seen ? "opacity-100" : "opacity-0"}`} />
+                    <img crossOrigin={IMG_CORS} src={imgUrl(m, `d_${big.id}_HH`)} alt="Measured radar change" className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-[1500ms] ${seen ? "opacity-100" : "opacity-0"}`} />
                   </div>
                   <figcaption className="mt-1 text-center text-[12px] text-muted"><span className="text-amber">Amber</span> = got brighter · <span className="text-blue">blue</span> = got darker ({big.delta_days} days apart)</figcaption>
                 </figure>

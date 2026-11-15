@@ -3,8 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AlertTriangle, History, Loader2, MapPin, Play, RefreshCw, Search, Satellite, Zap } from "lucide-react";
 import type { Manifest } from "@/lib/data";
 import {
-  Acquisitions, Detail, GalleryItem, Job, LiveStack, Place, acquisitions, gallery, geocode, health, job as getJob,
-  loadResult, startAnalysis,
+  ANALYSIS_OFFLINE, Acquisitions, Detail, GalleryItem, Job, LiveStack, Place, acquisitions, backendHealth, errorText, gallery,
+  geocode, job as getJob, loadResult, startAnalysis,
 } from "@/lib/api";
 import ExamplePicker from "@/components/ExamplePicker";
 
@@ -45,14 +45,19 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   const [started, setStarted] = useState<number | null>(null);
   const [now, setNow] = useState(0);
   const poll = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchSeq = useRef(0); // only the newest search may write its answer to the screen
 
   const refreshGallery = useCallback(() => { gallery().then(setRecent).catch(() => setRecent([])); }, []);
+  /** Ask whether the backend is there (it may have been started or stopped since the page opened). */
+  const checkBackend = useCallback(() => backendHealth(true).then((h) => {
+    setBackend({ ok: !!h, token: !!h?.earthdata_token });
+    return h;
+  }), []);
 
   useEffect(() => {
-    health().then((h) => setBackend({ ok: true, token: h.earthdata_token })).catch(() => setBackend({ ok: false, token: false }));
-    refreshGallery();
+    checkBackend().then(refreshGallery);
     return () => { if (poll.current) clearTimeout(poll.current); };
-  }, [refreshGallery]);
+  }, [checkBackend, refreshGallery]);
 
   const stack = acq?.stacks.find((s) => s.id === stackId) ?? null;
   const running = !!jobState && (jobState.status === "queued" || jobState.status === "running");
@@ -68,15 +73,18 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   }
 
   const pickPlace = useCallback(async (p: Place, fresh = false) => {
+    const seq = ++searchSeq.current;
+    if (poll.current) clearTimeout(poll.current); // a job for the previous place no longer reports here
     setPlace(p); setPlaces(null); setAcq(null); setStackId(null); setPicked([]); setJobState(null); setErr(null);
     setBusy("search");
     try {
       const a = await acquisitions(p.lat, p.lon, fresh);
+      if (seq !== searchSeq.current) return;
       setAcq(a);
       const rec = a.stacks.find((s) => s.id === a.recommended_stack) ?? a.stacks.find((s) => s.usable);
       if (rec) { setStackId(rec.id); setPicked(rec.usable ? rec.granules.slice(-2).map((g) => g.scene) : []); }
-    } catch (x) { setErr(`Archive search failed: ${(x as Error).message}`); }
-    finally { setBusy(null); }
+    } catch (x) { if (seq === searchSeq.current) setErr(`The archive search did not finish. ${errorText(x)}`); }
+    finally { if (seq === searchSeq.current) setBusy(null); }
   }, []);
 
   useEffect(() => {
@@ -86,13 +94,15 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
   async function doGeocode(e?: React.FormEvent) {
     e?.preventDefault();
     if (q.trim().length < 2) return;
+    const seq = ++searchSeq.current;
     setErr(null); setBusy("geocode"); setPlaces(null);
     try {
       const r = await geocode(q);
+      if (seq !== searchSeq.current) return;
       setPlaces(r);
       if (r.length === 1) await pickPlace(r[0]);
       else if (!r.length) setErr("No place found. Try another name, or type coordinates like 12.56, 104.21.");
-    } catch (x) { setErr(`Place search failed: ${(x as Error).message}`); }
+    } catch (x) { if (seq === searchSeq.current) setErr(`The place search did not finish. ${errorText(x)}`); }
     finally { setBusy((b) => (b === "geocode" ? null : b)); }
   }
 
@@ -110,7 +120,11 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
 
   async function analyze() {
     if (!place || !stack || picked.length < 2) return;
-    setErr(null); setStarted(Date.now()); setNow(Date.now());
+    setErr(null);
+    const h = await checkBackend();
+    if (!h) { setErr(ANALYSIS_OFFLINE); return; }
+    if (!h.earthdata_token) { setErr("The server has no Earthdata token (.earthdata_token), so it cannot read NASA's radar files yet."); return; }
+    setStarted(Date.now()); setNow(Date.now());
     try {
       let j = await startAnalysis({ lat: place.lat, lon: place.lon, scenes: picked, size_km: size, detail,
         place: place.type && ["coordinates", "feed", "map"].includes(place.type) ? `${place.lat.toFixed(4)}°, ${place.lon.toFixed(4)}°` : place.name.split(",").slice(0, 2).join(",") });
@@ -126,11 +140,11 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
         if (j.status === "error") { setErr(j.message ?? "Analysis failed"); return; }
         poll.current = setTimeout(async () => {
           try { j = await getJob(j.job_id); setJobState(j); tick(); }
-          catch (x) { setErr(`Lost contact with the backend: ${(x as Error).message}`); }
+          catch (x) { setErr(`Lost contact with the server during the analysis. ${errorText(x)}`); }
         }, 1500);
       };
       tick();
-    } catch (x) { setErr((x as Error).message); }
+    } catch (x) { setErr(errorText(x)); }
   }
 
   const est = detail === "quick" ? 10 : 12 + Math.max(0, picked.length - 2) * 3;
@@ -149,8 +163,9 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
         <div className="mt-3 flex gap-2 text-[13px] leading-relaxed text-amber" role="status">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />
           <span>
-            Live search is offline in this copy of the app. Live search needs our server, which reads NASA&apos;s archive with an
-            Earthdata login. The worldwide examples below, the Tonle Sap case study, Your Story, weather and river data all still work.
+            You can search any place and see what NISAR has recorded there, straight from NASA&apos;s archive. Analysing a new place
+            is switched off in this copy of the app, because that needs our server, which reads the radar files with an Earthdata
+            login. The worldwide examples below and the Tonle Sap case study open without it.
             {typeof window !== "undefined" && /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname) && (
               <span className="mt-1 block text-muted">Developers: in the radar folder run <code className="text-text">npm.cmd run api</code>, then reload.</span>
             )}
@@ -171,7 +186,7 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
             aria-label="Place name or coordinates"
             className="w-full rounded-md border border-line bg-bg py-2 pr-3 pl-9 text-sm text-text focus:border-cyan focus:outline-none" />
         </div>
-        <button type="submit" disabled={!backend?.ok || busy !== null || q.trim().length < 2}
+        <button type="submit" disabled={busy !== null || q.trim().length < 2}
           className="flex items-center gap-1.5 rounded-md bg-cyan px-4 text-sm font-medium text-bg disabled:opacity-40">
           {busy === "geocode" ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}Search
         </button>
@@ -179,8 +194,8 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
 
       {places && places.length > 1 && (
         <ul className="mt-2 max-h-48 overflow-auto rounded-md border border-line">
-          {places.map((p) => (
-            <li key={`${p.lat},${p.lon}`}>
+          {places.map((p, i) => (
+            <li key={`${i}-${p.lat},${p.lon}`}>
               <button onClick={() => pickPlace(p)} className="flex w-full items-start gap-2 px-3 py-2 text-left text-[13px] hover:bg-panel-2">
                 <MapPin size={13} className="mt-0.5 shrink-0 text-cyan" />
                 <span><span className="text-text">{p.name}</span><span className="ml-2 font-mono text-[11px] text-muted">{p.lat.toFixed(3)}, {p.lon.toFixed(3)}</span></span>
@@ -190,8 +205,11 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
         </ul>
       )}
 
+      {busy === "geocode" && (
+        <div className="mt-3 flex items-center gap-2 text-[13px] text-muted" role="status"><Loader2 size={14} className="animate-spin" />Looking for that place…</div>
+      )}
       {busy === "search" && (
-        <div className="mt-3 flex items-center gap-2 text-[13px] text-muted"><Loader2 size={14} className="animate-spin" />Searching the NISAR archive…</div>
+        <div className="mt-3 flex items-center gap-2 text-[13px] text-muted" role="status"><Loader2 size={14} className="animate-spin" />Searching the NISAR archive…</div>
       )}
 
       {acq && place && (
@@ -212,8 +230,8 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
                 className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border px-3 py-2 text-left text-[12px] ${s.id === stackId ? "border-cyan bg-cyan/10" : "border-line hover:border-cyan/40"} disabled:cursor-not-allowed disabled:opacity-45`}>
                 <span className="font-mono text-text">Track {s.track}{s.direction?.[0]} · frame {s.frame} · {s.bandwidth} MHz</span>
                 <span className={`rounded border px-1.5 font-mono text-[11px] ${MAT[s.maturity] ?? MAT.OTHER}`}>{MAT_LABEL[s.maturity] ?? s.maturity} {s.crid}</span>
-                <span className="text-muted">{s.n_dates} date{s.n_dates === 1 ? "" : "s"} · {s.dates[0]} → {s.latest}</span>
-                <span className="text-muted">{s.dual_pol_dates.length === s.n_dates ? "HH+HV" : `HV on ${s.dual_pol_dates.length}/${s.n_dates}`}</span>
+                <span className="text-muted">{s.n_dates === 1 ? `1 date · ${s.latest}` : `${s.n_dates} dates · ${s.dates[0]} → ${s.latest}`}</span>
+                <span className="text-muted">{s.dual_pol_dates.length === s.n_dates ? "HH+HV" : s.dual_pol_dates.length === 0 ? `${s.granules[0]?.pols.join("+") || "HH"} only` :`HV on ${s.dual_pol_dates.length} of ${s.n_dates} dates`}</span>
                 {s.id === acq.recommended_stack && <span className="ml-auto text-[11px] text-cyan">latest compatible pair</span>}
                 {s.usable && s.n_dates < 2 && <span className="ml-auto text-[11px] text-muted">needs a 2nd date to compare</span>}
               </button>
@@ -256,7 +274,8 @@ export default function LiveSearch({ onResult, active, externalPlace }: Props) {
                       className={`px-3 py-1.5 ${size === k ? "bg-cyan/15 text-cyan" : "text-muted hover:text-text"}`}>{k} km</button>
                   ))}
                 </div>
-                <button onClick={analyze} disabled={picked.length < 2 || running || !backend?.token}
+                <button onClick={analyze} disabled={picked.length < 2 || running}
+                  title={picked.length < 2 ? "Pick at least two dates to compare" : undefined}
                   className="flex items-center gap-1.5 rounded-md bg-cyan px-4 py-1.5 text-sm font-medium text-bg disabled:opacity-40">
                   {running ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
                   Analyse {picked.length} acquisition{picked.length === 1 ? "" : "s"}

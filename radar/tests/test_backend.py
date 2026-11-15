@@ -153,3 +153,66 @@ def test_public_error_hides_signed_urls():
     e = RuntimeError("503 Server Error for url: https://d1.cloudfront.net/x.h5?A-userid=someone&Signature=abc")
     msg = backend_app.public_error(e)
     assert "userid" not in msg and "Signature" not in msg and "[archive URL hidden]" in msg
+
+
+def test_latest_is_newest_first_and_says_when_truncated(monkeypatch):
+    """The worldwide feed keeps every product (urgent-response and science versions of one pass),
+    newest first, and reports when the period holds more than it fetched."""
+    import types
+
+    def result(scene, start, collection):
+        props = {"sceneName": scene, "startTime": start, "pathNumber": 141, "frameNumber": 18,
+                 "flightDirection": "ASCENDING", "collectionName": collection, "crid": "P05036",
+                 "mainBandPolarization": ["HH", "HV"], "rangeBandwidth": ["20+5"]}
+        geom = {"type": "Polygon", "coordinates": [[[90, 30], [92, 30], [92, 32], [90, 32], [90, 30]]]}
+        return types.SimpleNamespace(properties=props, geometry=geom)
+
+    found = [result("UR_A", "2026-11-13T10:00:00Z", "NISAR_UR_L2"),
+             result("PR_A", "2026-11-13T10:00:00Z", "NISAR_L2_GCOV_V1"),
+             result("UR_B", "2026-11-14T23:15:27Z", "NISAR_UR_L2")]
+    calls = []
+
+    def search(**kw):
+        calls.append(kw)
+        return found[:kw["maxResults"]]
+
+    monkeypatch.setitem(sys.modules, "asf_search", types.SimpleNamespace(search=search))
+    monkeypatch.setattr(nisar, "_LATEST", {})
+    out = nisar.latest(3, limit=10)
+    assert [g["scene"] for g in out["granules"]] == ["UR_B", "UR_A", "PR_A"] or \
+        [g["scene"] for g in out["granules"]] == ["UR_B", "PR_A", "UR_A"]
+    assert out["n"] == 3 and out["truncated"] is False
+    assert {g["maturity"] for g in out["granules"]} == {"URGENT_RESPONSE", "VALIDATED"}
+    assert out["granules"][0]["centroid"] == [91.0, 31.0]
+    nisar.latest(3, limit=10)
+    assert len(calls) == 1  # second call within 10 min is served from the cache
+    assert nisar.latest(3, limit=2)["truncated"] is True
+
+
+def test_every_answer_says_it_depends_on_the_origin():
+    """A radar image is requested both by <img> tags and by the map, which reads it with CORS. Without
+    "Vary: Origin" the browser hands the map a copy cached without the CORS header and the map stays empty."""
+    import asyncio
+    import app as backend_app
+
+    def get(headers):
+        sent = []
+        scope = {"type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1", "method": "GET", "scheme": "http",
+                 "path": "/api/health", "raw_path": b"/api/health", "query_string": b"", "root_path": "",
+                 "headers": headers, "client": ("127.0.0.1", 1), "server": ("localhost", 8000)}
+
+        async def receive():
+            return {"type": "http.request", "body": b"", "more_body": False}
+
+        async def send(msg):
+            sent.append(msg)
+
+        asyncio.run(backend_app.app(scope, receive, send))
+        start = next(m for m in sent if m["type"] == "http.response.start")
+        assert start["status"] == 200
+        return {k.decode().lower(): v.decode() for k, v in start["headers"]}
+
+    plain = get([])
+    assert plain.get("vary") == "Origin" and "access-control-allow-origin" not in plain
+    cors = get([(b"origin", b"http://localhost:3000")])
+    assert cors.get("vary") == "Origin" and cors["access-control-allow-origin"] == "http://localhost:3000"

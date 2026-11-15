@@ -72,6 +72,7 @@ function useSiteState() {
     const first = new Date(Date.parse(m.observations[0].date) - 15 * 864e5).toISOString().slice(0, 10);
     const last = new Date(Math.min(Date.now(), Date.parse(m.observations[m.observations.length - 1].date) + 3 * 864e5)).toISOString().slice(0, 10);
     let cancelled = false;
+    setRain(null); // never show the previous place's weather beside this one while the new record loads
     rainfall(lat, lon, first, last).then((r) => { if (!cancelled) setRain(r); }).catch(() => { if (!cancelled) setRain(null); });
     return () => { cancelled = true; };
   }, [m]);
