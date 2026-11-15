@@ -1,0 +1,130 @@
+{
+ "examples": [
+  {
+   "id": "manaus",
+   "name": "Amazon floodplain near Manaus, Brazil",
+   "blurb": "Amazon flooded forest drains as the river falls: water-under-trees signature 135 \u2192 28 km\u00b2",
+   "center": [
+    -59.78,
+    -3.22
+   ],
+   "n_obs": 8,
+   "first": "2026-06-23",
+   "last": "2026-10-09",
+   "maturity": "PROVISIONAL",
+   "track": "140D",
+   "computed_utc": "2026-11-15T00:46:02+00:00",
+   "footprint": {
+    "coordinates": [
+     [
+      [
+       -60.02339,
+       -1.73212
+      ],
+      [
+       -60.48931,
+       -3.87998
+      ],
+      [
+       -58.26502,
+       -4.35471
+      ],
+      [
+       -57.80728,
+       -2.21333
+      ],
+      [
+       -60.02339,
+       -1.73212
+      ]
+     ]
+    ],
+    "type": "Polygon"
+   }
+  },
+  {
+   "id": "sundarbans",
+   "name": "Sundarbans mangroves, Bangladesh",
+   "blurb": "World's largest mangrove forest: the water-under-trees signature stays strong all monsoon",
+   "center": [
+    89.2,
+    21.95
+   ],
+   "n_obs": 9,
+   "first": "2026-06-25",
+   "last": "2026-10-11",
+   "maturity": "PROVISIONAL",
+   "track": "170A",
+   "computed_utc": "2026-11-15T00:43:38+00:00",
+   "footprint": {
+    "coordinates": [
+     [
+      [
+       90.47047,
+       21.98495
+      ],
+      [
+       89.88232,
+       24.12096
+      ],
+      [
+       87.40368,
+       23.5101
+      ],
+      [
+       88.02831,
+       21.38652
+      ],
+      [
+       90.47047,
+       21.98495
+      ]
+     ]
+    ],
+    "type": "Polygon"
+   }
+  },
+  {
+   "id": "okavango",
+   "name": "Okavango Delta, Botswana",
+   "blurb": "Inland delta in the Kalahari: open water-like area dries from 12 km\u00b2 (Jul) to 0.2 km\u00b2 (Oct)",
+   "center": [
+    22.9,
+    -19.3
+   ],
+   "n_obs": 9,
+   "first": "2026-06-26",
+   "last": "2026-10-12",
+   "maturity": "PROVISIONAL",
+   "track": "172A",
+   "computed_utc": "2026-11-15T00:44:33+00:00",
+   "footprint": {
+    "coordinates": [
+     [
+      [
+       24.97818,
+       -19.89832
+      ],
+      [
+       24.53107,
+       -17.81421
+      ],
+      [
+       22.09288,
+       -18.26581
+      ],
+      [
+       22.50527,
+       -20.3448
+      ],
+      [
+       24.97818,
+       -19.89832
+      ]
+     ]
+    ],
+    "type": "Polygon"
+   }
+  }
+ ]
+}

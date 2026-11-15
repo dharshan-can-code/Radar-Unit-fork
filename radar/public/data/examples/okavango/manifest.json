@@ -1,0 +1,534 @@
+{
+ "area": "examples",
+ "stack": "okavango",
+ "name": "Okavango Delta, Botswana",
+ "bbox": [
+  22.80583,
+  -19.39096,
+  22.99401,
+  -19.20833
+ ],
+ "center": [
+  22.9,
+  -19.3
+ ],
+ "size_km": 20.0,
+ "detail": "standard",
+ "is_demonstration": false,
+ "demonstration_note": null,
+ "generated_utc": "2026-11-15T00:44:33+00:00",
+ "epsg": 32734,
+ "display": {
+  "res_m": 40.0,
+  "nx": 500,
+  "ny": 500,
+  "x0": 689640.0,
+  "y1": 7874920.0,
+  "corners": [
+   [
+    22.803851,
+    -19.210305
+   ],
+   [
+    22.994009,
+    -19.208335
+   ],
+   [
+    22.996199,
+    -19.388972
+   ],
+   [
+    22.805832,
+    -19.390963
+   ]
+  ]
+ },
+ "grid": {
+  "file": "grid.bin",
+  "dtype": "int16",
+  "scale": 0.01,
+  "nodata": -32768,
+  "shape": [
+   9,
+   3,
+   500,
+   500
+  ],
+  "channels": [
+   "HH_db",
+   "HV_db",
+   "valid_frac_x1e4"
+  ],
+  "res_m": 40.0,
+  "x0": 689640.0,
+  "y1": 7874920.0
+ },
+ "stretch_db": {
+  "HH": [
+   -25.0,
+   0.0
+  ],
+  "HV": [
+   -32.0,
+   -8.0
+  ]
+ },
+ "change_range_db": 6.0,
+ "screening": {
+  "status": "UNCALIBRATED",
+  "note": "Starting values for SCREENING only, chosen from the general behaviour of L-band backscatter (specular water is very dark; water-trunk double bounce gives strong HH with a large HH-HV difference). They are NOT validated thresholds. Calibrate them against reference areas (JRC Global Surface Water permanent water, ESA WorldCover tree cover) before quoting any area numbers, and record the calibrated values and the evidence here.",
+  "open_water": {
+   "hh_max_db": {
+    "value": -18.0,
+    "why": "Calm open water is a specular reflector; L-band HH is typically far below land returns. Wind roughening raises it, so this misses rough water."
+   },
+   "hv_max_db": {
+    "value": -25.0,
+    "why": "Cross-pol return from water is near the noise floor; excludes dark-but-vegetated pixels."
+   }
+  },
+  "double_bounce": {
+   "hh_min_db": {
+    "value": -6.0,
+    "why": "Water beneath trunks forms a corner reflector, giving unusually bright co-pol returns."
+   },
+   "hh_minus_hv_min_db": {
+    "value": 7.0,
+    "why": "Double bounce boosts HH much more than HV; volume scattering from dry canopy raises HV instead. Buildings produce the same signature - mask urban areas."
+   }
+  },
+  "change": {
+   "significant_db": {
+    "value": 3.0,
+    "why": "Changes smaller than ~3 dB at 100 m aggregation can be produced by speckle, moisture, and calibration differences. A doubling of power is +3 dB."
+   }
+  },
+  "min_valid_fraction": {
+   "value": 0.5,
+   "why": "A cell is used only if at least half of its source pixels were valid."
+  }
+ },
+ "observations": [
+  {
+   "id": "2026-06-26",
+   "date": "2026-06-26",
+   "start_time": "2026-06-26T04:17:17Z",
+   "scene": "NISAR_L2_PR_GCOV_023_172_A_168_2005_DHDH_A_20260626T041717_20260626T041752_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 5011,
+    "double_bounce": 5858,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:29+00:00"
+  },
+  {
+   "id": "2026-07-08",
+   "date": "2026-07-08",
+   "start_time": "2026-07-08T04:17:17Z",
+   "scene": "NISAR_L2_PR_GCOV_024_172_A_168_2005_DHDH_A_20260708T041717_20260708T041751_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 7731,
+    "double_bounce": 5704,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:29+00:00"
+  },
+  {
+   "id": "2026-07-20",
+   "date": "2026-07-20",
+   "start_time": "2026-07-20T04:17:16Z",
+   "scene": "NISAR_L2_PR_GCOV_025_172_A_168_2005_DHDH_A_20260720T041716_20260720T041750_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 2360,
+    "double_bounce": 5733,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:30+00:00"
+  },
+  {
+   "id": "2026-08-13",
+   "date": "2026-08-13",
+   "start_time": "2026-08-13T04:17:14Z",
+   "scene": "NISAR_L2_PR_GCOV_027_172_A_168_2005_DHDH_A_20260813T041714_20260813T041749_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 785,
+    "double_bounce": 6910,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:30+00:00"
+  },
+  {
+   "id": "2026-08-25",
+   "date": "2026-08-25",
+   "start_time": "2026-08-25T04:17:14Z",
+   "scene": "NISAR_L2_PR_GCOV_028_172_A_168_2005_DHDH_A_20260825T041714_20260825T041748_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 751,
+    "double_bounce": 7023,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:30+00:00"
+  },
+  {
+   "id": "2026-09-06",
+   "date": "2026-09-06",
+   "start_time": "2026-09-06T04:17:14Z",
+   "scene": "NISAR_L2_PR_GCOV_029_172_A_168_2005_DHDH_A_20260906T041714_20260906T041748_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 264,
+    "double_bounce": 7032,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:31+00:00"
+  },
+  {
+   "id": "2026-09-18",
+   "date": "2026-09-18",
+   "start_time": "2026-09-18T04:17:14Z",
+   "scene": "NISAR_L2_PR_GCOV_030_172_A_168_2005_DHDH_A_20260918T041714_20260918T041748_P05023_F_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 170,
+    "double_bounce": 5608,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:31+00:00"
+  },
+  {
+   "id": "2026-09-30",
+   "date": "2026-09-30",
+   "start_time": "2026-09-30T04:17:14Z",
+   "scene": "NISAR_L2_PR_GCOV_031_172_A_168_2005_DHDH_A_20260930T041714_20260930T041748_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 119,
+    "double_bounce": 5388,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:31+00:00"
+  },
+  {
+   "id": "2026-10-12",
+   "date": "2026-10-12",
+   "start_time": "2026-10-12T04:17:14Z",
+   "scene": "NISAR_L2_PR_GCOV_032_172_A_168_2005_DHDH_A_20261012T041714_20261012T041748_P05023_N_F_J_001",
+   "crid": "P05023",
+   "epsg": 32734,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "track": 172,
+   "frame": 168,
+   "direction": "ASCENDING",
+   "maturity": "PROVISIONAL",
+   "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+   "valid_fraction": 1.0,
+   "screening_counts": {
+    "low_backscatter": 111,
+    "double_bounce": 4028,
+    "valid_cells": 250000
+   },
+   "cell_area_km2": 0.0016,
+   "downloaded_utc": null,
+   "read_utc": "2026-11-15T00:44:32+00:00"
+  }
+ ],
+ "pairs": [
+  {
+   "id": "2026-06-26_2026-07-08",
+   "before": "2026-06-26",
+   "after": "2026-07-08",
+   "delta_days": 12,
+   "nominal_repeat": true,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": -0.3776266073287913,
+    "frac_increase": 0.002272,
+    "frac_decrease": 0.02006
+   },
+   "HV_change": {
+    "mean_db": -0.2186035878878026,
+    "frac_increase": 0.002176,
+    "frac_decrease": 0.00694
+   }
+  },
+  {
+   "id": "2026-07-08_2026-07-20",
+   "before": "2026-07-08",
+   "after": "2026-07-20",
+   "delta_days": 12,
+   "nominal_repeat": true,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": 0.7710324426532115,
+    "frac_increase": 0.081652,
+    "frac_decrease": 0.001712
+   },
+   "HV_change": {
+    "mean_db": 0.336221949296532,
+    "frac_increase": 0.013724,
+    "frac_decrease": 0.002376
+   }
+  },
+  {
+   "id": "2026-07-20_2026-08-13",
+   "before": "2026-07-20",
+   "after": "2026-08-13",
+   "delta_days": 24,
+   "nominal_repeat": false,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": 0.5336049320747654,
+    "frac_increase": 0.051004,
+    "frac_decrease": 0.007484
+   },
+   "HV_change": {
+    "mean_db": 0.38407631978276974,
+    "frac_increase": 0.034264,
+    "frac_decrease": 0.007312
+   }
+  },
+  {
+   "id": "2026-08-13_2026-08-25",
+   "before": "2026-08-13",
+   "after": "2026-08-25",
+   "delta_days": 12,
+   "nominal_repeat": true,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": 0.2402390912678636,
+    "frac_increase": 0.02654,
+    "frac_decrease": 0.006296
+   },
+   "HV_change": {
+    "mean_db": 0.061370967928340306,
+    "frac_increase": 0.01306,
+    "frac_decrease": 0.007584
+   }
+  },
+  {
+   "id": "2026-08-25_2026-09-06",
+   "before": "2026-08-25",
+   "after": "2026-09-06",
+   "delta_days": 12,
+   "nominal_repeat": true,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": 0.5482710372090872,
+    "frac_increase": 0.056724,
+    "frac_decrease": 0.004832
+   },
+   "HV_change": {
+    "mean_db": 0.2823279828283185,
+    "frac_increase": 0.023604,
+    "frac_decrease": 0.0064
+   }
+  },
+  {
+   "id": "2026-09-06_2026-09-18",
+   "before": "2026-09-06",
+   "after": "2026-09-18",
+   "delta_days": 12,
+   "nominal_repeat": true,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": 0.08917909261171052,
+    "frac_increase": 0.023768,
+    "frac_decrease": 0.008824
+   },
+   "HV_change": {
+    "mean_db": 0.25319629691188084,
+    "frac_increase": 0.024072,
+    "frac_decrease": 0.006972
+   }
+  },
+  {
+   "id": "2026-09-18_2026-09-30",
+   "before": "2026-09-18",
+   "after": "2026-09-30",
+   "delta_days": 12,
+   "nominal_repeat": true,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": 0.0012873615034497197,
+    "frac_increase": 0.011788,
+    "frac_decrease": 0.008664
+   },
+   "HV_change": {
+    "mean_db": -0.020612571877791155,
+    "frac_increase": 0.01066,
+    "frac_decrease": 0.009824
+   }
+  },
+  {
+   "id": "2026-09-30_2026-10-12",
+   "before": "2026-09-30",
+   "after": "2026-10-12",
+   "delta_days": 12,
+   "nominal_repeat": true,
+   "channels": [
+    "HH",
+    "HV"
+   ],
+   "HH_change": {
+    "mean_db": 0.2522447832248329,
+    "frac_increase": 0.055396,
+    "frac_decrease": 0.011932
+   },
+   "HV_change": {
+    "mean_db": 0.25238242549237233,
+    "frac_increase": 0.044188,
+    "frac_decrease": 0.011508
+   }
+  }
+ ],
+ "processing": {
+  "steps": [
+   "live ASF search for NISAR L2 GCOV covering the point",
+   "parallel HTTP range reads of the frequencyA HHHH/HVHV chunks in the window (no full download)",
+   "exclude non-finite, <=0, mask 0/255 and inputDataExceptionMask samples",
+   "bin onto a common 40 m grid in EPSG:32734 by mean linear power",
+   "drop cells with valid fraction < 0.5",
+   "dB = 10*log10(power); change = dB(after) - dB(before), consecutive dates",
+   "screening rules from screening.json (UNCALIBRATED)"
+  ],
+  "script": "backend/analyze.py",
+  "elapsed_s": 47.1,
+  "bytes_fetched": 236978176,
+  "range_requests": 226
+ },
+ "source_result_id": "14a22ea91082748f",
+ "example_note": "Saved copy of a live analysis of real NISAR GCOV data, computed 2026-11-15T00:44:33+00:00 by backend/analyze.py; files are unchanged."
+}

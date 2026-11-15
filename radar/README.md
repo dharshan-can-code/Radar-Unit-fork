@@ -2,6 +2,8 @@
 
 **RADAR UNIT · NASA Space Apps Challenge 2026 · "Dancing with the SARs"**
 
+[Visit Here!](https://delta-pulse-nisar.vercel.app/)
+
 DELTA PULSE is an interactive web app that uses NASA-ISRO **NISAR L-band radar** (L2 GCOV) to explore wetland change at **Tonle Sap Lake, Cambodia**. It shows four things:
 - what the radar measured
 - what changed between two acquisitions
@@ -19,11 +21,12 @@ Every statement in the app is tagged **OBSERVED**, **CALCULATED**, **INTERPRETED
 2. **Radar Change Fingerprint:** before/after/Δ for HH and HV, a per-cell change histogram, screening shares, data quality, an evidence-tagged interpretation, and a region time series.
 3. **Observation Timeline:** every real NISAR GCOV granule over both candidate sites, by track, maturity and polarisation, with the documented data gap marked.
 4. **Science explainer** and **Methods & limitations**, including the uncalibrated screening thresholds.
-5. **Explore anywhere:** type a place or coordinates, click the map, or pick from the live **Newest NISAR acquisitions worldwide** map. The backend searches NASA's archive live and analyses a 10–40 km window in about 10–15 s, reading only the needed chunks of the real files.
-6. **Your Story:** type any place and get an animated, data-driven story of the water hidden there (cloud cover at each pass, radar flipbook, hidden-water timeline, biggest change, evidence labels).
-7. **Impact** section, **independent checks** (JRC Global Surface Water, GloFAS river flow, ERA5 wind) and a **sensitivity test** showing the conclusions hold when the threshold moves ±2 dB.
-8. **Globe, Water Now, Scatter Lab, Radar Lab, 3D terrain** and **story sound**: a live 3D globe of new acquisitions; live weather, river flow with forecast and NASA same-day camera vs radar; draggable thresholds on real pixels; an interactive scattering model; narration and data sonification.
-9. **Rainfall context** (ERA5 via Open-Meteo), **CSV / image / JSON downloads**, **share links**, a **recent analyses** gallery and an **opacity** slider.
+5. **Worldwide examples** that open instantly, even on the hosted site without the backend: Amazon floodplain (Manaus), Sundarbans mangroves and the Okavango Delta, saved from real live analyses.
+6. **Explore anywhere:** type a place or coordinates, click the map, or pick from the live **Newest NISAR acquisitions worldwide** map. The backend searches NASA's archive live and analyses a 10–40 km window in about 10–15 s, reading only the needed chunks of the real files.
+7. **Your Story:** type any place and get an animated, data-driven story of the water hidden there (cloud cover at each pass, radar flipbook, hidden-water timeline, biggest change, evidence labels).
+8. **Impact** section, **independent checks** (JRC Global Surface Water, GloFAS river flow, ERA5 wind) and a **sensitivity test** showing the conclusions hold when the threshold moves ±2 dB.
+9. **Globe, Water Now, Scatter Lab, Radar Lab, 3D terrain** and **story sound**: a live 3D globe of new acquisitions; live weather, river flow with forecast and NASA same-day camera vs radar; draggable thresholds on real pixels; an interactive scattering model; narration and data sonification.
+10. **Rainfall context** (ERA5 via Open-Meteo), **CSV / image / JSON downloads**, **share links**, a **recent analyses** gallery and an **opacity** slider.
 
 ## Run the app
 ```bash
@@ -79,6 +82,7 @@ python -m venv .venv
 | `scripts/inspection/inspect_h5.py` | Dumps HDF5 structure and value checks |
 | `scripts/refresh.py` | Check, diff, download, process, publish workflow |
 | `scripts/processing/` | Reader, radar maths, screening config, stack processing; `make_synthetic.py` is used by tests only |
+| `scripts/processing/export_examples.py` | Saves finished live analyses as static worldwide examples in `public/data/examples/` |
 | `scripts/validation/validate_area.py` | Independent checks against JRC, GloFAS and ERA5; writes `public/data/<area>/validation.json` |
 | `data/metadata/` | Real acquisition inventories (CSV/GeoJSON), candidate pairs, discovery summary |
 | `public/data/` | Files the app reads: `status.json`, `inventory.json`, `tonle_sap/stacks.json`, `tonle_sap/<stack>/` (manifest, grid, images) |

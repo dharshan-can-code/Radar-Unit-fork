@@ -8,7 +8,7 @@ import { Methods, ScienceExplainer } from "@/components/Science";
 import type { Mode, Selection } from "@/components/Explorer";
 import {
   AreaStatus, Bounds, Channel, GridIndex, Inventory, Manifest, Stacks, Validation, fingerprint, interpret, loadGrid, loadInventory,
-  loadManifest, loadStacks, loadStatus, loadValidation, timeSeries,
+  loadExample, loadManifest, loadStacks, loadStatus, loadValidation, resultQuery, timeSeries,
 } from "@/lib/data";
 import ValidationPanel from "@/components/Validation";
 import DataStatus from "@/components/DataStatus";
@@ -56,7 +56,16 @@ export default function Home() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("result");
+    const ex = params.get("example");
     if (params.get("view") === "story") setView("story");
+    if (ex) {
+      const asStory = params.get("view") === "story";
+      loadExample(ex).then((mm) => {
+        if (!mm) return;
+        const r = { manifest: mm, footprint: null, checkedUtc: null };
+        if (asStory) storyResult(r); else showLive(r, true);
+      }).catch(() => { /* unknown example: stay on case study */ });
+    }
     if (id && /^[a-f0-9]{8,32}$/.test(id)) {
       const asStory = params.get("view") === "story";
       loadResult(`/api/results/${id}/manifest.json`).then((mm) => {
@@ -123,20 +132,28 @@ export default function Home() {
   // A live analysis result replaces the case-study data in every section.
   function showLive(r: LiveResult, noScroll = false) {
     setSource("live"); setLive(r); setSel({ kind: "area" }); setGrid(null); setM(r.manifest);
-    window.history.replaceState(null, "", `?result=${r.manifest.stack}${view === "story" ? "&view=story" : ""}`);
-    setPairIdx(Math.max(0, r.manifest.pairs.length - 1));
+    window.history.replaceState(null, "", `?${resultQuery(r.manifest)}${view === "story" ? "&view=story" : ""}`);
+    // Live results open on the newest pair; saved examples on the pair with the most change (as in Your Story).
+    const changed = (p: Manifest["pairs"][number]) => {
+      const c = (p as unknown as { HH_change?: { frac_increase: number | null; frac_decrease: number | null } }).HH_change;
+      return (c?.frac_increase ?? 0) + (c?.frac_decrease ?? 0);
+    };
+    const ps = r.manifest.pairs;
+    setPairIdx(r.manifest.area === "examples" && ps.length
+      ? ps.reduce((best, p, i) => (changed(p) > changed(ps[best]) ? i : best), 0)
+      : Math.max(0, ps.length - 1));
     loadGrid(r.manifest).then((g) => setGrid(new GridIndex(r.manifest, g))).catch(() => setGrid(null));
     if (!noScroll && view === "app") document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" });
     if (view === "story") window.scrollTo({ top: 0 });
   }
-  function storyResult(r: LiveResult) { showLive(r, true); window.history.replaceState(null, "", `?result=${r.manifest.stack}&view=story`); }
+  function storyResult(r: LiveResult) { showLive(r, true); window.history.replaceState(null, "", `?${resultQuery(r.manifest)}&view=story`); }
   function openMapFromStory() {
     setView("app");
-    if (m?.area === "live") window.history.replaceState(null, "", `?result=${m.stack}`);
+    if (m && m.area !== AREA) window.history.replaceState(null, "", `?${resultQuery(m)}`);
     setTimeout(() => document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth" }), 80);
   }
-  const shareStoryUrl = m && m.area === "live" && typeof window !== "undefined"
-    ? `${window.location.origin}/?result=${m.stack}&view=story` : null;
+  const shareStoryUrl = m && m.area !== AREA && typeof window !== "undefined"
+    ? `${window.location.origin}/?${resultQuery(m)}&view=story` : null;
   function backToCase() {
     setSource("case"); setLive(null); setM(undefined); setGrid(null); setCaseReload((n) => n + 1);
     window.history.replaceState(null, "", window.location.pathname);
@@ -179,7 +196,7 @@ export default function Home() {
     <main className="mx-auto max-w-[1400px] px-4 pb-24 sm:px-6">
       <Navbar view={view} setView={(v) => {
         setView(v);
-        if (m?.area === "live") window.history.replaceState(null, "", `?result=${m.stack}${v === "story" ? "&view=story" : ""}`);
+        if (m && m.area !== AREA) window.history.replaceState(null, "", `?${resultQuery(m)}${v === "story" ? "&view=story" : ""}`);
         else window.history.replaceState(null, "", v === "story" ? "?view=story" : window.location.pathname);
       }} />
       {view === "story" ? (
@@ -310,7 +327,7 @@ function SourceBar({ m, source, live, onBack, pairId, channel }: { m: Manifest; 
     <div className={`mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border px-3 py-2 text-[12px] ${source === "live" ? "border-cyan/40 bg-cyan/5" : "border-line bg-panel"}`}>
       <span className="flex items-center gap-1.5 font-semibold text-text">
         {source === "live" ? <Globe2 size={14} className="text-cyan" /> : <Radar size={14} className="text-cyan" />}
-        {source === "live" ? `Live: ${m.name}` : `Case study: ${m.name}`}
+        {source === "live" ? `${m.area === "examples" ? "Example" : "Live"}: ${m.name}` : `Case study: ${m.name}`}
       </span>
       <span className="text-muted">
         {o.length} NISAR acquisitions {o[0]?.date} → {o[o.length - 1]?.date} · track {o[0]?.track}{o[0]?.direction?.[0]} · {o[0]?.maturity} {o[0]?.crid} · {m.display.res_m} m cells
