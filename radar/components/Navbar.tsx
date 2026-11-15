@@ -6,7 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/site/LanguageSelector";
 import { useLanguage } from "@/components/site/LanguageContext";
 import { BrandMark } from "@/components/ui";
-import { PAGES, STORY } from "@/components/site/nav";
+import { PAGES, STORY, navName } from "@/components/site/nav";
 import { useNavLinks } from "@/components/Sidebar";
 
 /** Top navigation for screens narrower than xl: the current page, Your Story, a menu of every page and
@@ -39,7 +39,7 @@ export default function Navbar() {
         </Link>
 
         <div className="ml-auto flex shrink-0 items-center gap-1">
-          {current && <span className="mr-1 hidden text-[13px] text-muted sm:inline">{t(current.key)}</span>}
+          {current && <span className="mr-1 hidden text-[13px] text-muted sm:inline">{navName(current, language, t)}</span>}
           <LanguageSelector className="hidden sm:flex" />
           <ThemeToggle compact />
           <Link href="/guide" className="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] text-muted hover:text-text sm:flex">
@@ -60,7 +60,7 @@ export default function Navbar() {
               return (
                 <div key={p.href}>
                   <Link href={href(p.href)} onClick={() => setOpen(false)} aria-current={here ? "page" : undefined}
-                    className={`text-[12px] ${here ? "text-accent" : "text-muted hover:text-text"}`}>{t(p.key)}</Link>
+                    className={`text-[12px] ${here ? "text-accent" : "text-muted hover:text-text"}`}>{navName(p, language, t)}</Link>
                   <ul className="mt-1">
                     {p.items.map((x) => {
                       const on = isOn(p, x);
@@ -68,7 +68,7 @@ export default function Navbar() {
                         <li key={x.id}>
                           <Link href={target(p, x)} onClick={(e) => onClick(p, x, e, () => setOpen(false))} aria-current={on ? "location" : undefined}
                             className={`block w-full py-1.5 text-left text-[15px] ${on ? "text-accent" : "text-text hover:text-accent"}`}>
-                            {t(x.key)}
+                            {navName(x, language, t)}
                           </Link>
                         </li>
                       );

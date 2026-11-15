@@ -1,43 +1,60 @@
 "use client";
 // Plain-language guides: how to read the map, and what the Fingerprint result means.
-import { BoxSelect, Layers, MousePointerClick, SplitSquareHorizontal } from "lucide-react";
+import { ArrowDown, BoxSelect, Layers, MousePointerClick, SplitSquareHorizontal } from "lucide-react";
 import type { Mode } from "@/components/Explorer";
 import type { Fingerprint as FP, Verdict } from "@/lib/data";
 import { fmtDate } from "@/lib/story";
 
 const MODES: { v: Mode; icon: React.ReactNode; title: string; body: React.ReactNode }[] = [
-  { v: "compare", icon: <SplitSquareHorizontal size={15} />, title: "Before / After",
+  { v: "compare", icon: <SplitSquareHorizontal size={15} />, title: "Before and after",
     body: <>Drag the handle to compare two dates. <b className="text-text">Black</b> is calm water, which reflects the radar away. <b className="text-text">Light grey</b> is land, trees and towns.</> },
-  { v: "change", icon: <Layers size={15} />, title: "Measured change",
+  { v: "change", icon: <Layers size={15} />, title: "What changed",
     body: <><Chip c="bg-map-veg" /> <b className="text-text">Amber</b>: the echo got stronger, often water rising under trees. <Chip c="bg-map-darker" /> <b className="text-text">Blue</b>: the echo got weaker, often new open water or drying plants.</> },
-  { v: "screening", icon: <BoxSelect size={15} />, title: "Screening",
-    body: <><Chip c="bg-map-water" /> <b className="text-text">Cyan</b>: looks like open water. <Chip c="bg-map-veg" /> <b className="text-text">Orange</b>: looks like water under trees. These are signatures, not confirmed floods.</> },
+  { v: "screening", icon: <BoxSelect size={15} />, title: "Likely water",
+    body: <><Chip c="bg-map-water" /> <b className="text-text">Cyan</b>: looks like open water. <Chip c="bg-map-veg" /> <b className="text-text">Orange</b>: looks like water under trees (buildings look the same). These are radar signatures, not confirmed floods.</> },
 ];
 
 function Chip({ c }: { c: string }) {
   return <i className={`inline-block h-2.5 w-2.5 translate-y-[1px] ${c}`} />;
 }
 
-/** One line under the map: how to read the view that is on screen, and what to do next. */
-export function MapGuide({ mode }: { mode: Mode }) {
+const AREA_NAME = { area: "Across the whole area", box: "In the box you drew", point: "At the spot you clicked" } as const;
+
+/** Under the map: how to read the view that is on screen, and the plain answer for the area picked on it,
+ *  so picking an area gives an answer without scrolling away from the map. */
+export function MapGuide({ mode, picked, answer }: {
+  mode: Mode; picked: keyof typeof AREA_NAME;
+  /** the plain verdict for the picked area; null while it is being worked out or when the spot is outside the image */
+  answer: { head: string; tone: string } | null;
+}) {
   const x = MODES.find((k) => k.v === mode) ?? MODES[0];
   return (
-    <div className="grid gap-x-10 gap-y-2 border-t border-line px-3 py-3 text-[13px] leading-relaxed text-text/75 sm:px-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+    <div className="grid gap-x-10 gap-y-3 border-t border-line px-3 py-3.5 text-[13px] leading-relaxed text-text/75 sm:px-4 lg:grid-cols-2">
       <p key={x.v} className="fade-in flex items-start gap-2">
         <span className="mt-[3px] shrink-0 text-accent">{x.icon}</span>
         <span><span className="font-semibold text-text">{x.title}.</span> {x.body}</span>
       </p>
-      <p className="flex items-start gap-2">
+      <div className="flex items-start gap-2">
         <MousePointerClick size={15} className="mt-[3px] shrink-0 text-green" />
-        <span><span className="font-semibold text-text">Then pick an area.</span> Click a spot or draw a box on the map. The panel below explains what changed there.</span>
-      </p>
+        {answer ? (
+          <p key={answer.head + picked} className="fade-in" aria-live="polite">
+            <span className="text-muted">{AREA_NAME[picked]}: </span>
+            <span className="font-semibold text-text">{answer.head}.</span>{" "}
+            <a href="#fingerprint" className="inline-flex items-center gap-1 whitespace-nowrap text-accent hover:text-accent-strong">See the evidence<ArrowDown size={12} /></a>
+            <span className="mt-0.5 block text-muted">Click a spot or draw a box on the map to ask about a different area.</span>
+          </p>
+        ) : (
+          <p><span className="font-semibold text-text">Pick an area.</span> Click a spot or draw a box on the map, and the answer for that area appears here.</p>
+        )}
+      </div>
     </div>
   );
 }
 
 const share = (x: Record<string, number>) => { const t = (x.water ?? 0) + (x.double ?? 0) + (x.other ?? 0); return t ? (x.double ?? 0) / t : 0; };
 
-export function PlainVerdict({ fp, verdict }: { fp: FP; verdict: Verdict }) {
+/** The plain-language reading of a comparison: a headline, a paragraph, and the colour of its panel. */
+export function plainAnswer(fp: FP, verdict: Verdict): { head: string; body: string; tone: string } {
   const a = fmtDate(fp.before.date), b = fmtDate(fp.after.date);
   const [hh] = fp.channels;
   const d0 = share(fp.screening.before), d1 = share(fp.screening.after);
@@ -71,6 +88,11 @@ export function PlainVerdict({ fp, verdict }: { fp: FP; verdict: Verdict }) {
       ? ` However, the "water under trees" echo shrank from ${Math.round(d0 * 100)}% to ${Math.round(d1 * 100)}% of the area, a sign that water may be draining from under the vegetation.`
       : ` However, the "water under trees" echo grew from ${Math.round(d0 * 100)}% to ${Math.round(d1 * 100)}% of the area, a sign that water may be rising under the vegetation.`;
   }
+  return { head, body, tone };
+}
+
+export function PlainVerdict({ fp, verdict }: { fp: FP; verdict: Verdict }) {
+  const { head, body, tone } = plainAnswer(fp, verdict);
   return (
     <div className={`mb-4 rounded-lg border p-5 sm:p-7 ${tone}`}>
       <h3 className="text-2xl leading-tight font-medium sm:text-[2rem]">{head}</h3>
@@ -78,7 +100,7 @@ export function PlainVerdict({ fp, verdict }: { fp: FP; verdict: Verdict }) {
       <details className="mt-4 text-[13px] text-muted">
         <summary className="cursor-pointer text-text/80 hover:text-text">How to read the numbers below</summary>
         <ul className="mt-2 list-disc space-y-1 pl-5">
-          <li><b className="text-text">dB (decibels)</b> measure how strong the radar echo is. <b className="text-text">+3 dB means twice as strong</b>, −3 dB means half.</li>
+          <li><b className="text-text">Echo strength</b> is how much of the radar pulse bounces back to the satellite. It is measured in <b className="text-text">dB (decibels)</b>. <b className="text-text">+3 dB means twice as strong</b>, −3 dB means half.</li>
           <li><b className="text-text">HH</b> and <b className="text-text">HV</b> are two ways the radar sends and listens. HH lights up strongly when water stands under trunks; HV responds to leaves and branches.</li>
           <li>The <b className="text-text">bar charts</b> show how many map cells got brighter (amber, right) or darker (blue, left), and by how much.</li>
           <li>The <b className="text-text">time series</b> shows the average echo on every pass, so you can see when change happened.</li>

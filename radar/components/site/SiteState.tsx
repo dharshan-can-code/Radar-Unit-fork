@@ -42,6 +42,9 @@ function useSiteState() {
   const [validation, setValidation] = useState<Validation | null>(null);
   const [featuredFor, setFeaturedFor] = useState<string | null>(null);
   const [deepTab, setDeepTab] = useState("now");
+  // The place chooser on the Explore page (examples, search, newest acquisitions) is folded away
+  // while a result is on screen, so choosing a place sits above the result instead of far below it.
+  const [placesOpen, setPlacesOpen] = useState(false);
 
   // Shareable links: ?result=<id> reopens a saved live analysis, ?example=<id> a ready-made one.
   // Old links used /?view=story; they now open /story.
@@ -130,11 +133,12 @@ function useSiteState() {
     const qs = `?${resultQuery(r.manifest)}`;
     const path = window.location.pathname;
     if (!noScroll && path !== STORY) {
-      // A new result opens on its headline findings, which are on the first page.
-      if (path === "/") {
-        window.history.replaceState(null, "", `/${qs}`);
-        document.getElementById("findings")?.scrollIntoView({ behavior: "smooth" });
-      } else router.push(`/${qs}#findings`);
+      // A new result opens on its short answer, directly under the place chooser it was picked in.
+      setPlacesOpen(false);
+      if (path === "/explore") {
+        window.history.replaceState(null, "", `/explore${qs}`);
+        setTimeout(() => document.getElementById("answer")?.scrollIntoView({ behavior: "smooth" }), 80);
+      } else router.push(`/explore${qs}#answer`);
     } else if (!keepUrl) {
       window.history.replaceState(null, "", `${path}${qs}${window.location.hash}`);
     }
@@ -162,8 +166,9 @@ function useSiteState() {
   /** A place picked on the map or the globe goes into the search box on the Explore page. */
   function pickPlace(p: Place) {
     setExternalPlace({ ...p, nonce: Date.now() });
-    if (pathname === "/explore") document.getElementById("live")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    else router.push(href("/explore", "live"));
+    setPlacesOpen(true);
+    if (pathname === "/explore") setTimeout(() => document.getElementById("places")?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+    else router.push(href("/explore", "places"));
   }
 
   const inventoryForMap: InventoryArea | undefined = source === "live"
@@ -202,7 +207,7 @@ function useSiteState() {
 
   return {
     inv, m, grid, pairIdx, setPairIdx, pair, channel, setChannel, mode, setMode, sel, setSel, stacks, stackId, setStackId,
-    status, source, live, externalPlace, rain, help, setHelp, validation, featured, deepTab, setDeepTab,
+    status, source, live, externalPlace, rain, help, setHelp, validation, featured, deepTab, setDeepTab, placesOpen, setPlacesOpen,
     query, href, showLive, backToCase, pickPlace, inventoryForMap, rect, bounds, label, analysis,
   };
 }

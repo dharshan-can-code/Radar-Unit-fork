@@ -54,32 +54,64 @@ function CountUp({ to, active, decimals = 0, ms = 1400 }: { to: number; active: 
 function Flipbook({ m, layer = "HH", interval = 1100, big = false }: { m: Manifest; layer?: "HH" | "class"; interval?: number; big?: boolean }) {
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(true);
+  // Which images have arrived. The flipbook only ever shows a frame that has loaded, so a slow
+  // server gives a short wait and then a shorter loop, never a blank frame in the middle of it.
+  const [got, setGot] = useState<Record<string, "ok" | "failed">>({});
+  const [attempt, setAttempt] = useState(0);
   const obs = m.observations;
+  const mark = (date: string, v: "ok" | "failed") => setGot((g) => (g[date] === v ? g : { ...g, [date]: v }));
+  const ready = obs.filter((o) => got[o.date] === "ok");
+  const failed = obs.filter((o) => got[o.date] === "failed").length;
+  const waiting = obs.length - ready.length - failed;
   useEffect(() => {
-    if (!playing || obs.length < 2) return;
-    const t = setInterval(() => { setI((k) => (k + 1) % obs.length); if (big) storySound.blip(); }, interval);
+    if (!playing || ready.length < 2) return;
+    const t = setInterval(() => { setI((k) => k + 1); if (big) storySound.blip(); }, interval);
     return () => clearInterval(t);
-  }, [playing, obs.length, interval, big]);
+  }, [playing, ready.length, interval, big]);
   const ratio = m.display.ny / m.display.nx;
-  const cur = obs.length ? i % obs.length : 0; // never index past the end (e.g. after switching places)
+  const cur = ready.length ? ready[i % ready.length] : null; // never index past the end (e.g. after switching places)
+  const retry = () => { setGot({}); setAttempt((a) => a + 1); };
   return (
     <figure className={`relative mx-auto w-full ${big ? "max-w-2xl" : "max-w-md"}`}>
       <div className="relative overflow-hidden rounded-xl border border-line bg-void" style={{ paddingTop: `${ratio * 100}%` }}>
-        {obs.map((o, k) => (
+        {obs.map((o) => (
           // eslint-disable-next-line @next/next/no-img-element
-          <img key={o.date} crossOrigin={IMG_CORS} src={imgUrl(m, `${o.date}_${layer === "class" ? "class" : "HH"}`)} alt={`NISAR ${layer} radar image, ${o.date}`}
-            className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500" style={{ opacity: k === cur ? 1 : 0, imageRendering: "pixelated" }} />
+          <img key={`${o.date}-${attempt}`} crossOrigin={IMG_CORS} src={imgUrl(m, `${o.date}_${layer === "class" ? "class" : "HH"}`)} alt={`NISAR ${layer} radar image, ${o.date}`}
+            ref={(el) => { if (el?.complete) mark(o.date, el.naturalWidth > 0 ? "ok" : "failed"); }}
+            onLoad={() => mark(o.date, "ok")} onError={() => mark(o.date, "failed")}
+            className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500" style={{ opacity: o.date === cur?.date ? 1 : 0, imageRendering: "pixelated" }} />
         ))}
-        <div className="absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-sm text-text">{obs[cur] ? fmtDate(obs[cur].date) : ""}</div>
-        <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pause" : "Play"}
-          className="absolute top-3 right-3 rounded-full bg-bg/80 p-1.5 text-accent">{playing ? <Pause size={14} /> : <Play size={14} />}</button>
+        {!cur && (
+          <div className="on-map absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-[14px]" role="status">
+            {waiting > 0 ? <><Loader2 size={18} className="animate-spin" />Loading the radar images…</> : (
+              <>
+                <span>The radar images did not load. The server that holds them may have gone to sleep.</span>
+                <button onClick={retry} className="rounded-md border border-current px-3 py-1.5 text-[13px] font-medium">Try again</button>
+              </>
+            )}
+          </div>
+        )}
+        {cur && <div className="absolute top-3 left-3 rounded bg-bg/80 px-2 py-1 font-mono text-sm text-text">{fmtDate(cur.date)}</div>}
+        {ready.length > 1 && (
+          <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pause" : "Play"}
+            className="absolute top-3 right-3 rounded-full bg-bg/80 p-1.5 text-accent">{playing ? <Pause size={14} /> : <Play size={14} />}</button>
+        )}
       </div>
-      <div className="mt-2 flex gap-1" role="tablist" aria-label="Acquisition dates">
-        {obs.map((o, k) => (
-          <button key={o.date} onClick={() => { setI(k); setPlaying(false); }} title={o.date} aria-label={o.date}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${k === cur ? "bg-accent" : "bg-line hover:bg-muted"}`} />
-        ))}
+      <div className="mt-2 flex gap-1" role="group" aria-label="Radar passes">
+        {obs.map((o) => {
+          const k = ready.findIndex((r) => r.date === o.date);
+          return (
+            <button key={o.date} disabled={k < 0} onClick={() => { setI(k); setPlaying(false); }}
+              title={k < 0 ? `${o.date}: ${got[o.date] === "failed" ? "this image did not load" : "loading"}` : o.date} aria-label={o.date} aria-pressed={o.date === cur?.date}
+              className={`h-1.5 flex-1 rounded-full transition-colors ${o.date === cur?.date ? "bg-accent" : k < 0 ? "bg-line opacity-50" : "bg-line hover:bg-muted"}`} />
+          );
+        })}
       </div>
+      {cur && failed > 0 && (
+        <p className="mt-1 text-center text-[12px] text-muted">
+          {failed} of {obs.length} images did not load. <button onClick={retry} className="text-accent hover:text-accent-strong">Try again</button>
+        </p>
+      )}
       <figcaption className="mt-1 text-center text-[12px] text-muted">
         {layer === "class" ? "Cyan: water-like (calm, dark). Amber: flooded-vegetation-like (very bright)." : "Real NISAR radar. Dark = smooth surfaces such as calm water; bright = trees, towns, flooded forest."}
       </figcaption>

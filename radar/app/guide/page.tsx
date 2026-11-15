@@ -92,10 +92,10 @@ export default function Guide() {
             <p>Use the bar at the top to jump between sections. The app opens on <b>Tonle Sap Lake in Cambodia</b>, which swells enormously every monsoon. Drag the round <Btn><ChevronsLeftRight size={12} /></Btn> handle on the map left and right to compare two dates.</p>
           </Step>
           <Step n={2} icon={<MousePointer2 size={16} />} title="Click anywhere on the map">
-            <p>The <b>Radar Change Fingerprint</b> below the map tells you, in plain words, what changed at that spot and how sure we can be.</p>
+            <p>The answer for that spot appears right under the map, in plain words. <b>The evidence</b> section below it shows every number and how sure we can be.</p>
           </Step>
           <Step n={3} icon={<Search size={16} />} title="Try your own place">
-            <p>Type a place like <i>Jakarta</i> or <i>New Orleans</i> into the search box in the <b>Other places</b> section, press <Btn><Search size={11} />Search</Btn>, then <Btn>▶ Analyse</Btn>. After about 10–15 seconds the whole page shows real radar for your place. No server running? Open one of the three ready-made examples there instead.</p>
+            <p>Type a place like <i>Jakarta</i> or <i>New Orleans</i> into the search box (press <Btn><Search size={11} />Choose another place</Btn> at the top of <b>Explore a place</b> to open it), press <Btn><Search size={11} />Search</Btn>, then <Btn>▶ Analyse</Btn>. After about 10–15 seconds the whole page shows real radar for your place. No server running? Open one of the three ready-made examples there instead.</p>
           </Step>
         </div>
       </Section>
@@ -111,9 +111,9 @@ export default function Guide() {
           <div className="rounded-xl border border-line bg-panel p-5">
             <h3 className="font-semibold">Three views</h3>
             <ul className="mt-3 space-y-2 text-[14px] text-text/80">
-              <li><Btn><SplitSquareHorizontal size={11} />Before / After</Btn> the two radar images, side by side under the slider.</li>
-              <li><Btn><Layers size={11} />Measured change</Btn> <span className="text-amber">amber</span> got brighter, <span className="text-blue">blue</span> got darker.</li>
-              <li><Btn><BoxSelect size={11} />Screening</Btn> <span className="text-cyan">cyan</span> may be open water, <span className="text-amber">amber</span> may be flooded plants (or buildings).</li>
+              <li><Btn><SplitSquareHorizontal size={11} />Before and after</Btn> the two radar images, side by side under the slider.</li>
+              <li><Btn><Layers size={11} />What changed</Btn> <span className="text-amber">amber</span>: the echo got stronger, <span className="text-blue">blue</span>: it got weaker.</li>
+              <li><Btn><BoxSelect size={11} />Likely water</Btn> <span className="text-cyan">cyan</span> may be open water, <span className="text-amber">amber</span> may be flooded plants (or buildings).</li>
             </ul>
           </div>
           <div className="rounded-xl border border-line bg-panel p-5">
@@ -159,6 +159,7 @@ export default function Guide() {
       <Section id="anywhere" title="Explore any place in the world">
         <div className="grid gap-3">
           <Step n={1} icon={<Globe2 size={16} />} title="Choose a place: three ways">
+            <p>On <b>Explore a place</b>, press <Btn><Search size={11} />Choose another place</Btn>. The chooser opens at the top of the page.</p>
             <ul className="list-disc space-y-1 pl-5">
               <li><b>Type</b> a name or coordinates (e.g. <i>Manaus</i> or <i>22.02, 89.31</i>) and press <Btn><Search size={11} />Search</Btn>.</li>
               <li><b>Click</b> a coloured strip on the <i>Newest NISAR acquisitions worldwide</i> map. Each strip is an image the satellite took recently.</li>
@@ -175,7 +176,7 @@ export default function Guide() {
               <li><Btn>Detailed 40 m</Btn> about 15 seconds for two dates, sharper.</li>
               <li><Btn>10 km</Btn> <Btn>20 km</Btn> <Btn>40 km</Btn> how big an area around your point.</li>
             </ul>
-            <p>Press <Btn>▶ Analyse</Btn>. A bar shows progress, and then the whole page switches to your place. A <span className="text-accent">Live:</span> bar above the map tells you where you are. <Btn><ArrowLeft size={11} />Tonle Sap case study</Btn> takes you back.</p>
+            <p>Press <Btn>▶ Analyse</Btn>. A bar shows progress, and then the page shows your place, starting with the short answer. The bar at the top of the page names the place you are looking at. <Btn><ArrowLeft size={11} />Back to Tonle Sap</Btn> takes you back.</p>
           </Step>
         </div>
         <h3 className="mt-6 font-semibold">What the coloured badges mean</h3>
@@ -209,8 +210,8 @@ export default function Guide() {
         <div className="grid gap-3 sm:grid-cols-2">
           {[
             ["Sound in Your Story", "Press “Turn sound on”. A voice reads each chapter, soft rain follows the real rainfall, and “Hear the water” plays one note per satellite pass: higher notes mean more water."],
-            ["Globe (Other places)", "A spinning 3D globe of every NISAR image taken in the last day, 3 days or week. Click any strip to explore it."],
-            ["Water now (Go deeper)", "Live weather at your place, river flow for the past 6 months plus a 30-day forecast, and NASA’s normal camera photo from the same day as each radar image. Drag the slider to see what the clouds hid."],
+            ["Globe (Choose a place)", "A spinning 3D globe of every NISAR image taken in the last day, 3 days or week. Click any strip to explore it."],
+            ["Conditions today (Go deeper)", "Live weather at your place, river flow for the past 6 months plus a 30-day forecast, and NASA’s normal camera photo from the same day as each radar image. Drag the slider to see what the clouds hid."],
             ["Scatter Lab (Go deeper)", "Every real radar pixel as a dot. Drag the coloured lines to change what counts as water and watch the map change."],
             ["Radar Lab (Go deeper)", "Add water, trees and wind, switch the radar wavelength, and see why NISAR can find flooding under forest. (A teaching model, not data.)"],
             ["3D terrain", "On the main map, press “3D terrain” to lay the radar over real hills and valleys. Choose “Basemap: NASA same day” to see NASA’s photo from that date underneath."],

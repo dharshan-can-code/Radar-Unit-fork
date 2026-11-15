@@ -8,6 +8,7 @@ import { imgUrl } from "@/lib/data";
 import { COLOR, mapTilesFor } from "@/lib/theme";
 import { currentTheme, useTheme } from "@/lib/themeMode";
 import { Segmented } from "@/components/ui";
+import { fmtDate } from "@/lib/story";
 
 export type Mode = "compare" | "change" | "screening";
 export type Selection = { kind: "point"; lng: number; lat: number } | { kind: "box"; bounds: Bounds } | { kind: "area" };
@@ -231,12 +232,12 @@ export default function Explorer(p: Props) {
       {/* toolbar */}
       <div className="flex flex-wrap items-center gap-2 border-b border-line px-3 py-2 text-[12px] sm:px-4 sm:text-[13px]">
         <Segmented label="Map view" value={mode} onChange={(v) => p.setMode(v as Mode)} options={[
-          { v: "compare", label: "Before / After", icon: <SplitSquareHorizontal size={14} /> },
-          { v: "change", label: "Measured change", icon: <Layers size={14} /> },
-          { v: "screening", label: "Screening", icon: <BoxSelect size={14} /> },
+          { v: "compare", label: "Before and after", icon: <SplitSquareHorizontal size={14} />, title: "The two radar images, side by side" },
+          { v: "change", label: "What changed", icon: <Layers size={14} />, title: "Measured change in backscatter (dB) between the two passes" },
+          { v: "screening", label: "Likely water", icon: <BoxSelect size={14} />, title: "Threshold screening: low-backscatter (open water) and double-bounce (water under vegetation) signatures" },
         ]} />
         {mode !== "screening" && (
-          <Segmented label="Radar channel" value={channel} onChange={(v) => p.setChannel(v as Channel)} options={[
+          <Segmented label="Radar channel: HH and HV are the two ways the radar sends and listens" value={channel} onChange={(v) => p.setChannel(v as Channel)} options={[
             { v: "HH", label: "HH", title: "Sent and received horizontally" }, { v: "HV", label: "HV", disabled: !hvOk, title: "Sent horizontally, received vertically" },
           ]} />
         )}
@@ -274,7 +275,7 @@ export default function Explorer(p: Props) {
       </div>
 
       {/* maps */}
-      <div ref={wrap} className="relative h-[70svh] min-h-[420px] overflow-hidden bg-void sm:h-[68vh]">
+      <div ref={wrap} className="relative h-[66svh] min-h-[420px] overflow-hidden bg-void sm:h-[62vh]">
         {/* maplibre sets position:relative on its container, so each map lives inside an absolute wrapper */}
         <div className="absolute inset-0"><div ref={aEl} className="h-full w-full" /></div>
         <div className="pointer-events-none absolute inset-0" style={{ clipPath: `inset(0 0 0 ${clip}%)` }}>
@@ -287,8 +288,8 @@ export default function Explorer(p: Props) {
         )}
         {mode !== "change" && pair && (
           <>
-            <div className="pointer-events-none absolute top-3 left-3 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">Before </span>{pair.before}</div>
-            <div className="pointer-events-none absolute top-3 right-14 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">After </span>{pair.after}</div>
+            <div className="pointer-events-none absolute top-3 left-3 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">Before </span>{fmtDate(pair.before)}</div>
+            <div className="pointer-events-none absolute top-3 right-14 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text"><span className="text-muted">After </span>{fmtDate(pair.after)}</div>
             <div className="absolute top-0 bottom-0 z-10 w-px bg-accent" style={{ left: `${swipe}%` }}>
               <button aria-label="Drag to compare before and after" role="slider" aria-orientation="horizontal"
                 aria-valuemin={2} aria-valuemax={98} aria-valuenow={Math.round(swipe)}
@@ -301,7 +302,7 @@ export default function Explorer(p: Props) {
         )}
         {mode === "change" && pair && (
           <div className="pointer-events-none absolute top-3 left-3 z-10 border border-line bg-bg/85 px-2 py-1 font-mono text-[11px] text-text">
-            Δ{channel} = {pair.after} − {pair.before} <span className="text-muted">({pair.delta_days} days)</span></div>
+            Change in {channel} echo, {fmtDate(pair.before)} to {fmtDate(pair.after)} <span className="text-muted">({pair.delta_days} days)</span></div>
         )}
         {ready && imgFailed && (
           <div role="alert" className="absolute top-14 left-1/2 z-10 w-[min(92%,26rem)] -translate-x-1/2 border border-amber/60 bg-bg/95 px-3 py-2 text-[13px] text-text">
@@ -320,8 +321,12 @@ function Legend({ m, mode, channel }: { m: Manifest; mode: Mode; channel: Channe
   // Open by default where there is room; on phones it starts folded so the map stays visible.
   const [open, setOpen] = useState(true);
   useEffect(() => { if (window.matchMedia("(max-width: 639px)").matches) setOpen(false); }, []);
-  const title = mode === "screening" ? "Screening (interpreted, uncalibrated)"
-    : mode === "change" ? `Right: measured Δ${channel} (dB). Left: before` : `Measured ${channel} backscatter γ⁰ (dB)`;
+  const title = mode === "screening" ? "Likely water (an estimate)"
+    : mode === "change" ? "How the echo changed" : "Strength of the radar echo";
+  // The exact quantity behind the plain title, for readers who work with radar.
+  const exact = mode === "screening" ? "threshold screening, uncalibrated"
+    : mode === "change" ? `Δ${channel} γ⁰ = after − before, dB` : `${channel} γ⁰ backscatter, dB`;
+  const ow = m.screening.open_water, db = m.screening.double_bounce;
   return (
     <div className="absolute bottom-8 left-3 z-10 w-60 border border-line bg-bg/90 text-xs backdrop-blur-sm sm:w-64">
       <button onClick={() => setOpen((o) => !o)} aria-expanded={open}
@@ -331,22 +336,25 @@ function Legend({ m, mode, channel }: { m: Manifest; mode: Mode; channel: Channe
       </button>
       {open && (
         <div className="px-3 pb-3">
+          <div className="mb-2 font-mono text-[11px] text-muted">{exact}</div>
           {mode === "screening" ? (
             <>
-              <Row color="var(--map-water)" text="Very low HH/HV — consistent with open water" />
-              <Row color="var(--map-veg)" text="Bright HH, large HH−HV — consistent with double bounce (flooded vegetation or buildings)" />
-              <div className="mt-1.5 text-muted">Not confirmed flooding. See Methods.</div>
+              <Row color="var(--map-water)" text="Looks like open water: the echo is very weak" exact={`HH < ${ow.hh_max_db.value} dB, HV < ${ow.hv_max_db.value} dB`} />
+              <Row color="var(--map-veg)" text="Looks like water under trees: the echo is very strong. Buildings look the same." exact={`double bounce: HH ≥ ${db.hh_min_db.value} dB, HH−HV ≥ ${db.hh_minus_hv_min_db.value} dB`} />
+              <div className="mt-1.5 text-muted">Radar signatures from simple thresholds, not confirmed flooding.</div>
             </>
           ) : mode === "change" ? (
             <>
               <div className="h-2.5" style={{ background: "linear-gradient(90deg, var(--map-darker), transparent 50%, var(--map-veg))" }} />
-              <div className="mt-1 flex justify-between font-mono text-muted"><span>−{m.change_range_db}</span><span>0</span><span>+{m.change_range_db}</span></div>
-              <div className="mt-1 text-muted">Blue = darker, amber = brighter radar return.</div>
+              <div className="mt-1 flex justify-between font-mono text-muted"><span>−{m.change_range_db} dB</span><span>0</span><span>+{m.change_range_db} dB</span></div>
+              <div className="mt-1 text-muted">Blue: the echo got weaker. Amber: it got stronger. The faint image underneath is the earlier pass.</div>
             </>
           ) : (
             <>
               <div className="h-2.5 border border-line" style={{ background: "linear-gradient(90deg, black, white)" }} />
-              <div className="mt-1 flex justify-between font-mono text-muted"><span>{lo}</span><span>{hi}</span></div>
+              <div className="mt-1 flex justify-between font-mono text-muted"><span>{lo} dB</span><span>{hi} dB</span></div>
+              <div className="mt-1 flex justify-between gap-3 text-muted"><span>weak: calm water</span><span className="text-right">strong: trees, towns</span></div>
+              <div className="mt-1.5 text-muted">Channel {channel}. Left of the handle is the earlier pass.</div>
             </>
           )}
           <div className="mt-2 flex items-center gap-2 text-muted">
@@ -359,6 +367,9 @@ function Legend({ m, mode, channel }: { m: Manifest; mode: Mode; channel: Channe
   );
 }
 
-const Row = ({ color, text }: { color: string; text: string }) => (
-  <div className="mb-1 flex items-start gap-2"><span className="mt-0.5 h-3 w-3 shrink-0" style={{ background: color }} /><span className="text-muted">{text}</span></div>
+const Row = ({ color, text, exact }: { color: string; text: string; exact?: string }) => (
+  <div className="mb-1.5 flex items-start gap-2">
+    <span className="mt-0.5 h-3 w-3 shrink-0" style={{ background: color }} />
+    <span className="text-muted">{text}{exact && <span className="mt-0.5 block font-mono text-[11px]">{exact}</span>}</span>
+  </div>
 );

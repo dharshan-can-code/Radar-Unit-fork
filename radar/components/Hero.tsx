@@ -4,7 +4,7 @@
 // with the least and the one with the most of the "water under vegetation"
 // screening signature (manifest.observations[].screening_counts).
 import { useEffect, useMemo, useState } from "react";
-import Orbits from "@/components/Orbits";
+import Contours from "@/components/Contours";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 import type { Manifest } from "@/lib/data";
@@ -42,7 +42,7 @@ export default function Hero({ m, storyHref, exploreHref }: { m: Manifest | null
 
   return (
     <header id="top" className="atmosphere relative overflow-hidden [&>:not(svg)]:relative -mx-4 scroll-mt-14 px-4 pt-10 pb-10 sm:-mx-6 sm:px-6 sm:pt-14 lg:pb-14">
-      <Orbits />
+      <Contours />
       <div className="grid gap-x-12 gap-y-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-y-10">
         <div className="min-w-0 lg:self-end">
           <h1 className="text-[2.6rem] leading-[1.02] font-medium sm:text-6xl 2xl:text-[4.5rem]">
@@ -55,7 +55,7 @@ export default function Hero({ m, storyHref, exploreHref }: { m: Manifest | null
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link href={exploreHref} className="flex items-center gap-2 rounded-md bg-accent px-5 py-3 text-[15px] font-semibold text-on-accent hover:bg-accent-strong">
-              Explore the data<ArrowRight size={17} />
+              Explore a place<ArrowRight size={17} />
             </Link>
             <Link href={storyHref} className="flex items-center gap-2 rounded-md border border-line-strong px-5 py-3 text-[15px] font-medium text-text hover:border-amber hover:text-amber">
               <Sparkles size={16} />Watch the story
@@ -119,7 +119,7 @@ export default function Hero({ m, storyHref, exploreHref }: { m: Manifest | null
               <Readout label="Radar passes">{m.observations.length}</Readout>
               <Readout label="First">{fmtDate(o0.date)}</Readout>
               <Readout label="Latest">{fmtDate(oN.date)}</Readout>
-              <Readout label="Map cell">{m.display.res_m} m</Readout>
+              <Readout label="Detail">{m.display.res_m} m cells</Readout>
             </dl>
           ) : m === undefined ? <div className="skeleton h-14 max-w-[34rem]" /> : null}
         </div>
