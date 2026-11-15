@@ -26,8 +26,17 @@ export default function PageTranslation() {
   const [progress, setProgress] = useState<number | null>(null);
   const [original, setOriginal] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [settled, setSettled] = useState(false);
 
   useEffect(() => { setOriginal(false); }, [language]);
+
+  // once the page is translated (nothing waiting for a moment), the banner steps aside
+  useEffect(() => {
+    if (status !== "on") { setSettled(false); return; }
+    if (pending > 0) { setSettled(false); return; }
+    const t = setTimeout(() => setSettled(true), 1500);
+    return () => clearTimeout(t);
+  }, [status, pending]);
 
   useEffect(() => {
     if (language === "en" || original) { setStatus("off"); return; }
@@ -91,7 +100,7 @@ export default function PageTranslation() {
     };
   }, [language, original, attempt]);
 
-  if (language === "en") return null;
+  if (language === "en" || (status === "on" && settled && !original)) return null;
 
   const btn = "shrink-0 rounded-md border border-line px-2.5 py-1 text-[12px] font-medium text-accent hover:border-accent/50";
   let body: React.ReactNode;
