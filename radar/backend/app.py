@@ -51,7 +51,22 @@ app = FastAPI(title="DELTA PULSE API", version="0.2")
 # Extra front-end origins (e.g. a hosted demo) via DELTA_PULSE_ORIGINS="https://a.example,https://b.example".
 ORIGINS = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"] + \
     [o.strip().rstrip("/") for o in os.environ.get("DELTA_PULSE_ORIGINS", "").split(",") if o.strip()]
-app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_methods=["*"], allow_headers=["*"])
+# Any local port is allowed too: the production preview runs on 3100, and Next picks another port when 3000 is busy.
+app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
+                   allow_methods=["*"], allow_headers=["*"])
+
+
+@app.middleware("http")
+async def vary_on_origin(request, call_next):
+    """Say that every answer depends on who asked. The CORS headers are only added when a request
+    names its origin, so without this a browser reuses a radar image it cached for an <img> tag
+    (no origin, no CORS header) when the map later reads the same file, and the map is refused."""
+    resp = await call_next(request)
+    if "origin" not in resp.headers.get("vary", "").lower():
+        resp.headers.add_vary_header("Origin")
+    return resp
+
+
 app.mount("/api/results", StaticFiles(directory=RESULTS), name="results")
 
 JOBS: dict[str, dict] = {}
@@ -110,8 +125,9 @@ def api_acquisitions(lat: float = Query(..., ge=-90, le=90), lon: float = Query(
 
 
 @app.get("/api/latest")
-def api_latest(days: float = Query(3, gt=0, le=14), limit: int = Query(400, ge=10, le=2000)):
-    """Newest NISAR GCOV acquisitions anywhere on Earth (live from ASF, cached 10 min)."""
+def api_latest(days: float = Query(3, gt=0, le=14), limit: int = Query(2000, ge=10, le=2000)):
+    """Newest NISAR GCOV products anywhere on Earth (live from ASF, cached 10 min). `truncated` says
+    whether the period holds more than `limit` products."""
     try:
         r = nisar.latest(days, limit)
     except Exception as e:  # noqa: BLE001

@@ -43,9 +43,9 @@ export default function Impact() {
         <div className="rounded-xl border border-line bg-panel p-5">
           <div className="flex items-center gap-2 text-sm font-semibold"><HeartHandshake size={16} className="text-accent" />Open, honest, reusable</div>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-[14px] text-text/80">
-            <li>Open source, with the full processing chain documented and tested (32 automated tests).</li>
+            <li>Open source, with the full processing chain documented and tested (34 automated tests).</li>
             <li>Checked against independent data: Landsat water maps, river-flow models and weather records.</li>
-            {recent != null && <li>Ready for new data: NISAR published {recent} new radar products in the last 3 days.</li>}
+            {recent != null && recent > 0 && <li>Ready for new data: NASA&apos;s archive already lists {recent.toLocaleString()} NISAR radar acquisitions from the last 3 days.</li>}
             <li>Every statement is labelled observed, calculated, interpreted or unconfirmed.</li>
             <li>Built to grow: next steps are calibrating against river gauges, alerts for watched places, and more languages.</li>
           </ul>

@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl, { GeoJSONSource, Map as MLMap } from "maplibre-gl";
 import { CloudOff, Loader2, RefreshCw, Satellite } from "lucide-react";
 import { Latest, LatestGranule, Place, errorText, latest } from "@/lib/api";
-import PublicDemoNote, { useIsPublicDemo } from "@/components/PublicDemoNote";
 import { MAT, MAT_LABEL } from "@/components/LiveSearch";
 import { COLOR, mapTilesFor } from "@/lib/theme";
 import { currentTheme, useTheme } from "@/lib/themeMode";
@@ -28,14 +27,22 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
   const [data, setData] = useState<Latest | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const demo = useIsPublicDemo();
   const onPickRef = useRef(onPick); onPickRef.current = onPick;
   const [globe, setGlobe] = useState(true);
   const spinning = useRef(true);
 
+  const [showAll, setShowAll] = useState(false);
+  const seq = useRef(0); // only the newest request may write its answer (periods can be switched quickly)
+
   async function load(d = days) {
+    const mine = ++seq.current;
     setLoading(true); setErr(null);
-    try { setData(await latest(d)); } catch (x) { setErr(errorText(x)); } finally { setLoading(false); }
+    try {
+      const l = await latest(d);
+      if (mine === seq.current) { setData(l); setShowAll(false); }
+    } catch (x) {
+      if (mine === seq.current) { setData(null); setErr(errorText(x)); }
+    } finally { if (mine === seq.current) setLoading(false); }
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(days); }, [days]);
@@ -80,13 +87,18 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
 
   useEffect(() => {
     const m = map.current;
-    if (!m || !data || !m.getSource("fp")) return;
+    if (!m || !m.getSource("fp")) return;
+    // No data (still loading, or the archive could not be reached) clears the globe instead of leaving old footprints on it.
     (m.getSource("fp") as GeoJSONSource).setData({
       type: "FeatureCollection",
-      features: data.granules.map((g) => ({ type: "Feature", geometry: g.footprint,
+      features: (data?.granules ?? []).map((g) => ({ type: "Feature", geometry: g.footprint,
         properties: { maturity: g.maturity, age_h: (Date.now() - Date.parse(g.start_time)) / 3.6e6 } })),
     });
   }, [data]);
+
+  const ROWS = 100;
+  const rows = data ? (showAll ? data.granules : data.granules.slice(0, ROWS)) : [];
+  const period = days === 1 ? "24 hours" : `${days} days`;
 
   const pick = (g: LatestGranule) =>
     onPick({ name: `${g.centroid[1].toFixed(4)}°, ${g.centroid[0].toFixed(4)}° (track ${g.track}${g.direction?.[0]}, ${g.date})`,
@@ -100,7 +112,7 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
         <div className="ml-auto flex items-center gap-2">
           <div className="flex overflow-hidden rounded-md border border-line text-[12px]">
             {DAYS.map((d) => (
-              <button key={d} onClick={() => setDays(d)} className={`px-2.5 py-1 ${days === d ? "bg-accent/15 text-accent" : "text-muted hover:text-text"}`}>
+              <button key={d} onClick={() => setDays(d)} aria-pressed={days === d} className={`px-2.5 py-1 ${days === d ? "bg-accent/15 text-accent" : "text-muted hover:text-text"}`}>
                 {d === 1 ? "24 h" : `${d} days`}
               </button>
             ))}
@@ -109,29 +121,43 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
             const m = map.current; if (!m) return;
             const g = !globe; setGlobe(g); m.setProjection({ type: g ? "globe" : "mercator" }); spinning.current = g;
           }} className="rounded-md border border-line px-2.5 py-1 text-[12px] text-muted hover:text-text">{globe ? "Flat map" : "3D globe"}</button>
-          <button onClick={() => load()} title="Check the archive again" className="text-accent hover:text-accent-strong">
+          <button onClick={() => load()} title="Check the archive again" aria-label="Check the archive again" className="text-accent hover:text-accent-strong">
             {loading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
           </button>
         </div>
       </div>
       <p className="mt-1 text-[12px] text-muted">
-        Footprints of every L2 GCOV product acquired in the selected period, as listed by ASF right now
-        {data && <> (checked {data.checked_utc.slice(11, 16)} UTC · {data.n} products)</>}. Click a footprint or a row to explore it.
+        Where NISAR imaged in the last {period}, from the L2 GCOV products ASF lists right now
+        {data && <> (checked {data.checked_utc.slice(11, 16)} UTC · {data.n.toLocaleString()} acquisition{data.n === 1 ? "" : "s"}
+          {data.n_products > data.n && <>, {data.n_products.toLocaleString()} products</>})</>}. Click a footprint or a row to explore it.
+        {data?.truncated && <> The archive holds more products in this period than the {data.n_products.toLocaleString()} newest shown here.</>}
       </p>
       <div className="mt-3 grid gap-3 lg:grid-cols-5">
         <div ref={el} className="h-80 overflow-hidden rounded-lg border border-line bg-void lg:col-span-3" />
         <div className="max-h-80 overflow-auto border-t border-line lg:col-span-2 lg:border-t-0 lg:border-l">
-          {err && demo && <div className="p-3"><PublicDemoNote compact what="The live worldwide feed needs the full app." /></div>}
-          {err && !demo && (
+          {err && (
             <div className="flex items-start gap-2.5 p-4 text-[13px] leading-relaxed text-muted">
               <CloudOff size={16} className="mt-0.5 shrink-0 text-amber" />
-              <span><span className="font-medium text-text">The live feed is not available right now.</span> {err} The saved examples above open without it.</span>
+              <span>
+                <span className="font-medium text-text">The newest acquisitions could not be loaded.</span> {err}
+                <button onClick={() => load()} className="mt-2 flex items-center gap-1.5 text-accent hover:text-accent-strong"><RefreshCw size={13} />Try again</button>
+              </span>
             </div>
           )}
-          {!data && !err && <p className="p-3 text-[12px] text-muted">Loading the newest acquisitions…</p>}
-          {data && data.granules.length === 0 && <p className="p-3 text-[12px] text-muted">No GCOV products in this period yet.</p>}
+          {!data && !err && <p className="p-3 text-[12px] text-muted" role="status">Loading the newest acquisitions…</p>}
+          {data && data.granules.length === 0 && (
+            <div className="p-4 text-[13px] leading-relaxed text-muted">
+              <span className="font-medium text-text">Nothing from the last {period} is in the archive yet.</span>{" "}
+              A radar image takes a few hours to a few days to be processed and published after the satellite passes.
+              {days < DAYS[DAYS.length - 1] && (
+                <button onClick={() => setDays(DAYS[DAYS.indexOf(days) + 1])} className="mt-2 block text-accent hover:text-accent-strong">
+                  Show the last {DAYS[DAYS.indexOf(days) + 1]} days instead
+                </button>
+              )}
+            </div>
+          )}
           <ul>
-            {data?.granules.slice(0, 80).map((g) => (
+            {rows.map((g) => (
               <li key={g.scene} className="border-b border-line/60 last:border-0">
                 <button onClick={() => pick(g)} className="w-full px-3 py-1.5 text-left text-[12px] hover:bg-panel-2">
                   <div className="flex items-center gap-2">
@@ -144,6 +170,11 @@ export default function LatestFeed({ onPick }: { onPick: (p: Place) => void }) {
               </li>
             ))}
           </ul>
+          {data && data.granules.length > rows.length && (
+            <button onClick={() => setShowAll(true)} className="w-full border-t border-line px-3 py-2 text-left text-[12px] text-accent hover:bg-panel-2 hover:text-accent-strong">
+              Showing the newest {rows.length} of {data.granules.length.toLocaleString()}. Show all
+            </button>
+          )}
         </div>
       </div>
       <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-muted">

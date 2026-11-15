@@ -23,19 +23,22 @@ export default function Findings({ m, grid, rain, validation, linkTo }: {
   const pct = (a: number, b: number) => (a > 0 ? Math.round(((b - a) / a) * 100) : 0);
   const signed = (x: number) => `${x > 0 ? "+" : x < 0 ? "−" : ""}${Math.abs(x)}%`;
 
+  // The "water under trees" signature is also what buildings look like to the radar. The case study and the
+  // saved examples are wetlands chosen for that reason; a place someone searched for may be a town.
+  const built = m.area === "live" ? " Buildings give the same radar signature, so in a town this mostly counts built-up land." : "";
   // Water under trees: report growth to the peak if it rose, otherwise the change over the season.
   const vegRose = f.vegPeak.date !== first.date && f.vegPeak.flooded_veg_km2 >= 1.5 * Math.max(first.flooded_veg_km2, 0.1);
   const veg: Card = vegRose
     ? { icon: <Trees size={18} />, tone: "text-amber", topic: "Under vegetation", tag: "INTERPRETED", big: `${(f.vegPeak.flooded_veg_km2 / Math.max(first.flooded_veg_km2, 0.1)).toFixed(1)}×`,
         what: "more water hidden under trees",
         detail: `${fmtKm2(first.flooded_veg_km2)} → ${fmtKm2(f.vegPeak.flooded_veg_km2)} km² between ${fmtDate(first.date)} and ${fmtDate(f.vegPeak.date)}`,
-        meaning: "Flooded forest and shrubs that look like ordinary green land from above. Only radar sees it." }
+        meaning: `Flooded forest and shrubs that look like ordinary green land from above. Only radar sees it.${built}` }
     : { icon: <Trees size={18} />, tone: "text-amber", topic: "Under vegetation", tag: "INTERPRETED", big: signed(pct(first.flooded_veg_km2, last.flooded_veg_km2)),
         what: pct(first.flooded_veg_km2, last.flooded_veg_km2) < 0 ? "less water under trees" : "change in water under trees",
         detail: `${fmtKm2(first.flooded_veg_km2)} → ${fmtKm2(last.flooded_veg_km2)} km² from ${fmtDate(first.date)} to ${fmtDate(last.date)}`,
-        meaning: pct(first.flooded_veg_km2, last.flooded_veg_km2) < -20
+        meaning: (pct(first.flooded_veg_km2, last.flooded_veg_km2) < -20
           ? "Floodwater draining out from beneath the forest as the river falls."
-          : "Water standing under trees or shrubs, which cameras cannot see from above." };
+          : "Water standing under trees or shrubs, which cameras cannot see from above.") + built };
 
   const openTiny = Math.max(first.water_km2, last.water_km2, f.waterPeak.water_km2) < 5;
   const water: Card = openTiny
@@ -50,7 +53,11 @@ export default function Findings({ m, grid, rain, validation, linkTo }: {
   const cloud: Card = f.cloudyPasses != null
     ? { icon: <CloudRain size={18} />, tone: "text-blue", topic: "Sky at each pass", tag: "OBSERVED", big: `${f.cloudyPasses} of ${f.cloudKnown}`, what: "passes under heavy cloud",
         detail: `More than half the sky was cloud when NISAR flew over (average ${Math.round(f.meanCloud ?? 0)}%)`,
-        meaning: "A normal satellite photo would have shown mostly cloud. Radar saw the ground every time." }
+        meaning: f.cloudyPasses === 0
+          ? "The sky was mostly clear on these dates, so a camera could have seen the ground too. Radar gives the same view in any weather."
+          : f.cloudyPasses === f.cloudKnown
+            ? "A normal satellite photo would have shown mostly cloud. Radar saw the ground every time."
+            : "On those passes a normal satellite photo would have shown mostly cloud. Radar saw the ground every time." }
     : { icon: <CloudRain size={18} />, tone: "text-blue", topic: "Sky at each pass", tag: "OBSERVED", big: `${f.n}`, what: "radar passes",
         detail: `${fmtDate(f.first)} to ${fmtDate(f.last)}, one every ~12 days`,
         meaning: "Radar images the ground on every pass, whatever the weather." };

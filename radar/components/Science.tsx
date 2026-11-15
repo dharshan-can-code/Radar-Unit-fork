@@ -138,9 +138,9 @@ export function Methods({ m }: { m: Manifest | null }) {
         <ul className="mt-2 list-disc space-y-1 pl-5 text-[13px] text-muted">
           <li>NISAR products before 21 Oct 2026 are PROVISIONAL (calibrated, partially validated); they are not mixed with VALIDATED data here.</li>
           <li>About five months of data: seasonal, not multi-year. No trend or dam-impact claims are possible yet.</li>
-          <li>Speckle: values are averaged in linear power over 100 m (layers) and 200 m (fingerprint) cells.</li>
+          <li>Speckle: values are averaged in linear power over {m ? `${m.display.res_m} m (layers) and ${m.grid.res_m} m (fingerprint)` : "100 m (layers) and 200 m (fingerprint)"} cells.</li>
           <li>Map overlays are UTM rasters warped to web-map corners; small (&lt; 1 cell) positional distortion is possible at the edges.</li>
-          <li>No independent validation (gauge, optical, field) is integrated yet; nothing is labelled as confirmed flooding.</li>
+          <li>The independent checks (Landsat water history, a river-flow model, wind records) cover the Tonle Sap case study only, and none of them is a ground measurement. Nothing is labelled as confirmed flooding.</li>
         </ul>
       </div>
     </div>

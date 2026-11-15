@@ -3,8 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChevronsLeftRight, Cloud, CloudRain, Droplets, Satellite, Thermometer, Waves } from "lucide-react";
 import type { Manifest } from "@/lib/data";
-import { imgUrl } from "@/lib/data";
-import { GIBS_LAYERS, Now, River, Rainfall, WMO, gibsSnapshot, nowWeather, river } from "@/lib/api";
+import { IMG_CORS, imgUrl } from "@/lib/data";
+import { GIBS_LAYERS, Now, River, Rainfall, WMO, errorText, gibsSnapshot, nowWeather, river } from "@/lib/api";
 import { Tag } from "@/components/Fingerprint";
 import { CHART } from "@/lib/theme";
 
@@ -90,7 +90,7 @@ function CameraVsRadar({ m, rain }: { m: Manifest; rain: Rainfall | null }) {
           No NASA daytime camera image covers this place on {fmt(date)} (gap between orbits). Radar doesn&apos;t have this problem.</div>}
         <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${split}%)` }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={imgUrl(m, `${date}_HH`)} alt={`NISAR radar, ${date}`} className="absolute inset-0 h-full w-full object-fill" />
+          <img crossOrigin={IMG_CORS} src={imgUrl(m, `${date}_HH`)} alt={`NISAR radar, ${date}`} className="absolute inset-0 h-full w-full object-fill" />
         </div>
         <div className="absolute top-2 left-2 max-w-[58%] truncate rounded bg-bg/80 px-2 py-0.5 font-mono text-[11px]">NASA {shown} · camera{shown !== layer && " (fallback)"}</div>
         <div className="absolute top-2 right-2 rounded bg-bg/80 px-2 py-0.5 font-mono text-[11px] text-accent">NISAR · radar</div>
@@ -121,7 +121,7 @@ export default function WaterNow({ m, rain }: { m: Manifest | null; rain: Rainfa
     if (!center) return;
     let cancel = false;
     setErr(null); setNow(null); setRiv(null);
-    nowWeather(center[1], center[0]).then((x) => { if (!cancel) setNow(x); }).catch((e) => { if (!cancel) setErr(e.message); });
+    nowWeather(center[1], center[0]).then((x) => { if (!cancel) setNow(x); }).catch((e) => { if (!cancel) setErr(errorText(e)); });
     river(center[1], center[0]).then((x) => { if (!cancel) setRiv(x); }).catch(() => { if (!cancel) setRiv(null); });
     const t = setInterval(() => nowWeather(center[1], center[0]).then((x) => { if (!cancel) setNow(x); }).catch(() => {}), 10 * 60 * 1000);
     return () => { cancel = true; clearInterval(t); };
@@ -142,7 +142,7 @@ export default function WaterNow({ m, rain }: { m: Manifest | null; rain: Rainfa
         <div className="rounded-xl border border-line bg-panel p-5 md:col-span-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-2 text-sm font-semibold">Right now <span className="text-[12px] font-normal text-green">live, refreshed every 10 min</span></div>
           <div className="mt-1 truncate text-[12px] text-muted">{m.name}</div>
-          {c ? (
+          {c?.time ? (
             <div className="mt-3 space-y-2 text-[14px]">
               <div className="text-lg text-text">{WMO[c.weather_code] ?? `code ${c.weather_code}`}</div>
               <div className="flex items-center gap-2"><Thermometer size={14} className="text-amber" />{c.temperature_2m} °C</div>
@@ -152,7 +152,7 @@ export default function WaterNow({ m, rain }: { m: Manifest | null; rain: Rainfa
               <div className="border-t border-line pt-2 text-[12px] leading-snug text-muted">Weather context from a forecast model (Open-Meteo, updated every 15 minutes). It is not a radar measurement.</div>
               {c.cloud_cover >= 50 && <div className="rounded border border-amber/40 bg-amber/5 p-2 text-[12px] text-amber">A camera satellite overhead now would mostly see cloud. Radar wouldn&apos;t.</div>}
             </div>
-          ) : <div className="mt-3 text-[13px] text-muted">{err ?? "Loading current conditions…"}</div>}
+          ) : <div className="mt-3 text-[13px] text-muted">{err ? `Current conditions are not available right now. ${err}` : now ? "No current conditions are available for this place." : "Loading current conditions…"}</div>}
         </div>
 
         <div className="rounded-xl border border-line bg-panel p-5 md:col-span-3">

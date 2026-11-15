@@ -10,7 +10,7 @@ npm.cmd run api
 ```
 Open http://localhost:8000/docs for interactive API docs. Analysis needs the Earthdata token in `.earthdata_token`; search works without it.
 
-**Hosted front end.** The front end builds to static files (`npm run build`) and can be hosted on its own. Without the backend, the Tonle Sap case study, Your Story, rainfall, cloud and river data still work, because the browser calls Open-Meteo directly. Only live search and live analysis need this server. To let a hosted front end use a backend, set `NEXT_PUBLIC_API` to the backend URL at build time, and allow the front end's address on the server with `DELTA_PULSE_ORIGINS="https://your-demo.example"` (comma-separated).
+**Hosted front end.** The front end builds to static files (`npm run build`) and can be hosted on its own. Without the backend, the Tonle Sap case study, the saved examples, Your Story, rainfall, cloud and river data still work, and so do place search, the archive search for a place and the newest-acquisitions globe: the browser asks OpenStreetMap Nominatim, the ASF Search API and Open-Meteo directly (`lib/api.ts` mirrors `backend/nisar.py`). Only analysing a new place needs this server, because that reads the radar files with an Earthdata login. To let a hosted front end use a backend, set `NEXT_PUBLIC_API` to the backend URL at build time, and allow the front end's address on the server with `DELTA_PULSE_ORIGINS="https://your-demo.example"` (comma-separated).
 
 ## How "live" works (and what it is not)
 - **Search is live.** Every new location queries the ASF archive at request time (results cached for 15 min; `?fresh=true` bypasses the cache).
@@ -28,7 +28,7 @@ Open http://localhost:8000/docs for interactive API docs. Analysis needs the Ear
 | GET | `/api/jobs/{id}` | `status` (queued/running/done/error), `progress`, `message` |
 | GET | `/api/results/{id}/manifest.json` | Result in the **same format as the batch pipeline**, plus `grid.bin` and `img/*.png` |
 | GET/POST | `/api/watch` | List/add locations for the periodic archive check |
-| GET | `/api/latest?days=3` | Newest NISAR GCOV acquisitions anywhere on Earth, live from ASF (cached 10 min) |
+| GET | `/api/latest?days=3&limit=2000` | Newest NISAR GCOV products anywhere on Earth, live from ASF (cached 10 min). A pass published as both an urgent-response and a science product is listed twice; the app shows it once. `truncated` is true when the period holds more than `limit` products |
 | GET | `/api/weather?lat=&lon=&start=&end=` | Daily rainfall (ERA5/ERA5T via Open-Meteo), context only |
 | GET | `/api/gallery` | Previously computed analyses, newest first |
 
@@ -60,3 +60,4 @@ Measured performance (2026-11-14, home connection):
 - Place names typed by users are sent to OpenStreetMap Nominatim to find coordinates.
 - Coordinates are sent to ASF to search the archive.
 - No user identity is sent. The geocoder identifies only as "DeltaPulse".
+- When the backend is not running, the visitor's browser sends those same requests itself, so OpenStreetMap and ASF see the visitor's IP address instead of the server's.

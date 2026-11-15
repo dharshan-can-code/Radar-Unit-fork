@@ -136,7 +136,7 @@ export default function Fingerprint({ m, fp, verdict, statements, series, region
               </div>
             );
           })}
-          <p className="mt-3 text-[12px] text-muted">Uses the uncalibrated rules in Methods at 200 m. Candidate signatures only.</p>
+          <p className="mt-3 text-[12px] text-muted">Uses the uncalibrated rules in Methods at {m.grid.res_m} m. Candidate signatures only.</p>
         </div>
 
         <div className="rounded-xl border border-line bg-panel p-5">

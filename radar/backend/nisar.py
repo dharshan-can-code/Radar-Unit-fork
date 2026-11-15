@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import re
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -196,28 +197,36 @@ def read_window(f, pol: str, xlim: tuple, ylim: tuple):
 # ---- newest acquisitions worldwide ----------------------------------------------
 
 _LATEST: dict[str, tuple[float, dict]] = {}
+_LATEST_LOCK = threading.Lock()  # one archive search at a time: simultaneous page loads share its answer
 
 
-def latest(days: float = 3, limit: int = 400) -> dict:
-    """The most recent NISAR GCOV acquisitions anywhere, straight from ASF."""
+def latest(days: float = 3, limit: int = 2000) -> dict:
+    """The most recent NISAR GCOV products anywhere, straight from ASF, newest first.
+
+    One acquisition can be listed more than once (an urgent-response product and a science
+    product of the same pass); they are all returned, each with its own maturity.
+    `truncated` is true when the period holds more products than `limit`."""
     key = f"{days}|{limit}"
-    if key in _LATEST and time.time() - _LATEST[key][0] < 600:
-        return _LATEST[key][1]
-    import asf_search as asf
-    from datetime import timedelta
-    from shapely.geometry import shape
+    with _LATEST_LOCK:
+        if key in _LATEST and time.time() - _LATEST[key][0] < 600:
+            return _LATEST[key][1]
+        import asf_search as asf
+        from datetime import timedelta
+        from shapely.geometry import shape
 
-    start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    res = asf.search(dataset="NISAR", processingLevel="GCOV", start=start, maxResults=limit)
-    items = {}
-    for r in res:
-        g = granule_record(r.properties, r.geometry)
-        c = shape(r.geometry).centroid
-        g["centroid"] = [round(c.x, 4), round(c.y, 4)]
-        items[g["scene"]] = g
-    gs = sorted(items.values(), key=lambda g: g["start_time"], reverse=True)
-    out = {"checked_utc": now_utc(), "days": days, "n": len(gs),
-           "source": "ASF Search API (asf_search), dataset NISAR, processingLevel GCOV, newest first",
-           "granules": gs}
-    _LATEST[key] = (time.time(), out)
-    return out
+        start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        res = list(asf.search(dataset="NISAR", processingLevel="GCOV", start=start, maxResults=limit))
+        items = {}
+        for r in res:
+            if not r.geometry:
+                continue
+            g = granule_record(r.properties, r.geometry)
+            c = shape(r.geometry).centroid
+            g["centroid"] = [round(c.x, 4), round(c.y, 4)]
+            items[g["scene"]] = g
+        gs = sorted(items.values(), key=lambda g: g["start_time"], reverse=True)
+        out = {"checked_utc": now_utc(), "days": days, "n": len(gs), "limit": limit, "truncated": len(res) >= limit,
+               "source": "ASF Search API (asf_search), dataset NISAR, processingLevel GCOV, newest first",
+               "granules": gs}
+        _LATEST[key] = (time.time(), out)
+        return out
