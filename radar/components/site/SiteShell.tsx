@@ -9,22 +9,25 @@ import { BrandMark } from "@/components/ui";
 import { NextPage } from "@/components/site/Section";
 import { SiteProvider, useSite } from "@/components/site/SiteState";
 import { STORY } from "@/components/site/nav";
+import { LanguageProvider, useLanguage } from "@/components/site/LanguageContext";
+import PageTranslation from "@/components/site/PageTranslation";
 
 /** The frame around every page: sidebar (xl+) or top bar, the demonstration-data warning, and the footer. */
 export default function SiteShell({ children }: { children: React.ReactNode }) {
-  return <SiteProvider><Shell>{children}</Shell></SiteProvider>;
+  return <LanguageProvider><SiteProvider><Shell>{children}</Shell></SiteProvider></LanguageProvider>;
 }
-
 function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { m, help, setHelp } = useSite();
   const story = pathname === STORY;
+  const { t } = useLanguage();
   return (
     <div className="transition-[padding-left] duration-200 motion-reduce:transition-none xl:pl-[var(--sidebar-w)]">
-      <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-on-accent">Skip to content</a>
+      <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-on-accent">{t("skip")}</a>
       <Sidebar />
       <Navbar />
       <main id="content" tabIndex={-1} className="mx-auto max-w-[1400px] px-4 pb-16 outline-none sm:px-6">
+        <PageTranslation />
         {!story && m?.is_demonstration && (
           <div role="alert" className="sticky top-[52px] z-50 -mx-4 flex items-center gap-2 border-b border-amber/40 bg-bg px-4 py-2 text-[13px] text-amber sm:-mx-6 sm:px-6 xl:top-0">
             <AlertTriangle size={16} className="shrink-0" />

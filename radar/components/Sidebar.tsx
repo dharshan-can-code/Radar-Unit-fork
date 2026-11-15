@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { BookOpen, ChevronsLeft, ChevronsRight, Sparkles } from "lucide-react";
 import { BrandMark } from "@/components/ui";
 import ThemeToggle from "@/components/ThemeToggle";
-import { PAGES, PLACE_SECTIONS, STORY, type NavItem, type NavPage } from "@/components/site/nav";
+import LanguageSelector from "@/components/site/LanguageSelector";
+import { useLanguage } from "@/components/site/LanguageContext";
+import { PAGES, PLACE_SECTIONS, STORY, navName, type NavItem, type NavPage } from "@/components/site/nav";
 import { useSite } from "@/components/site/SiteState";
 
 /** Which section of the current page is in view (for the highlight), from the page's own section ids. */
@@ -56,6 +58,8 @@ export function useNavLinks() {
 export default function Sidebar() {
   const { pathname, target, onClick, isOn, href } = useNavLinks();
   const [collapsed, setCollapsed] = useState(false);
+  const { t, language, dir } = useLanguage();
+  const name = (x: NavItem | NavPage) => navName(x, language, t);
 
   // remember the collapsed state (storage can be blocked, so every access is wrapped)
   useEffect(() => {
@@ -70,15 +74,15 @@ export default function Sidebar() {
   const row = `flex w-full items-center rounded-md text-[14px] font-medium ${collapsed ? "justify-center py-2.5" : "gap-3 px-3 py-2"}`;
   const storyLink = (
     <li key={STORY}>
-      <Link href={href(STORY)} aria-current={story ? "page" : undefined} title={collapsed ? "Your Story" : undefined} aria-label="Your Story"
+      <Link href={href(STORY)} aria-current={story ? "page" : undefined} title={collapsed ? t("story") : undefined} aria-label={t("story")}
         className={`${row} ${story ? "bg-amber/15 text-amber" : "text-amber hover:bg-amber/10"}`}>
-        <Sparkles size={17} className="shrink-0" />{!collapsed && "Your Story"}
+        <Sparkles size={17} className="shrink-0" />{!collapsed && t("story")}
       </Link>
     </li>
   );
 
   return (
-    <aside aria-label="Pages" style={{ width: "var(--sidebar-w)" }}
+    <aside aria-label="Pages" lang={language} style={{ width: "var(--sidebar-w)" }}
       className="fixed inset-y-0 left-0 z-[60] hidden flex-col border-r border-line bg-bg transition-[width] duration-200 motion-reduce:transition-none xl:flex">
       {/* brand + collapse / expand: the button keeps its place at the top in both states */}
       <div className={`flex h-[52px] shrink-0 items-center border-b border-line ${collapsed ? "justify-center" : "justify-between pr-2 pl-4"}`}>
@@ -89,23 +93,23 @@ export default function Sidebar() {
           </Link>
         )}
         <button onClick={() => setCollapsed((c) => !c)} aria-expanded={!collapsed}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? t("expand") : t("collapse")} title={collapsed ? t("expand") : t("collapse")}
           className="rounded-md p-2 text-muted hover:bg-panel hover:text-text">
           {collapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
         </button>
       </div>
 
       {/* the pages in reading order; the open page lists its sections */}
-      <nav aria-label="Main" className="flex-1 overflow-y-auto px-2 py-3">
+      <nav aria-label="Main" dir={dir} className="flex-1 overflow-y-auto px-2 py-3">
         <ul className="space-y-1">
           {PAGES.flatMap((p, gi) => {
             const here = p.href === pathname;
             const page = (
               <li key={p.href}>
                 <Link href={href(p.href)} aria-current={here ? "page" : undefined}
-                  title={collapsed ? p.title : undefined} aria-label={collapsed ? p.title : undefined}
+                  title={collapsed ? name(p) : undefined} aria-label={collapsed ? name(p) : undefined}
                   className={`${row} ${here ? "bg-accent/10 text-accent" : "text-text/85 hover:bg-panel hover:text-text"}`}>
-                  <p.icon size={17} className="shrink-0" />{!collapsed && p.title}
+                  <p.icon size={17} className="shrink-0" />{!collapsed && name(p)}
                 </Link>
                 {here && !collapsed && (
                   <ul className="panel-in mt-1 mb-2 ml-[1.3rem] space-y-px border-l border-line pl-2">
@@ -115,7 +119,7 @@ export default function Sidebar() {
                         <li key={x.id}>
                           <Link href={target(p, x)} onClick={(e) => onClick(p, x, e)} aria-current={on ? "location" : undefined}
                             className={`flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] ${on ? "font-medium text-accent" : "text-muted hover:bg-panel hover:text-text"}`}>
-                            <x.icon size={14} className="shrink-0" /><span className="truncate">{x.label}</span>
+                            <x.icon size={14} className="shrink-0" /><span className="truncate">{name(x)}</span>
                           </Link>
                         </li>
                       );
@@ -130,12 +134,13 @@ export default function Sidebar() {
         </ul>
       </nav>
 
-      {/* theme + guide */}
-      <div className="shrink-0 space-y-1 border-t border-line p-2">
+      {/* language + theme + guide */}
+      <div dir={dir} className="shrink-0 space-y-1 border-t border-line p-2">
+        {!collapsed && <LanguageSelector className="w-full border-transparent py-2 px-3 gap-3" />}
         <ThemeToggle compact={collapsed} className={`w-full border-transparent py-2 ${collapsed ? "justify-center" : "gap-3 px-3"}`} />
-        <Link href="/guide" title={collapsed ? "User guide" : undefined} aria-label="User guide"
+        <Link href="/guide" title={collapsed ? t("guide") : undefined} aria-label={t("guide")}
           className={`flex items-center rounded-md py-2 text-[13px] text-muted hover:bg-panel hover:text-text ${collapsed ? "justify-center" : "gap-3 px-3"}`}>
-          <BookOpen size={16} className="shrink-0" />{!collapsed && "User guide"}
+          <BookOpen size={16} className="shrink-0" />{!collapsed && t("guide")}
         </Link>
       </div>
     </aside>
