@@ -42,9 +42,12 @@ from geocode import geocode  # noqa: E402
 from weather import now as weather_now, rainfall, river  # noqa: E402
 from refresh import get_token  # noqa: E402
 
-RESULTS = ROOT / "data" / "live"
+DATA_DIR = Path(os.environ.get("DELTA_PULSE_DATA_DIR") or ROOT / "data").expanduser().resolve()
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+RESULTS = DATA_DIR / "live"
 RESULTS.mkdir(parents=True, exist_ok=True)
-WATCH_FILE = ROOT / "data" / "metadata" / "watchlist.json"
+WATCH_FILE = DATA_DIR / "metadata" / "watchlist.json"
+WATCH_FILE.parent.mkdir(parents=True, exist_ok=True)
 CHECK_INTERVAL_S = 6 * 3600
 
 app = FastAPI(title="DELTA PULSE API", version="0.2")
