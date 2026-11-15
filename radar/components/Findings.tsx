@@ -2,6 +2,7 @@
 // The three headline results for whatever place is loaded, each with a plain
 // "what this means" line. Computed from the data (lib/story.ts), never typed in.
 import { useMemo } from "react";
+import Link from "next/link";
 import { ArrowRight, CloudRain, ShieldCheck, Trees, Waves } from "lucide-react";
 import type { Rainfall } from "@/lib/api";
 import type { GridIndex, Manifest, Validation } from "@/lib/data";
@@ -11,8 +12,9 @@ import type { Evidence } from "@/lib/data";
 
 type Card = { icon: React.ReactNode; tone: string; topic: string; tag: Evidence; big: string; what: string; detail: string; meaning: string };
 
-export default function Findings({ m, grid, rain, validation }: {
+export default function Findings({ m, grid, rain, validation, linkTo }: {
   m: Manifest | null; grid: GridIndex | null; rain: Rainfall | null; validation: Validation | null;
+  /** where a section of the Explore page lives ("checks", "fingerprint") */ linkTo: (section: string) => string;
 }) {
   const f = useMemo(() => (m && grid && m.observations.length >= 2 ? buildStory(m, rain, grid) : null), [m, grid, rain]);
   if (!m || !f) return <div className="grid gap-px md:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="skeleton h-64" />)}</div>;
@@ -88,10 +90,10 @@ export default function Findings({ m, grid, rain, validation }: {
               surveyed flood maps. Flooding stays labelled <Tag kind="UNCONFIRMED" /> until other evidence confirms it.</>
           )}
         </div>
-        <button onClick={() => document.getElementById(v ? "checks" : "fingerprint")?.scrollIntoView({ behavior: "smooth" })}
+        <Link href={linkTo(v ? "checks" : "fingerprint")}
           className="flex shrink-0 items-center gap-1.5 text-[13px] font-medium text-green hover:text-text">
           {v ? "See the checks" : "See the details"}<ArrowRight size={14} />
-        </button>
+        </Link>
       </div>
       <p className="text-[12px] text-muted">Areas are counted only over ground the radar saw on every pass, so dates are compared fairly. {f.n} passes, {fmtDate(f.first)} – {fmtDate(f.last)}, {m.name}.</p>
     </div>

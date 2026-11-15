@@ -4,13 +4,14 @@
 // with the least and the one with the most of the "water under vegetation"
 // screening signature (manifest.observations[].screening_counts).
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 import type { Manifest } from "@/lib/data";
 import { imgUrl } from "@/lib/data";
 import { fmtDate } from "@/lib/story";
 import { Readout } from "@/components/ui";
 
-export default function Hero({ m, onStory, onExplore }: { m: Manifest | null | undefined; onStory: () => void; onExplore: () => void }) {
+export default function Hero({ m, storyHref, exploreHref }: { m: Manifest | null | undefined; storyHref: string; exploreHref: string }) {
   const scenes = useMemo(() => {
     if (!m || m.observations.length < 2) return null;
     const obs = m.observations;
@@ -51,12 +52,12 @@ export default function Hero({ m, onStory, onExplore }: { m: Manifest | null | u
             changed, and how sure we can be.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <button onClick={onExplore} className="flex items-center gap-2 rounded-md bg-cyan px-5 py-3 text-[15px] font-semibold text-bg hover:bg-cyan/90">
+            <Link href={exploreHref} className="flex items-center gap-2 rounded-md bg-cyan px-5 py-3 text-[15px] font-semibold text-bg hover:bg-cyan/90">
               Explore the data<ArrowRight size={17} />
-            </button>
-            <button onClick={onStory} className="flex items-center gap-2 rounded-md border border-line-strong px-5 py-3 text-[15px] font-medium text-text hover:border-amber hover:text-amber">
+            </Link>
+            <Link href={storyHref} className="flex items-center gap-2 rounded-md border border-line-strong px-5 py-3 text-[15px] font-medium text-text hover:border-amber hover:text-amber">
               <Sparkles size={16} />Watch the story
-            </button>
+            </Link>
             <button onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })}
               className="flex items-center gap-1.5 px-1 py-3 text-[14px] text-muted hover:text-text">
               How the radar sees it<ArrowDown size={14} />
